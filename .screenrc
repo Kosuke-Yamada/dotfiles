@@ -1,0 +1,10 @@
+escape ^Ww
+defscrollback 10000
+termcapinfo xterm* ti@:te@
+
+defbce on
+term xterm-256color
+
+hardstatus alwayslastline "%{= cd} %-w%{= dd} %n %t* %{-}%+w"
+
+shell $SHELL

@@ -1,0 +1,23 @@
+#! /bin/bash
+
+# Search the repository managed by ghq with peco and `cd`
+function ghq_repo_search_with_peco() {
+    local selected_dir
+    selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+    if [ -n "$selected_dir" ]; then
+        BUFFER="cd ${selected_dir}"
+        zle accept-line
+    fi
+    zle clear-screen
+}
+zle -N ghq_repo_search_with_peco
+bindkey '^]' ghq_repo_search_with_peco
+
+# Search command history with peco
+function history_search_with_peco() {
+    BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | peco)
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
+zle -N history_search_with_peco
+bindkey '^R' history_search_with_peco

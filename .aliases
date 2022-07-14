@@ -1,0 +1,70 @@
+#!/bin/zsh
+
+# base
+alias cd="nocorrect cd"
+alias cp="nocorrect cp -i"
+alias gcc="nocorrect gcc"
+alias ln="nocorrect ln -i"
+alias man="nocorrect man"
+alias mkdir="nocorrect mkdir -p"
+alias mv="nocorrect mv -i"
+alias rm="nocorrect rm -i"
+alias sl="ls"
+
+# Replace the default software
+type htop > /dev/null 2>&1 && alias top="htop"
+type rg > /dev/null 2>&1 && alias -g grep="rg"
+type cw > /dev/null 2>&1 && alias -g wc="cw"
+type fd > /dev/null 2>&1 && alias find="fd"
+type exa > /dev/null 2>&1 && alias -g ls="exa"
+
+# utils
+type exa > /dev/null 2>&1 && alias tree="exa -T"
+type nvidia-smi > /dev/null 2>&1 && alias ns="nvidia-smi"
+alias reload="exec $SHELL -l"
+alias c="code"
+alias lh="localhost"
+alias rtmp="rm -rf $HOME/tmp && mkdir $HOME/tmp"
+
+# utils global aliases
+alias -g G="| grep"
+alias -g C="| pbcopy"
+alias -g H="| head"
+alias -g T="| tail"
+alias -g L="| less"
+type lv > /dev/null 2>&1 && alias -g L="| lv"
+alias -g W="| wc"
+alias -g X="| xargs"
+
+# git
+alias ga="git add"
+alias gc="git commit"
+alias gf="git fetch"
+alias gm="git merge"
+alias gb="git branch"
+alias gd="git diff"
+alias gl="git log"
+alias gps="git push"
+alias gpl="git pull"
+alias gsw="git switch"
+alias gst="git status"
+alias grs="git restore"
+alias glo="git log --oneline"
+alias gaa="git add -A"
+alias gcm="git commit -m"
+alias gca="git commit --amend"
+alias gpsuom="git push -u origin main"
+
+# ls
+alias ll="ls -lh"
+alias la="ls -a"
+alias lla="ls -lah"
+
+# cd
+alias cdd="cd $HOME/dotfiles"
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ......="cd ../../../../.."
+alias .......="cd ../../../../../.."
