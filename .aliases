@@ -69,3 +69,7 @@ alias ....="cd ../../.."
 alias .....="cd ../../../.."
 alias ......="cd ../../../../.."
 alias .......="cd ../../../../../.."
+
+#conda
+alias ca="conda activate"
+alias cda="conda deactivate"
