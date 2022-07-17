@@ -88,7 +88,12 @@ zinit wait lucid for \
 # load pure
 zinit ice compile'(pure|async).zsh' pick'async.zsh' src'pure.zsh'
 zinit light sindresorhus/pure
-
+zstyle :prompt:pure:git:branch color cyan
+zstyle :prompt:pure:git:dirty color magenta
+zstyle :prompt:pure:host color magenta
+zstyle :prompt:pure:prompt:success color green
+zstyle :prompt:pure:user color green
+zstyle :prompt:pure:virtualenv color yellow
 ### End of Zinit's installer chunk
 
 # >>> conda initialize >>>
