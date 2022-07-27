@@ -73,3 +73,8 @@ alias .......="cd ../../../../../.."
 #conda
 alias ca="conda activate"
 alias cda="conda deactivate"
+
+#screen
+alias scs="screen -S"
+alias scr="screen -r"
+alias scd="screen -d"
