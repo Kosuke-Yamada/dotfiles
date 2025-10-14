@@ -16,6 +16,10 @@ setopt hist_no_store
 setopt hist_expand
 setopt inc_append_history
 
+# historyコマンドに日時を表示
+alias history='fc -liD 1'
+alias hist='fc -liD 1'
+
 # Complement
 autoload -U compinit
 compinit
