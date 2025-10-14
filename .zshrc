@@ -98,9 +98,3 @@ zstyle :prompt:pure:prompt:success color green
 zstyle :prompt:pure:user color green
 zstyle :prompt:pure:virtualenv color yellow
 ### End of Zinit's installer chunk
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/s26310/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/s26310/Downloads/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/s26310/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/s26310/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
