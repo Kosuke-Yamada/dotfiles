@@ -56,6 +56,7 @@ setopt correct
 stty erase ^H
 bindkey "^[[3~" delete-char
 
+
 [ -f $HOME/.functions ] && source $HOME/.functions
 [ -f $HOME/.aliases ] && source $HOME/.aliases
 
@@ -97,4 +98,6 @@ zstyle :prompt:pure:host color magenta
 zstyle :prompt:pure:prompt:success color green
 zstyle :prompt:pure:user color green
 zstyle :prompt:pure:virtualenv color yellow
+zstyle :prompt:pure:execution_time color yellow
+PURE_CMD_MAX_EXEC_TIME=0
 ### End of Zinit's installer chunk
