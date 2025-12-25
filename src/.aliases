@@ -1,0 +1,100 @@
+#!/bin/zsh
+
+# ==============================================================================
+# History
+# ==============================================================================
+alias history='fc -liD 1'  # 履歴を日時付きで表示
+alias hist='fc -liD 1'
+
+# ==============================================================================
+# Base commands (with nocorrect and safety options)
+# ==============================================================================
+alias cd="nocorrect cd"
+alias cp="nocorrect cp -i"       # 上書き前に確認
+alias mv="nocorrect mv -i"       # 上書き前に確認
+alias rm="nocorrect rm -i"       # 削除前に確認
+alias ln="nocorrect ln -i"       # 上書き前に確認
+alias mkdir="nocorrect mkdir -p" # 親ディレクトリも作成
+alias gcc="nocorrect gcc"
+alias man="nocorrect man"
+alias ls="nocorrect ls --color"
+alias sl="ls"                    # typo対策
+
+# ==============================================================================
+# Modern CLI replacements
+# ==============================================================================
+type htop >/dev/null 2>&1 && alias top="htop"   # プロセスモニタ
+type rg >/dev/null 2>&1 && alias grep="rg"      # ripgrep
+type cw >/dev/null 2>&1 && alias wc="cw"        # 高速wc
+type fd >/dev/null 2>&1 && alias find="fd"      # 高速find
+type bat >/dev/null 2>&1 && alias cat="bat"     # シンタックスハイライト付きcat
+
+# ==============================================================================
+# eza (modern ls replacement)
+# ==============================================================================
+if type eza >/dev/null 2>&1; then
+    alias ei="eza --icons --git"
+    alias ea="eza -la --icons --git"
+    alias ee="eza -aahl --icons --git"
+    alias et="eza -T -L 3 -a -I 'node_modules|.git|.cache' --icons"
+    alias ls="ei"    # 基本表示
+    alias la="ea"    # 全ファイル表示
+    alias ll="ee"    # 詳細表示
+    alias tree="eza -T --icons"
+fi
+
+# ==============================================================================
+# Directory navigation
+# ==============================================================================
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ......="cd ../../../../.."
+alias .......="cd ../../../../../.."
+
+# ==============================================================================
+# Git
+# ==============================================================================
+alias gui="gitui"              # Git TUI
+
+# Basic commands
+alias ga="git add"
+alias gaa="git add -A"         # 全ての変更をステージ
+alias gc="git commit"
+alias gcm="git commit -m"      # メッセージ付きコミット
+alias gf="git fetch"
+alias gm="git merge"
+alias gps="git push"
+alias gpl="git pull"
+
+# Branch & Switch
+alias gb="git branch"
+alias gsw="git switch"
+alias gswc="git switch -c"     # 新規ブランチ作成
+
+# Diff & Log
+alias gd="git diff"
+alias gl="git log"
+alias glo="git log --oneline"  # 1行表示
+
+# Status & Restore
+alias gst="git status -u"      # untracked含む
+alias grs="git restore"
+
+# Update all branches
+alias gua="git fetch origin && git checkout dev && git pull origin dev && git checkout main && git pull origin main && git checkout -"
+
+# ==============================================================================
+# Zellij
+# ==============================================================================
+alias ze="zellij"
+alias zes="zellij -s"   # 新規セッション作成
+alias zea="zellij a"    # セッション再接続
+alias zed="zellij delete-session --force"  # セッション強制削除
+alias zels="zellij ls"  # セッション一覧
+
+# ==============================================================================
+# Utils
+# ==============================================================================
+type nvidia-smi >/dev/null 2>&1 && alias ns="nvidia-smi"  # GPU状態確認

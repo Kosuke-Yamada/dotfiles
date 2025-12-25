@@ -1,0 +1,19 @@
+[user]
+	name = Kosuke-Yamada
+	email = kosyamada0526@gmail.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[core]
+	pager = delta
+	editor = nano
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	dark = true
+	line-numbers = true
+[merge]
+	conflictstyle = zdiff

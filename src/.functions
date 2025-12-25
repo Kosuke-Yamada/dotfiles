@@ -1,0 +1,58 @@
+#! /bin/bash
+# =============================================================================
+# カスタムシェル関数定義ファイル
+# pecoを使ったインタラクティブな選択機能とzellij補完を提供
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# ghqで管理しているリポジトリをpecoで検索してcdする関数
+# キーバインド: Ctrl+]
+# -----------------------------------------------------------------------------
+function ghq_repo_search_with_peco() {
+    local selected_dir
+    # ghq list -p: ghqで管理している全リポジトリのフルパスを一覧表示
+    # peco: インタラクティブなフィルタリング（$LBUFFERで現在のコマンドラインを初期クエリに）
+    selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+    # 選択されたディレクトリがあればcdコマンドを実行
+    if [ -n "$selected_dir" ]; then
+        BUFFER="cd ${selected_dir}"  # コマンドラインバッファにcdコマンドをセット
+        zle accept-line              # Enterキーを押したのと同じ動作（コマンド実行）
+    fi
+    zle clear-screen  # 画面をクリアして再描画
+}
+# zleウィジェットとして登録し、Ctrl+]にバインド
+zle -N ghq_repo_search_with_peco
+bindkey '^]' ghq_repo_search_with_peco
+
+# -----------------------------------------------------------------------------
+# コマンド履歴をpecoで検索する関数
+# キーバインド: Ctrl+R
+# -----------------------------------------------------------------------------
+function history_search_with_peco() {
+    # history -n 1: 履歴を番号なしで1番目から表示
+    # tac: 逆順にする（新しいものが上に来る）
+    # awk '!a[$0]++': 重複を除去（最初に出現したものだけ残す）
+    # peco: インタラクティブに選択
+    BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | peco)
+    CURSOR=$#BUFFER    # カーソルをコマンドの末尾に移動
+    zle reset-prompt   # プロンプトを再描画
+}
+# zleウィジェットとして登録し、Ctrl+Rにバインド
+zle -N history_search_with_peco
+bindkey '^R' history_search_with_peco
+
+# -----------------------------------------------------------------------------
+# zellijセッション名の補完関数
+# zea（attach）とzed（delete）エイリアス用の補完を提供
+# -----------------------------------------------------------------------------
+function _zellij_sessions() {
+    local sessions
+    # zellij list-sessions: 既存のセッション一覧を取得
+    # --no-formatting: 装飾なしのプレーンテキストで出力
+    # awk '{print $1}': セッション名（最初のフィールド）のみ抽出
+    # ${(f)"..."}: 改行で分割して配列に格納（zsh特有の構文）
+    sessions=(${(f)"$(zellij list-sessions --no-formatting 2>/dev/null | awk '{print $1}')"})
+    _describe 'session' sessions  # 補完候補として登録
+}
+# zeaとzedエイリアスにこの補完関数を適用
+compdef _zellij_sessions zea zed

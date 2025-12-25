@@ -1,0 +1,94 @@
+# ===========================================
+# フォント設定
+# ===========================================
+font-family = Hakugen Console
+font-size = 14
+
+# ===========================================
+# Quick Terminal設定
+# ===========================================
+# どこからでもCtrl+Gで呼び出せるグローバルホットキー
+keybind = global:ctrl+g=toggle_quick_terminal
+
+# 画面上部から表示
+quick-terminal-position = top
+
+# メインディスプレイに表示
+quick-terminal-screen = main
+
+# アニメーションなしで即座に表示
+quick-terminal-animation-duration = 0
+
+quick-terminal-size = 100%,100%
+
+# ===========================================
+# キーバインド設定
+# ===========================================
+# Shift+EnterでOption+Enter（改行文字を送信）の動作に
+keybind = shift+enter=text:\x1b\x0d
+
+# ===========================================
+# ウィンドウ設定
+# ===========================================
+# ウィンドウの装飾スタイル（macOS native titlebar）
+window-decoration = auto
+
+# 新しいタブ/ウィンドウは現在のディレクトリを引き継ぐ
+window-inherit-working-directory = true
+
+# 背景の透過度（0.0〜1.0、1.0で完全不透明）
+background-opacity = 0.8
+
+# ウィンドウの角丸
+macos-window-shadow = true
+
+# ===========================================
+# カーソル設定
+# ===========================================
+# カーソルスタイル: block, bar, underline
+cursor-style = block
+
+# カーソルの点滅
+cursor-style-blink = true
+
+# ===========================================
+# 動作設定
+# ===========================================
+# マウスでURLをクリックして開く
+link-url = true
+
+# 選択時に自動でクリップボードにコピー
+copy-on-select = clipboard
+
+# クリップボードからペースト時に確認しない（安全のため）
+clipboard-paste-protection = false
+
+# スクロールバック行数（履歴の保持量）
+scrollback-limit = 10000
+
+# ===========================================
+# シェル統合
+# ===========================================
+# シェル統合を有効化（コマンド完了通知など）
+shell-integration = zsh
+
+# コマンド完了時のデスクトップ通知
+shell-integration-features = cursor,sudo,title
+
+# ===========================================
+# macOS固有設定
+# ===========================================
+# Option キーをAltとして扱う（ターミナル操作で便利）
+macos-option-as-alt = true
+
+# タイトルバーのスタイル
+macos-titlebar-style = native
+
+# フルスクリーン時にタブバーを表示
+macos-non-native-fullscreen = false
+
+# Dockとメニューバーから常に非表示
+macos-hidden = always
+
+# 起動時にウィンドウを表示しない
+initial-window = false
