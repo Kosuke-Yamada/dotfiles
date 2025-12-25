@@ -90,7 +90,9 @@ export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 type starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 
 # zoxide (smart cd)
-type zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh --cmd cd)"
+if [[ $- == *i* ]]; then
+  type zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh --cmd cd)"
+fi
 
 # ==============================================================================
 # Google Cloud SDK
