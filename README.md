@@ -6,24 +6,25 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 
 このリポジトリには以下の設定ファイルが含まれています:
 
-| カテゴリ | ツール | 説明 |
-|---------|--------|------|
-| シェル | [zsh](https://www.zsh.org/) | メインシェル |
-| プラグイン管理 | [sheldon](https://github.com/rossmacarthur/sheldon) | zsh プラグインマネージャー |
-| プロンプト | [starship](https://starship.rs/) | カスタマイズ可能なプロンプト |
-| ターミナル | [zellij](https://zellij.dev/) | ターミナルマルチプレクサ |
-| ターミナル | [ghostty](https://ghostty.org/) | ターミナルエミュレータ (macOS) |
-| ホットキー | [skhd](https://github.com/koekeishiya/skhd) | ホットキーデーモン (macOS) |
-| Git | [git-delta](https://github.com/dandavison/delta) | 差分表示の強化 |
-| Git | [gitui](https://github.com/extrawurst/gitui) | Git TUI クライアント |
-| エディタ | [nano](https://www.nano-editor.org/) | Git デフォルトエディタ |
-| ファイル操作 | [eza](https://github.com/eza-community/eza) | モダンな ls 代替 |
-| ファイル操作 | [bat](https://github.com/sharkdp/bat) | シンタックスハイライト付き cat |
-| ファイル操作 | [fd](https://github.com/sharkdp/fd) | 高速な find 代替 |
-| 検索 | [ripgrep](https://github.com/BurntSushi/ripgrep) | 高速な grep 代替 |
-| ナビゲーション | [zoxide](https://github.com/ajeetdsouza/zoxide) | スマートな cd |
-| リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | Git リポジトリ管理 |
-| 選択UI | [peco](https://github.com/peco/peco) | インタラクティブフィルタリング |
+| カテゴリ | ツール | バージョン | 説明 |
+|---------|--------|------------|------|
+| シェル | [zsh](https://www.zsh.org/) | - | メインシェル |
+| プラグイン管理 | [sheldon](https://github.com/rossmacarthur/sheldon) | 0.8.5 | zsh プラグインマネージャー |
+| プロンプト | [starship](https://starship.rs/) | 1.24.1 | カスタマイズ可能なプロンプト |
+| ターミナル | [zellij](https://zellij.dev/) | 0.43.1 | ターミナルマルチプレクサ |
+| ターミナル | [ghostty](https://ghostty.org/) | 1.2.3 | ターミナルエミュレータ (macOS) |
+| ホットキー | [skhd](https://github.com/koekeishiya/skhd) | 0.3.9 | ホットキーデーモン (macOS) |
+| ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | タイリングウィンドウマネージャー (macOS) |
+| Git | [git-delta](https://github.com/dandavison/delta) | 0.18.2 | 差分表示の強化 |
+| Git | [gitui](https://github.com/extrawurst/gitui) | nightly | Git TUI クライアント |
+| エディタ | [nano](https://www.nano-editor.org/) | - | Git デフォルトエディタ |
+| ファイル操作 | [eza](https://github.com/eza-community/eza) | 0.23.4 | モダンな ls 代替 |
+| ファイル操作 | [bat](https://github.com/sharkdp/bat) | 0.26.1 | シンタックスハイライト付き cat |
+| ファイル操作 | [fd](https://github.com/sharkdp/fd) | 10.3.0 | 高速な find 代替 |
+| 検索 | [ripgrep](https://github.com/BurntSushi/ripgrep) | 15.1.0 | 高速な grep 代替 |
+| ナビゲーション | [zoxide](https://github.com/ajeetdsouza/zoxide) | 0.9.8 | スマートな cd |
+| リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | Git リポジトリ管理 |
+| 選択UI | [peco](https://github.com/peco/peco) | 0.5.11 | インタラクティブフィルタリング |
 
 ## セットアップ
 
@@ -54,7 +55,7 @@ make all    # または make init && make link
 1. **Homebrew のインストール** - 未インストールの場合のみ
 2. **パッケージのインストール** - Brewfile に定義されたツール群
 3. **Sheldon プラグインのインストール** - zsh プラグインの取得
-4. **macOS 固有の設定** - skhd サービスの起動など
+4. **macOS 固有の設定** - skhd / yabai サービスの起動など
 
 #### `make link` の処理内容
 
@@ -80,20 +81,22 @@ dotfiles/
         ├── sheldon/      # Sheldon 設定
         ├── skhd/         # skhd 設定 (macOS)
         ├── starship/     # Starship 設定
+        ├── yabai/        # yabai 設定 (macOS)
         └── zellij/       # Zellij 設定
 ```
 
 ## 注意事項
 
-### macOS での skhd 権限設定
+### macOS での skhd / yabai 権限設定
 
-skhd を使用するには、アクセシビリティ権限が必要です:
+skhd と yabai を使用するには、アクセシビリティ権限が必要です:
 
 1. **システム設定** > **プライバシーとセキュリティ** > **アクセシビリティ** を開く
-2. `/opt/homebrew/bin/skhd` を追加して有効化
+2. `/opt/homebrew/bin/skhd` と `/opt/homebrew/bin/yabai` を追加して有効化
 3. 以下のコマンドでサービスを再起動:
    ```bash
    skhd --restart-service
+   yabai --restart-service
    ```
 
 ### 既存ファイルのバックアップ
@@ -102,7 +105,7 @@ skhd を使用するには、アクセシビリティ権限が必要です:
 
 ### Linux での注意
 
-- ghostty と skhd は macOS 専用のため、Linux ではインストールされません
+- ghostty、skhd、yabai は macOS 専用のため、Linux ではインストールされません
 - フォント（HackGen）も macOS 専用です
 
 ### zsh プラグイン
@@ -125,6 +128,7 @@ sheldon で管理している zsh プラグイン:
 | skhd | `Alt+Return` | Ghostty を起動 |
 | skhd | `Alt+B` | Arc ブラウザを起動 |
 | skhd | `Alt+E` | Finder を起動 |
+| skhd + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
 
 ## ドキュメント
 
@@ -134,6 +138,7 @@ sheldon で管理している zsh プラグイン:
 - [eza コマンド](./docs/eza.md)
 - [Zellij キーバインド](./docs/zellij.md)
 - [skhd キーバインド](./docs/skhd.md)
+- [yabai 設定](./docs/yabai.md)
 
 ## ライセンス
 

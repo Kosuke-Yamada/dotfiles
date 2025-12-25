@@ -70,11 +70,13 @@ macos-setup:
 ifeq ($(OS),Darwin)
 	@echo "skhd サービスを開始中..."
 	@skhd --start-service 2>/dev/null || true
+	@echo "yabai サービスを開始中..."
+	@yabai --start-service 2>/dev/null || true
 	@echo ""
-	@echo "NOTE: skhd にはアクセシビリティ権限が必要です。"
+	@echo "NOTE: skhd と yabai にはアクセシビリティ権限が必要です。"
 	@echo "  1. システム設定 > プライバシーとセキュリティ > アクセシビリティ を開く"
-	@echo "  2. /opt/homebrew/bin/skhd を追加して有効化"
-	@echo "  3. 実行: skhd --restart-service"
+	@echo "  2. /opt/homebrew/bin/skhd と /opt/homebrew/bin/yabai を追加して有効化"
+	@echo "  3. 実行: skhd --restart-service && yabai --restart-service"
 else
 	@echo "macOS ではないためスキップします。"
 endif
@@ -118,6 +120,8 @@ ifeq ($(OS),Darwin)
 	@ln -snfv "$(SRC_DIRECTORY)/.config/ghostty/config" "$(HOME)/.config/ghostty/config"
 	@mkdir -p "$(HOME)/.config/skhd"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/skhd/skhdrc" "$(HOME)/.config/skhd/skhdrc"
+	@mkdir -p "$(HOME)/.config/yabai"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/yabai/yabairc" "$(HOME)/.config/yabai/yabairc"
 endif
 	@echo ""
 	@echo "=========================================="

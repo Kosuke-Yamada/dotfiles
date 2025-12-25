@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+# ===========================================
+# yabai 設定ファイル
+# ===========================================
+# ドキュメント: https://github.com/koekeishiya/yabai/wiki
+
+# ===========================================
+# スペース設定
+# ===========================================
+
+# レイアウト: bsp（タイリング）, stack（スタック）, float（フロート）
+yabai -m config layout                       float
+
+# パディング（ウィンドウ間の余白）
+yabai -m config top_padding                  10
+yabai -m config bottom_padding               10
+yabai -m config left_padding                 10
+yabai -m config right_padding                10
+yabai -m config window_gap                   10
+
+# ===========================================
+# 管理対象外のアプリ
+# ===========================================
+# Ghosttyのクイックターミナルを管理対象外にする
+yabai -m rule --add app="Ghostty" manage=off

@@ -19,6 +19,7 @@ brew "peco"
 if OS.mac?
   cask "ghostty"
   brew "skhd"
+  brew "yabai"
 
   # Fonts
   cask "font-hackgen"
