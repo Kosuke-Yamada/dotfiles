@@ -56,3 +56,77 @@ function _zellij_sessions() {
 }
 # zeaとzedエイリアスにこの補完関数を適用
 compdef _zellij_sessions zea zed
+
+# -----------------------------------------------------------------------------
+# メモコマンド
+# macOS: メモアプリに追加 / Linux: ~/memo ディレクトリにファイルとして保存
+# 使い方:
+#   memo "メモの内容"     - 引数でメモを追加
+#   memo                  - エディタでメモを作成
+#   memo -l               - メモ一覧を表示（Linuxのみ）
+# -----------------------------------------------------------------------------
+function memo() {
+    local content=""
+    local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+
+    # オプション処理
+    if [[ "$1" == "-l" ]]; then
+        if [[ "$(uname)" == "Darwin" ]]; then
+            echo "メモアプリを開いてください"
+            open -a Notes
+        else
+            local memo_dir="${HOME}/memo"
+            if [[ -d "$memo_dir" ]]; then
+                ls -lt "$memo_dir"
+            else
+                echo "メモがありません"
+            fi
+        fi
+        return 0
+    fi
+
+    # メモ内容の取得
+    if [[ -n "$1" ]]; then
+        # 引数がある場合はそれをメモ内容とする
+        content="$*"
+    else
+        # 引数がない場合はエディタを開く
+        local tmpfile=$(mktemp)
+        nano "$tmpfile"
+        if [[ -s "$tmpfile" ]]; then
+            content=$(cat "$tmpfile")
+        fi
+        rm -f "$tmpfile"
+    fi
+
+    # メモ内容がなければ終了
+    if [[ -z "$content" ]]; then
+        echo "メモが空のため保存しませんでした"
+        return 1
+    fi
+
+    # OS別の保存処理
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS: AppleScriptでメモアプリに追加
+        osascript <<EOF
+tell application "Notes"
+    tell account "iCloud"
+        make new note at folder "Notes" with properties {name:"CLI Memo - ${timestamp}", body:"${content}"}
+    end tell
+end tell
+EOF
+        if [[ $? -eq 0 ]]; then
+            echo "メモを保存しました: CLI Memo - ${timestamp}"
+        else
+            echo "メモの保存に失敗しました"
+            return 1
+        fi
+    else
+        # Linux: ~/memo ディレクトリにファイルとして保存
+        local memo_dir="${HOME}/memo"
+        mkdir -p "$memo_dir"
+        local filename=$(date "+%Y%m%d_%H%M%S").txt
+        echo "$content" > "${memo_dir}/${filename}"
+        echo "メモを保存しました: ${memo_dir}/${filename}"
+    fi
+}
