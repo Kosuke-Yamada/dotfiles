@@ -7,7 +7,7 @@ font-size = 14
 # ===========================================
 # Quick Terminal設定
 # ===========================================
-# どこからでもCtrl+Gで呼び出せるグローバルホットキー
+# Ctrl+G でクイックターミナルをトグル
 keybind = global:ctrl+g=toggle_quick_terminal
 
 # 画面上部から表示
@@ -19,8 +19,11 @@ quick-terminal-screen = main
 # アニメーションなしで即座に表示
 quick-terminal-animation-duration = 0
 
-# ピクセル指定で画面サイズより大きい値を設定
-quick-terminal-size = 100%, 100%
+# フォーカスを失っても自動で隠さない
+quick-terminal-autohide = false
+
+# 画面の100%を使用（全画面）
+quick-terminal-size = 100%,100%
 
 # ===========================================
 # キーバインド設定
