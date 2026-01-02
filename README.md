@@ -12,6 +12,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | プラグイン管理 | [sheldon](https://github.com/rossmacarthur/sheldon) | 0.8.5 | zsh プラグインマネージャー |
 | プロンプト | [starship](https://starship.rs/) | 1.24.1 | カスタマイズ可能なプロンプト |
 | ターミナル | [zellij](https://zellij.dev/) | 0.43.1 | ターミナルマルチプレクサ |
+| ターミナル | [tmux](https://github.com/tmux/tmux) | - | ターミナルマルチプレクサ（代替） |
 | ターミナル | [ghostty](https://ghostty.org/) | 1.2.3 | ターミナルエミュレータ (macOS) |
 | ホットキー | [skhd](https://github.com/koekeishiya/skhd) | 0.3.9 | ホットキーデーモン (macOS) |
 | ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | タイリングウィンドウマネージャー (macOS) |
@@ -68,24 +69,33 @@ make all    # または make init && make link
 ```
 dotfiles/
 ├── README.md
-├── Makefile              # セットアップ用 Makefile
-├── Brewfile              # Homebrew パッケージ定義
-├── docs/                 # ドキュメント
-└── src/                  # 設定ファイル本体
-    ├── .aliases          # エイリアス定義
-    ├── .claude/          # Claude Code 設定
-    │   └── CLAUDE.md     # グローバル設定
-    ├── .functions        # カスタム関数定義
-    ├── .gitconfig        # Git 設定
-    ├── .nanorc           # nano 設定
-    ├── .zshrc            # zsh 設定
+├── Makefile                  # セットアップ用 Makefile
+├── Brewfile                  # Homebrew パッケージ定義
+├── docs/                     # ドキュメント
+└── src/                      # 設定ファイル本体
+    ├── .aliases              # エイリアス定義
+    ├── .claude/              # Claude Code 設定
+    │   ├── CLAUDE.md         # グローバル設定
+    │   ├── CLAUDE_PYTHON.md  # Python プロジェクト用ガイドライン
+    │   ├── CLAUDE_REACT_FASTAPI.md  # React+FastAPI 用ガイドライン
+    │   ├── CLAUDE_STREAMLIT.md      # Streamlit 用ガイドライン
+    │   ├── settings.json     # Claude Code 設定
+    │   ├── agents/           # カスタムエージェント
+    │   ├── commands/         # カスタムコマンド
+    │   └── skills/           # カスタムスキル
+    ├── .functions            # カスタム関数定義
+    ├── .gitconfig            # Git 設定
+    ├── .nanorc               # nano 設定
+    ├── .tmux.conf            # tmux 設定
+    ├── .zshrc                # zsh 設定
+    ├── .zshrc.local.example  # ローカル設定のサンプル
     └── .config/
-        ├── ghostty/      # Ghostty 設定 (macOS)
-        ├── sheldon/      # Sheldon 設定
-        ├── skhd/         # skhd 設定 (macOS)
-        ├── starship/     # Starship 設定
-        ├── yabai/        # yabai 設定 (macOS)
-        └── zellij/       # Zellij 設定
+        ├── ghostty/          # Ghostty 設定 (macOS)
+        ├── sheldon/          # Sheldon 設定
+        ├── skhd/             # skhd 設定 (macOS)
+        ├── starship/         # Starship 設定
+        ├── yabai/            # yabai 設定 (macOS)
+        └── zellij/           # Zellij 設定
 ```
 
 ## 注意事項
@@ -121,15 +131,49 @@ sheldon で管理している zsh プラグイン:
 
 ### Claude Code 設定
 
-`~/.claude/CLAUDE.md` にグローバル設定ファイルがリンクされます。この設定により:
+`~/.claude/` に各種設定ファイルがリンクされます。
+
+#### グローバル設定（CLAUDE.md）
+
+`CLAUDE.md` により以下がデフォルトで適用されます:
 
 - 日本語での応答
 - コーディングスタイルのガイドライン
 - Git コミットの規約（日本語 + Conventional Commits）
 - セキュリティに関する注意事項
-- テストコード作成時の厳守事項
 
-がデフォルトで適用されます。設定を変更する場合は `src/.claude/CLAUDE.md` を編集してください。
+#### プロジェクト別ガイドライン
+
+プロジェクトの種類に応じた追加ガイドラインを用意しています:
+
+| ファイル | 用途 |
+|----------|------|
+| `CLAUDE_PYTHON.md` | Python プロジェクト用（uv、pytest、型ヒント等） |
+| `CLAUDE_REACT_FASTAPI.md` | React + FastAPI プロジェクト用 |
+| `CLAUDE_STREAMLIT.md` | Streamlit プロジェクト用 |
+
+プロジェクトルートにコピーして `CLAUDE.md` としてお使いください。
+
+#### カスタムエージェント
+
+`agents/` には以下のカスタムエージェントが含まれます:
+
+| エージェント | 説明 |
+|--------------|------|
+| `git-commit-assistant` | 変更内容を分析して適切なコミットを作成 |
+| `python-file-creator` | Python ファイルのテンプレートに従った新規作成 |
+
+#### カスタムスキル
+
+`skills/` には以下のスキルが含まれます:
+
+| スキル | 説明 |
+|--------|------|
+| `doc-coauthoring` | ドキュメント共同作成 |
+| `frontend-design` | フロントエンドデザイン |
+| `python-quality-check` | Python コード品質チェック |
+| `skill-creator` | 新規スキル作成 |
+| `theme-factory` | テーマ生成 |
 
 #### MCP サーバー
 
@@ -140,6 +184,7 @@ sheldon で管理している zsh プラグイン:
 | [context7](https://github.com/upstash/context7-mcp) | ライブラリのドキュメント検索 |
 | [Playwright](https://github.com/microsoft/playwright-mcp) | ブラウザ自動化・E2E テスト |
 | [Serena](https://github.com/oraios/serena) | LSP 連携によるコード解析 |
+| [GitHub](https://github.com/github/github-mcp-server) | GitHub 操作（PR、Issue 等） |
 
 ## キーバインド
 
