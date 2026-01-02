@@ -8,7 +8,12 @@ if command -v tmux &> /dev/null \
     && [[ -z "$VSCODE_GIT_IPC_HANDLE" ]] \
     && [[ "$TERM_PROGRAM" != "vscode" ]] \
     && [[ "$TERMINAL_EMULATOR" != "JetBrains-JediTerm" ]]; then
-    exec tmux attach -t default 2>/dev/null || exec tmux new -s default
+    # セッションの存在を確認してからexecで接続/作成
+    if tmux has-session -t default 2>/dev/null; then
+        exec tmux attach -t default
+    else
+        exec tmux new -s default
+    fi
 fi
 
 # ==============================================================================
