@@ -148,6 +148,16 @@ endif
 	@echo "ホームディレクトリ配下の設定ファイルをリンク中..."
 	@mkdir -p "$(HOME)/.claude"
 	@ln -snfv "$(SRC_DIRECTORY)/.claude/CLAUDE.md" "$(HOME)/.claude/CLAUDE.md"
+	@# .claude/agents 配下
+	@echo ""
+	@echo ".claude/agents 配下のエージェント設定をリンク中..."
+	@mkdir -p "$(HOME)/.claude/agents"
+	@cd "$(SRC_DIRECTORY)/.claude/agents" && \
+	for f in *.md; do \
+		if [ -f "$$f" ]; then \
+			ln -snfv "$(SRC_DIRECTORY)/.claude/agents/$$f" "$(HOME)/.claude/agents/$$f"; \
+		fi; \
+	done
 	@echo ""
 	@echo "=========================================="
 	@echo "link が完了しました！"
