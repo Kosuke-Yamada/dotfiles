@@ -72,7 +72,12 @@ claude-mcp: packages
 		claude mcp add -s user context7 -- npx -y @upstash/context7-mcp 2>/dev/null || true; \
 		claude mcp add -s user Playwright -- npx @playwright/mcp@latest 2>/dev/null || true; \
 		claude mcp add -s user serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context=claude-code --project-from-cwd 2>/dev/null || true; \
+		claude mcp add -s user github -- npx -y @modelcontextprotocol/server-github 2>/dev/null || true; \
 		echo "MCP サーバーの設定が完了しました。"; \
+		echo ""; \
+		echo "NOTE: GitHub MCP を使用するには GITHUB_TOKEN 環境変数が必要です。"; \
+		echo "  1. ~/.zshrc.local.example を ~/.zshrc.local にコピー"; \
+		echo "  2. GITHUB_TOKEN を設定（https://github.com/settings/tokens で作成）"; \
 	else \
 		echo "Claude Code がインストールされていません。スキップします。"; \
 	fi
