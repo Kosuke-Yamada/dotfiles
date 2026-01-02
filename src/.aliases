@@ -98,6 +98,22 @@ alias zed="zellij delete-session --force"  # セッション強制削除
 alias zels="zellij ls"  # セッション一覧
 
 # ==============================================================================
+# tmux
+# ==============================================================================
+alias tmuxn="tmux new -s"      # 新規セッション作成 (tmuxn <name>)
+alias tmuxl="tmux ls"          # セッション一覧
+alias tmuxa="tmux a -t"        # セッション再接続 (tmuxa <name>)
+
+# セッション削除 (tmuxd <name> or tmuxd all)
+tmuxd() {
+    if [[ "$1" == "all" ]]; then
+        tmux kill-server
+    else
+        tmux kill-session -t "$1"
+    fi
+}
+
+# ==============================================================================
 # Utils
 # ==============================================================================
 type nvidia-smi >/dev/null 2>&1 && alias ns="nvidia-smi"  # GPU状態確認
