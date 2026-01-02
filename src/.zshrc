@@ -96,6 +96,7 @@ zle_highlight=('paste:none') # ペースト時のハイライトを無効化
 # ==============================================================================
 [ -f "$HOME/.functions" ] && source "$HOME/.functions"
 [ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"  # ローカル設定（Git管理外）
 
 # ==============================================================================
 # Tools initialization
