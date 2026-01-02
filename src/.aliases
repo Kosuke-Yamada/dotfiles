@@ -82,6 +82,9 @@ alias glo="git log --oneline"  # 1行表示
 alias gst="git status -u"      # untracked含む
 alias grs="git restore"
 
+# GitHub CLI
+alias gbr="gh browse"          # ブラウザでリポジトリを開く
+
 # Update all branches
 alias gua="git fetch origin && git checkout dev && git pull origin dev && git checkout main && git pull origin main && git checkout -"
 
