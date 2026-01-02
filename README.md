@@ -25,6 +25,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | ナビゲーション | [zoxide](https://github.com/ajeetdsouza/zoxide) | 0.9.8 | スマートな cd |
 | リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | Git リポジトリ管理 |
 | 選択UI | [peco](https://github.com/peco/peco) | 0.5.11 | インタラクティブフィルタリング |
+| AI | [Claude Code](https://github.com/anthropics/claude-code) | - | AI コーディングアシスタント |
 
 ## セットアップ
 
@@ -72,6 +73,8 @@ dotfiles/
 ├── docs/                 # ドキュメント
 └── src/                  # 設定ファイル本体
     ├── .aliases          # エイリアス定義
+    ├── .claude/          # Claude Code 設定
+    │   └── CLAUDE.md     # グローバル設定
     ├── .functions        # カスタム関数定義
     ├── .gitconfig        # Git 設定
     ├── .nanorc           # nano 設定
@@ -115,6 +118,28 @@ sheldon で管理している zsh プラグイン:
 - **zsh-autosuggestions** - コマンド入力補完の提案
 - **zsh-syntax-highlighting** - コマンドのシンタックスハイライト
 - **zsh-completions** - 追加の補完定義
+
+### Claude Code 設定
+
+`~/.claude/CLAUDE.md` にグローバル設定ファイルがリンクされます。この設定により:
+
+- 日本語での応答
+- コーディングスタイルのガイドライン
+- Git コミットの規約（日本語 + Conventional Commits）
+- セキュリティに関する注意事項
+- テストコード作成時の厳守事項
+
+がデフォルトで適用されます。設定を変更する場合は `src/.claude/CLAUDE.md` を編集してください。
+
+#### MCP サーバー
+
+`make init` または `make claude-mcp` で以下の MCP サーバーが設定されます:
+
+| サーバー | 説明 |
+|----------|------|
+| [context7](https://github.com/upstash/context7-mcp) | ライブラリのドキュメント検索 |
+| [Playwright](https://github.com/microsoft/playwright-mcp) | ブラウザ自動化・E2E テスト |
+| [Serena](https://github.com/oraios/serena) | LSP 連携によるコード解析 |
 
 ## キーバインド
 

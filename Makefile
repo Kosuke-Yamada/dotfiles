@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link brew packages plugins macos-setup help
+.PHONY: all init link brew packages plugins macos-setup claude-mcp help
 
 # デフォルトターゲット
 all: init link
@@ -27,7 +27,7 @@ all: init link
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages plugins macos-setup
+init: brew packages plugins claude-mcp macos-setup
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -62,6 +62,21 @@ plugins: packages
 	@echo "------------------------------------------"
 	sheldon lock --update
 
+# Claude Code MCP サーバーの設定
+claude-mcp: packages
+	@echo ""
+	@echo "[init] Claude Code MCP サーバーの設定"
+	@echo "------------------------------------------"
+	@if command -v claude &> /dev/null; then \
+		echo "MCP サーバーを設定中..."; \
+		claude mcp add -s user context7 -- npx -y @upstash/context7-mcp 2>/dev/null || true; \
+		claude mcp add -s user Playwright -- npx @playwright/mcp@latest 2>/dev/null || true; \
+		claude mcp add -s user serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context=claude-code --project-from-cwd 2>/dev/null || true; \
+		echo "MCP サーバーの設定が完了しました。"; \
+	else \
+		echo "Claude Code がインストールされていません。スキップします。"; \
+	fi
+
 # macOS 固有の設定
 macos-setup:
 	@echo ""
@@ -93,7 +108,7 @@ link:
 	@echo "ホームディレクトリのドットファイルをリンク中..."
 	@cd "$(SRC_DIRECTORY)" && \
 	for f in .??*; do \
-		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ]; then \
+		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ]; then \
 			continue; \
 		fi; \
 		if [ -e "$(HOME)/$$f" ] && [ ! -L "$(HOME)/$$f" ]; then \
@@ -123,6 +138,11 @@ ifeq ($(OS),Darwin)
 	@mkdir -p "$(HOME)/.config/yabai"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/yabai/yabairc" "$(HOME)/.config/yabai/yabairc"
 endif
+	@# ホームディレクトリ配下（個別ファイル）
+	@echo ""
+	@echo "ホームディレクトリ配下の設定ファイルをリンク中..."
+	@mkdir -p "$(HOME)/.claude"
+	@ln -snfv "$(SRC_DIRECTORY)/.claude/CLAUDE.md" "$(HOME)/.claude/CLAUDE.md"
 	@echo ""
 	@echo "=========================================="
 	@echo "link が完了しました！"
@@ -135,7 +155,8 @@ help:
 	@echo "dotfiles Makefile"
 	@echo ""
 	@echo "使用方法:"
-	@echo "  make init  - Homebrew とパッケージをインストール"
-	@echo "  make link  - シンボリックリンクを作成"
-	@echo "  make all   - init と link を実行"
-	@echo "  make help  - このヘルプを表示"
+	@echo "  make all        - init と link を実行（フルセットアップ）"
+	@echo "  make init       - Homebrew とパッケージをインストール"
+	@echo "  make link       - シンボリックリンクを作成"
+	@echo "  make claude-mcp - Claude Code MCP サーバーを設定"
+	@echo "  make help       - このヘルプを表示"

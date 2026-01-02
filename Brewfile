@@ -1,6 +1,10 @@
 # Editor
 brew "nano"
 
+# AI
+brew "claude"
+brew "uv"  # Python package manager (required for Serena MCP)
+
 # Terminal
 brew "zellij"
 brew "sheldon"
