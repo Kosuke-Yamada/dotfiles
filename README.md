@@ -24,7 +24,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | 検索 | [ripgrep](https://github.com/BurntSushi/ripgrep) | 15.1.0 | 高速な grep 代替 |
 | ナビゲーション | [zoxide](https://github.com/ajeetdsouza/zoxide) | 0.9.8 | スマートな cd |
 | リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | Git リポジトリ管理 |
-| 選択UI | [peco](https://github.com/peco/peco) | 0.5.11 | インタラクティブフィルタリング |
+| 選択UI | [fzf](https://github.com/junegunn/fzf) | 0.67.0 | インタラクティブフィルタリング |
 | AI | [Claude Code](https://github.com/anthropics/claude-code) | - | AI コーディングアシスタント |
 
 ## セットアップ
@@ -147,8 +147,8 @@ sheldon で管理している zsh プラグイン:
 
 | ツール | キー | 説明 |
 |--------|------|------|
-| zsh | `Ctrl+]` | ghq リポジトリを peco で検索 |
-| zsh | `Ctrl+R` | コマンド履歴を peco で検索 |
+| zsh | `Ctrl+]` | ghq リポジトリを fzf で検索 |
+| zsh | `Ctrl+R` | コマンド履歴を fzf で検索 |
 | ghostty | `Ctrl+G` | Quick Terminal の表示/非表示 |
 | skhd | `Alt+Return` | Ghostty を起動 |
 | skhd | `Alt+B` | Arc ブラウザを起動 |

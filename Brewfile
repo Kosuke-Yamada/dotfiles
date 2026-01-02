@@ -6,6 +6,7 @@ brew "claude"
 brew "uv"  # Python package manager (required for Serena MCP)
 
 # Terminal
+brew "tmux"
 brew "zellij"
 brew "sheldon"
 brew "zoxide"
@@ -17,7 +18,7 @@ brew "starship"
 brew "gitui"
 brew "git-delta"
 brew "ghq"
-brew "peco"
+brew "fzf"
 
 # macOS only
 if OS.mac?

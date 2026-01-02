@@ -1,18 +1,18 @@
 #! /bin/bash
 # =============================================================================
 # カスタムシェル関数定義ファイル
-# pecoを使ったインタラクティブな選択機能とzellij補完を提供
+# fzfを使ったインタラクティブな選択機能とzellij補完を提供
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# ghqで管理しているリポジトリをpecoで検索してcdする関数
+# ghqで管理しているリポジトリをfzfで検索してcdする関数
 # キーバインド: Ctrl+]
 # -----------------------------------------------------------------------------
-function ghq_repo_search_with_peco() {
+function ghq_repo_search_with_fzf() {
     local selected_dir
     # ghq list -p: ghqで管理している全リポジトリのフルパスを一覧表示
-    # peco: インタラクティブなフィルタリング（$LBUFFERで現在のコマンドラインを初期クエリに）
-    selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+    # fzf: インタラクティブなフィルタリング（--queryで現在のコマンドラインを初期クエリに）
+    selected_dir=$(ghq list -p | fzf --query "$LBUFFER" --height 40% --reverse)
     # 選択されたディレクトリがあればcdコマンドを実行
     if [ -n "$selected_dir" ]; then
         BUFFER="cd ${selected_dir}"  # コマンドラインバッファにcdコマンドをセット
@@ -21,25 +21,24 @@ function ghq_repo_search_with_peco() {
     zle clear-screen  # 画面をクリアして再描画
 }
 # zleウィジェットとして登録し、Ctrl+]にバインド
-zle -N ghq_repo_search_with_peco
-bindkey '^]' ghq_repo_search_with_peco
+zle -N ghq_repo_search_with_fzf
+bindkey '^]' ghq_repo_search_with_fzf
 
 # -----------------------------------------------------------------------------
-# コマンド履歴をpecoで検索する関数
+# コマンド履歴をfzfで検索する関数
 # キーバインド: Ctrl+R
 # -----------------------------------------------------------------------------
-function history_search_with_peco() {
-    # history -n 1: 履歴を番号なしで1番目から表示
-    # tac: 逆順にする（新しいものが上に来る）
+function history_search_with_fzf() {
+    # fc -ln 1: 履歴を番号なしで1番目から表示（zsh用）
     # awk '!a[$0]++': 重複を除去（最初に出現したものだけ残す）
-    # peco: インタラクティブに選択
-    BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | peco)
+    # fzf --tac: 逆順表示（新しいものが上に来る）
+    BUFFER=$(fc -ln 1 | awk '!a[$0]++' | fzf --height 40% --reverse --tac)
     CURSOR=$#BUFFER    # カーソルをコマンドの末尾に移動
     zle reset-prompt   # プロンプトを再描画
 }
 # zleウィジェットとして登録し、Ctrl+Rにバインド
-zle -N history_search_with_peco
-bindkey '^R' history_search_with_peco
+zle -N history_search_with_fzf
+bindkey '^R' history_search_with_fzf
 
 # -----------------------------------------------------------------------------
 # zellijセッション名の補完関数
