@@ -3,12 +3,12 @@
 # ==============================================================================
 # tmuxがインストールされていて、tmuxセッション外で、IDE内でない場合に自動起動
 if command -v tmux &> /dev/null \
-    && [ -z "$TMUX" ] \
-    && [ -z "$VSCODE_INJECTION" ] \
-    && [ -z "$VSCODE_GIT_IPC_HANDLE" ] \
+    && [[ -z "$TMUX" ]] \
+    && [[ -z "$VSCODE_INJECTION" ]] \
+    && [[ -z "$VSCODE_GIT_IPC_HANDLE" ]] \
     && [[ "$TERM_PROGRAM" != "vscode" ]] \
     && [[ "$TERMINAL_EMULATOR" != "JetBrains-JediTerm" ]]; then
-    tmux attach -t default 2>/dev/null || tmux new -s default
+    exec tmux attach -t default 2>/dev/null || exec tmux new -s default
 fi
 
 # ==============================================================================
