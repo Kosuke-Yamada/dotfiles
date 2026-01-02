@@ -7,6 +7,14 @@
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
       }
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "Playwright": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-playwright"]
     }
   }
 }
