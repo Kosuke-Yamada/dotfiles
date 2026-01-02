@@ -150,9 +150,6 @@ sheldon で管理している zsh プラグイン:
 | zsh | `Ctrl+]` | ghq リポジトリを fzf で検索 |
 | zsh | `Ctrl+R` | コマンド履歴を fzf で検索 |
 | ghostty | `Ctrl+G` | Quick Terminal の表示/非表示 |
-| skhd | `Alt+Return` | Ghostty を起動 |
-| skhd | `Alt+B` | Arc ブラウザを起動 |
-| skhd | `Alt+E` | Finder を起動 |
 | skhd + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
 
 ## カスタムコマンド
@@ -168,10 +165,9 @@ sheldon で管理している zsh プラグイン:
 - [エイリアス一覧](./docs/aliases.md)
 - [カスタム関数一覧](./docs/functions.md)
 - [Git コマンド](./docs/git.md)
-- [eza コマンド](./docs/eza.md)
+- [tmux キーバインド](./docs/tmux.md)
 - [Zellij キーバインド](./docs/zellij.md)
-- [skhd キーバインド](./docs/skhd.md)
-- [yabai 設定](./docs/yabai.md)
+- [skhd & yabai キーバインド](./docs/skhd-yabai.md)
 
 ## ライセンス
 
