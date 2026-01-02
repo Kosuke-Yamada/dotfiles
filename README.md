@@ -27,6 +27,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | Git リポジトリ管理 |
 | 選択UI | [fzf](https://github.com/junegunn/fzf) | 0.67.0 | インタラクティブフィルタリング |
 | AI | [Claude Code](https://github.com/anthropics/claude-code) | - | AI コーディングアシスタント |
+| エディタ | [Cursor](https://cursor.com/) | - | AI 搭載エディタ (VS Code fork) |
 
 ## セットアップ
 
@@ -90,6 +91,7 @@ dotfiles/
     ├── .zshrc                # zsh 設定
     ├── .zshrc.local.example  # ローカル設定のサンプル
     └── .config/
+        ├── cursor/           # Cursor 拡張機能リスト
         ├── ghostty/          # Ghostty 設定 (macOS)
         ├── sheldon/          # Sheldon 設定
         ├── skhd/             # skhd 設定 (macOS)
@@ -97,6 +99,28 @@ dotfiles/
         ├── yabai/            # yabai 設定 (macOS)
         └── zellij/           # Zellij 設定
 ```
+
+### Cursor 拡張機能
+
+`src/.config/cursor/extensions.txt` で管理しています。`make init` または `make cursor-extensions` でインストールされます。
+
+#### 拡張機能の更新方法
+
+```bash
+# 現在の拡張機能リストを更新
+cursor --list-extensions | sort > ~/dotfiles/src/.config/cursor/extensions.txt
+```
+
+#### 主な拡張機能カテゴリ
+
+| カテゴリ | 主な拡張機能 |
+|----------|--------------|
+| Python | ms-python.python, charliermarsh.ruff, ms-toolsai.jupyter |
+| JavaScript/TypeScript | dbaeumer.vscode-eslint, esbenp.prettier-vscode |
+| Vue | vue.volar |
+| CSS | bradlc.vscode-tailwindcss |
+| Git | eamodio.gitlens, mhutchie.git-graph |
+| AI | anthropic.claude-code |
 
 ## 注意事項
 

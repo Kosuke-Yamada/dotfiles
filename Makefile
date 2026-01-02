@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link brew packages plugins macos-setup claude-mcp help
+.PHONY: all init link brew packages plugins macos-setup claude-mcp cursor-extensions help
 
 # デフォルトターゲット
 all: init link
@@ -27,7 +27,7 @@ all: init link
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages plugins claude-mcp macos-setup
+init: brew packages plugins claude-mcp cursor-extensions macos-setup
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -80,6 +80,35 @@ claude-mcp: packages
 		echo "  2. GITHUB_TOKEN を設定（https://github.com/settings/tokens で作成）"; \
 	else \
 		echo "Claude Code がインストールされていません。スキップします。"; \
+	fi
+
+# Cursor 拡張機能のインストール
+cursor-extensions:
+	@echo ""
+	@echo "[init] Cursor 拡張機能のインストール"
+	@echo "------------------------------------------"
+	@if command -v cursor &> /dev/null; then \
+		EXTENSION_FILE="$(SRC_DIRECTORY)/.config/cursor/extensions.txt"; \
+		if [ -f "$$EXTENSION_FILE" ]; then \
+			INSTALLED=$$(cursor --list-extensions); \
+			while IFS= read -r ext; do \
+				case "$$ext" in \
+					""|\#*) continue ;; \
+				esac; \
+				if echo "$$INSTALLED" | grep -qFi "$$ext"; then \
+					echo "  既存: $$ext"; \
+				else \
+					echo "  インストール: $$ext"; \
+					cursor --install-extension "$$ext" 2>/dev/null || true; \
+				fi; \
+			done < "$$EXTENSION_FILE"; \
+			echo "Cursor 拡張機能のインストールが完了しました。"; \
+		else \
+			echo "extensions.txt が見つかりません。スキップします。"; \
+		fi; \
+	else \
+		echo "Cursor がインストールされていません。スキップします。"; \
+		echo "Cursor をインストール後、'cursor' コマンドを PATH に追加してください。"; \
 	fi
 
 # macOS 固有の設定
@@ -181,8 +210,9 @@ help:
 	@echo "dotfiles Makefile"
 	@echo ""
 	@echo "使用方法:"
-	@echo "  make all        - init と link を実行（フルセットアップ）"
-	@echo "  make init       - Homebrew とパッケージをインストール"
-	@echo "  make link       - シンボリックリンクを作成"
-	@echo "  make claude-mcp - Claude Code MCP サーバーを設定"
-	@echo "  make help       - このヘルプを表示"
+	@echo "  make all               - init と link を実行（フルセットアップ）"
+	@echo "  make init              - Homebrew とパッケージをインストール"
+	@echo "  make link              - シンボリックリンクを作成"
+	@echo "  make claude-mcp        - Claude Code MCP サーバーを設定"
+	@echo "  make cursor-extensions - Cursor 拡張機能をインストール"
+	@echo "  make help              - このヘルプを表示"

@@ -1,0 +1,102 @@
+# Cursor Extensions
+# インストール: cat extensions.txt | xargs -L 1 cursor --install-extension
+
+# === Editor Enhancement ===
+aaron-bond.better-comments
+usernamehw.errorlens
+shardulm94.trailing-spaces
+naumovs.color-highlight
+pkief.material-icon-theme
+bceskavich.theme-dracula-at-night
+
+# === Path & Autocomplete ===
+christian-kohler.path-intellisense
+ionutvmi.path-autocomplete
+
+# === Git ===
+eamodio.gitlens
+mhutchie.git-graph
+donjayamanne.githistory
+waderyan.gitblame
+codezombiech.gitignore
+ziyasal.vscode-open-in-github
+
+# === Python ===
+ms-python.python
+ms-python.debugpy
+anysphere.cursorpyright
+charliermarsh.ruff
+mgesbert.python-path
+
+# === Jupyter ===
+ms-toolsai.jupyter
+ms-toolsai.jupyter-keymap
+ms-toolsai.jupyter-renderers
+ms-toolsai.vscode-jupyter-cell-tags
+ms-toolsai.vscode-jupyter-powertoys
+ms-toolsai.vscode-jupyter-slideshow
+
+# === JavaScript / TypeScript ===
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode
+ms-vscode.vscode-typescript-next
+dsznajder.es7-react-js-snippets
+
+# === Vue ===
+vue.volar
+
+# === Tailwind CSS ===
+bradlc.vscode-tailwindcss
+
+# === HTML / CSS ===
+formulahendry.auto-rename-tag
+ritwickdey.liveserver
+
+# === Config Files ===
+tamasfe.even-better-toml
+redhat.vscode-yaml
+zainchen.json
+richie5um2.vscode-sort-json
+davidanson.vscode-markdownlint
+mechatroner.rainbow-csv
+
+# === Database ===
+cweijan.vscode-mysql-client2
+cweijan.dbclient-jdbc
+
+# === Docker / Kubernetes ===
+ms-azuretools.vscode-docker
+ms-azuretools.vscode-containers
+ms-kubernetes-tools.vscode-kubernetes-tools
+
+# === Remote Development ===
+ms-vscode-remote.remote-ssh
+ms-vscode-remote.vscode-remote-extensionpack
+ms-vscode.remote-explorer
+ms-vscode.remote-server
+anysphere.remote-containers
+
+# === Testing ===
+hbenl.vscode-test-explorer
+ms-vscode.test-adapter-converter
+
+# === API Testing ===
+humao.rest-client
+
+# === Utilities ===
+alefragnani.project-manager
+tyriar.sort-lines
+quicktype.quicktype
+tomoki1207.pdf
+foxundermoon.shell-format
+ms-vscode.makefile-tools
+
+# === Collaboration ===
+ms-vsliveshare.vsliveshare
+
+# === AI ===
+anthropic.claude-code
+beilunyang.cursor-rules
+
+# === Language Pack ===
+ms-ceintl.vscode-language-pack-ja
