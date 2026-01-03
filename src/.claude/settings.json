@@ -56,40 +56,5 @@
       "Bash(bash:*)"
     ]
   },
-  "model": "opus",
-  "enabledPlugins": {
-    "code-review@claude-plugins-official": true,
-    "commit-commands@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "pr-review-toolkit@claude-plugins-official": true,
-    "document-skills@anthropic-agent-skills": true
-  },
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
-      }
-    },
-    "context7": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp@latest"
-      ]
-    },
-    "Playwright": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@anthropics/mcp-server-playwright"
-      ]
-    }
-  }
+  "model": "opus"
 }
