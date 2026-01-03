@@ -1,0 +1,51 @@
+#!/bin/bash
+# claude-hook - Claude Code hookイベントを受け取り、状態ファイルを更新
+#
+# 使用方法: Claude Codeのhooks設定から呼び出される（stdinでJSON受信）
+# 出力先: $CLAUDE_STATE_DIR/<tty_name>
+
+# 共通設定を読み込む
+SCRIPT_DIR="$(dirname "$0")"
+# shellcheck source=claude-hook-config
+source "$SCRIPT_DIR/claude-hook-config"
+
+init_state_dir
+
+# 古い状態ファイルを定期的にクリーンアップ（10%の確率）
+[[ $((RANDOM % 10)) -eq 0 ]] && cleanup_old_state_files
+
+# JSONからイベント名を抽出
+INPUT=$(cat)
+HOOK_EVENT=$(json_get_value "$INPUT" "hook_event_name")
+
+# TTYを取得
+# hookプロセスはパイプで接続されているためttyコマンドは使えない
+# TMUX_PANE環境変数からtmux経由でTTYを取得する
+if [[ -n "$TMUX_PANE" ]]; then
+    CURRENT_TTY=$(tmux display-message -t "$TMUX_PANE" -p '#{pane_tty}' 2>/dev/null | sed 's|/dev/||')
+fi
+[[ -z "$CURRENT_TTY" ]] && CURRENT_TTY="unknown"
+
+STATE_FILE="$CLAUDE_STATE_DIR/${CURRENT_TTY//\//_}"
+
+# デバッグログ（ペーンごと）
+echo "$(date '+%H:%M:%S') $HOOK_EVENT" >> "/tmp/claude-hook-debug/claude-hook-${CURRENT_TTY//\//_}.log"
+
+# イベントに応じた状態を記録
+case "$HOOK_EVENT" in
+    UserPromptSubmit|PostToolUse)
+        echo "run_prompt" > "$STATE_FILE"
+        ;;
+    Notification)
+        NOTIFICATION_TYPE=$(json_get_value "$INPUT" "notification_type")
+        [[ "$NOTIFICATION_TYPE" == "permission_prompt" ]] && echo "permission_prompt" > "$STATE_FILE"
+        ;;
+    Stop)
+        echo "idle_prompt" > "$STATE_FILE"
+        ;;
+esac
+
+# デバッグ: 書き込み後の状態を記録
+echo "$(date '+%H:%M:%S') $HOOK_EVENT -> $(cat "$STATE_FILE" 2>/dev/null)" >> "/tmp/claude-hook-debug/claude-hook-${CURRENT_TTY//\//_}.log"
+
+exit 0

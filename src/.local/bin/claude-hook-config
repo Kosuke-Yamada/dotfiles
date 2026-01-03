@@ -1,0 +1,108 @@
+#!/bin/bash
+# claude-hook-config - Claude Code hook スクリプト共通設定
+#
+# 使用方法: source ~/.local/bin/claude-hook-config
+#
+# このファイルは他のclaude-hook-*スクリプトからsourceされることを想定
+
+# ==============================================================================
+# パス設定
+# ==============================================================================
+
+# 状態ファイルを保存するディレクトリ
+CLAUDE_STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/claude-code-state"
+
+# ==============================================================================
+# タイムアウト設定（秒）
+# ==============================================================================
+
+# 状態ファイルのクリーンアップ閾値（この秒数より古いファイルを削除）
+STATE_FILE_MAX_AGE=3600
+
+# ==============================================================================
+# 色定義（Ghostty Ideaテーマ準拠）
+# tmux形式: #[fg=#RRGGBB]
+# ==============================================================================
+
+# マゼンタ: permission_prompt（許可待ち）
+COLOR_PERMISSION="#9d74b0"
+
+# シアン: idle_prompt（入力待ち）
+COLOR_IDLE="#248887"
+
+# イエロー: run_prompt（処理中）
+COLOR_RUN="#ccb444"
+
+# グレー: non_claude（Claude未起動）
+COLOR_NON_CLAUDE="#4b4b4b"
+
+# ==============================================================================
+# ユーティリティ関数
+# ==============================================================================
+
+# OS検出（statコマンドの互換性のため）
+_detect_os() {
+    case "$(uname -s)" in
+        Darwin) echo "macos" ;;
+        Linux)  echo "linux" ;;
+        *)      echo "unknown" ;;
+    esac
+}
+
+# ファイルの更新時刻を取得（エポック秒）
+# macOSとLinuxの両方で動作
+get_file_mtime() {
+    local file="$1"
+    local os
+    os=$(_detect_os)
+
+    case "$os" in
+        macos)
+            stat -f %m "$file" 2>/dev/null || echo 0
+            ;;
+        linux)
+            stat -c %Y "$file" 2>/dev/null || echo 0
+            ;;
+        *)
+            # フォールバック: 現在時刻を返す（常に新しいとみなす）
+            date +%s
+            ;;
+    esac
+}
+
+# JSONからキーの値を抽出
+# jqが利用可能ならjqを使用、なければgrep/sedでフォールバック
+json_get_value() {
+    local json="$1"
+    local key="$2"
+
+    if command -v jq &>/dev/null; then
+        echo "$json" | jq -r ".$key // empty" 2>/dev/null
+    else
+        # フォールバック: grep/sedでパース
+        echo "$json" | grep -o "\"$key\"[[:space:]]*:[[:space:]]*\"[^\"]*\"" | sed 's/.*"\([^"]*\)"$/\1/'
+    fi
+}
+
+# 状態ディレクトリを初期化
+init_state_dir() {
+    mkdir -p "$CLAUDE_STATE_DIR"
+}
+
+# 古い状態ファイルをクリーンアップ
+cleanup_old_state_files() {
+    local current_time
+    current_time=$(date +%s)
+
+    for file in "$CLAUDE_STATE_DIR"/*; do
+        [[ -f "$file" ]] || continue
+
+        local file_mtime
+        file_mtime=$(get_file_mtime "$file")
+        local age=$((current_time - file_mtime))
+
+        if [[ "$age" -gt "$STATE_FILE_MAX_AGE" ]]; then
+            rm -f "$file"
+        fi
+    done
+}

@@ -1,0 +1,61 @@
+#!/bin/bash
+# claude-pane-status - tmuxペーンのClaude Code状態を検出
+#
+# 使用方法: claude-pane-status [pane_id]
+# 出力: permission_prompt | idle_prompt | run_prompt | non_claude
+
+# 共通設定を読み込む
+SCRIPT_DIR="$(dirname "$0")"
+# shellcheck source=claude-hook-config
+source "$SCRIPT_DIR/claude-hook-config"
+
+PANE_ID="${1:-}"
+
+# ペーンのTTYを取得
+if [[ -n "$PANE_ID" ]]; then
+    PANE_TTY=$(tmux display-message -t "$PANE_ID" -p '#{pane_tty}' 2>/dev/null)
+else
+    PANE_TTY=$(tmux display-message -p '#{pane_tty}' 2>/dev/null)
+fi
+[[ -z "$PANE_TTY" ]] && { echo "non_claude"; exit 0; }
+
+TTY_SHORT="${PANE_TTY#/dev/}"
+
+# claudeプロセスがフォアグラウンドで実行中か確認
+CLAUDE_PROCS=$(ps -t "$TTY_SHORT" -o pid=,stat=,comm= 2>/dev/null | grep -E '\bclaude\b')
+[[ -z "$CLAUDE_PROCS" ]] && { echo "non_claude"; exit 0; }
+
+CLAUDE_FG=$(echo "$CLAUDE_PROCS" | grep -E '\+')
+[[ -z "$CLAUDE_FG" ]] && { echo "non_claude"; exit 0; }
+
+# claudeプロセスの起動時刻を取得（前回セッションの状態ファイルを無視するため）
+CLAUDE_PID=$(echo "$CLAUDE_FG" | head -1 | awk '{print $1}')
+if [[ -n "$CLAUDE_PID" ]]; then
+    CLAUDE_START=$(ps -o lstart= -p "$CLAUDE_PID" 2>/dev/null)
+    [[ -n "$CLAUDE_START" ]] && CLAUDE_START_EPOCH=$(date -j -f "%a %b %d %T %Y" "$CLAUDE_START" +%s 2>/dev/null)
+fi
+
+# 状態ファイルを確認
+STATE_FILE="$CLAUDE_STATE_DIR/${TTY_SHORT//\//_}"
+if [[ -f "$STATE_FILE" ]]; then
+    FILE_MTIME=$(get_file_mtime "$STATE_FILE")
+
+    # 前回セッションの残りファイルは無視
+    if [[ -n "$CLAUDE_START_EPOCH" && "$FILE_MTIME" -lt "$CLAUDE_START_EPOCH" ]]; then
+        echo "idle_prompt"
+        exit 0
+    fi
+
+    HOOK_STATE=$(cat "$STATE_FILE" 2>/dev/null)
+    case "$HOOK_STATE" in
+        permission_prompt|idle_prompt|run_prompt)
+            echo "$HOOK_STATE"
+            ;;
+        *)
+            echo "run_prompt"
+            ;;
+    esac
+else
+    # 状態ファイルなし = 起動直後
+    echo "idle_prompt"
+fi

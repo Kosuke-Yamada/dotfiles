@@ -149,7 +149,7 @@ link:
 	@echo "ホームディレクトリのドットファイルをリンク中..."
 	@cd "$(SRC_DIRECTORY)" && \
 	for f in .??*; do \
-		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ]; then \
+		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".local" ]; then \
 			continue; \
 		fi; \
 		if [ -e "$(HOME)/$$f" ] && [ ! -L "$(HOME)/$$f" ]; then \
@@ -179,6 +179,17 @@ ifeq ($(OS),Darwin)
 	@mkdir -p "$(HOME)/.config/yabai"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/yabai/yabairc" "$(HOME)/.config/yabai/yabairc"
 endif
+	@# .local/bin 配下のスクリプト
+	@echo ""
+	@echo ".local/bin 配下のスクリプトをリンク中..."
+	@mkdir -p "$(HOME)/.local/bin"
+	@cd "$(SRC_DIRECTORY)/.local/bin" && \
+	for f in *; do \
+		if [ -f "$$f" ]; then \
+			chmod +x "$(SRC_DIRECTORY)/.local/bin/$$f"; \
+			ln -snfv "$(SRC_DIRECTORY)/.local/bin/$$f" "$(HOME)/.local/bin/$$f"; \
+		fi; \
+	done
 	@# ホームディレクトリ配下（個別ファイル）
 	@echo ""
 	@echo "ホームディレクトリ配下の設定ファイルをリンク中..."

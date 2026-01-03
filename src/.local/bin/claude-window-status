@@ -1,0 +1,53 @@
+#!/bin/bash
+# claude-window-status - ウィンドウ内の全ペーンのClaude Code状態を色付きシンボルで表示
+#
+# 使用方法: claude-window-status [window_id]
+#   window_id を省略すると現在のウィンドウを対象とする
+#
+# 出力例: "#[fg=#9d74b0]●#[fg=#248887]●#[fg=#ccb444]●" (3ペーン)
+#
+# シンボルと色:
+#   ● マゼンタ - permission_prompt (許可待ち)
+#   ● シアン   - idle_prompt (入力待ち)
+#   ● イエロー - run_prompt (処理中)
+#   ● グレー   - non_claude (Claude未起動)
+#
+# 色は claude-hook-config で定義されています
+
+# 共通設定を読み込む
+SCRIPT_DIR="$(dirname "$0")"
+# shellcheck source=claude-hook-config
+source "$SCRIPT_DIR/claude-hook-config"
+
+WINDOW_ID="${1:-}"
+CLAUDE_PANE_STATUS="$SCRIPT_DIR/claude-pane-status"
+
+# ウィンドウ内のペーン一覧を取得
+if [[ -n "$WINDOW_ID" ]]; then
+    PANES=$(tmux list-panes -t "$WINDOW_ID" -F '#{pane_id}' 2>/dev/null)
+else
+    PANES=$(tmux list-panes -F '#{pane_id}' 2>/dev/null)
+fi
+
+[[ -z "$PANES" ]] && exit 0
+
+OUTPUT=""
+for pane in $PANES; do
+    STATUS=$("$CLAUDE_PANE_STATUS" "$pane" 2>/dev/null)
+    case "$STATUS" in
+        permission_prompt)
+            OUTPUT+="#[fg=${COLOR_PERMISSION}]●"
+            ;;
+        idle_prompt)
+            OUTPUT+="#[fg=${COLOR_IDLE}]●"
+            ;;
+        run_prompt)
+            OUTPUT+="#[fg=${COLOR_RUN}]●"
+            ;;
+        *)
+            OUTPUT+="#[fg=${COLOR_NON_CLAUDE}]●"
+            ;;
+    esac
+done
+
+echo "$OUTPUT"
