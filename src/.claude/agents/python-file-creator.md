@@ -67,47 +67,58 @@ uv run python src/script.py --input-file data/input.csv --output-dir output/
 
 import argparse
 import logging
+import sys
 from pathlib import Path
 from datetime import datetime
+
+import structlog
 
 # その他必要なimport文
 
 
-def setup_logging(log_dir: Path, log_name: str) -> logging.Logger:
-    """ロギングの設定を行う
-    
+def setup_logging(log_dir: Path, log_name: str) -> structlog.stdlib.BoundLogger:
+    """ロギングの設定を行う（structlog使用）
+
     Args:
         log_dir: ログファイルを出力するディレクトリ
         log_name: ログファイルの名前（拡張子なし）
-    
+
     Returns:
-        設定済みのLoggerインスタンス
+        設定済みのstructlog Loggerインスタンス
     """
     log_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     log_file = log_dir / f"{log_name}_{timestamp}.log"
-    
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    
-    # ファイルハンドラー
-    file_handler = logging.FileHandler(log_file, encoding='utf-8')
-    file_handler.setLevel(logging.DEBUG)
-    file_formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+    # 標準loggingの設定（ファイル出力用）
+    logging.basicConfig(
+        format='%(message)s',
+        level=logging.DEBUG,
+        handlers=[
+            logging.FileHandler(log_file, encoding='utf-8'),
+            logging.StreamHandler(sys.stdout),
+        ],
     )
-    file_handler.setFormatter(file_formatter)
-    
-    # コンソールハンドラー
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_formatter = logging.Formatter('%(levelname)s: %(message)s')
-    console_handler.setFormatter(console_formatter)
-    
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
-    
-    return logger
+
+    # structlogの設定
+    structlog.configure(
+        processors=[
+            structlog.stdlib.filter_by_level,
+            structlog.stdlib.add_logger_name,
+            structlog.stdlib.add_log_level,
+            structlog.processors.TimeStamper(fmt='iso'),
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.UnicodeDecoder(),
+            structlog.dev.ConsoleRenderer(),
+        ],
+        wrapper_class=structlog.stdlib.BoundLogger,
+        context_class=dict,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        cache_logger_on_first_use=True,
+    )
+
+    return structlog.get_logger()
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -147,12 +158,12 @@ def get_parser() -> argparse.ArgumentParser:
 
 class YourClassName:
     """処理を行うクラスの説明"""
-    
-    def __init__(self, logger: logging.Logger):
+
+    def __init__(self, logger: structlog.stdlib.BoundLogger):
         """初期化
-        
+
         Args:
-            logger: ロガーインスタンス
+            logger: structlogロガーインスタンス
         """
         self.logger = logger
     
@@ -216,9 +227,9 @@ if __name__ == '__main__':
 - 具体的な処理ロジックはクラスまたは関数に分離する
 
 ### 3. ロギング
-- `logging` モジュールを使用してターミナル出力を行う
+- `structlog` を使用して構造化ログを出力する
 - `.log` ファイルとして出力ディレクトリにログを保存する
-- ファイルハンドラーとコンソールハンドラーの両方を設定する
+- コンソールとファイルの両方に出力する設定とする
 - print文は使用しない（全てloggerを使用）
 
 ### 4. グローバル変数
@@ -229,8 +240,17 @@ if __name__ == '__main__':
 ### 5. コードスタイル
 - コメントは日本語で記述する
 - 変数名・関数名はスネークケースを使用する（Python慣習）
-- 型ヒントを積極的に使用する
+- 型ヒントを積極的に使用する（Python 3.10+ の `X | Y`, `list[int]` 形式）
 - docstringはGoogle形式で記述する
+- Linting / Formatting は `ruff` を使用する（`black`, `isort` は使用しない）
+
+```bash
+# Lint + 自動修正
+uv run ruff check . --fix
+
+# フォーマット
+uv run ruff format .
+```
 
 ### 6. uv実行
 - スクリプト作成前に `uv add` で必要なパッケージを追加すること
@@ -252,7 +272,7 @@ if __name__ == '__main__':
 - [ ] 出力引数がoutput-dirの形式
 - [ ] main()内でget_parser()を呼び出している
 - [ ] 具体的な処理がクラスまたは関数に分離されている
-- [ ] loggingを使用している（print文がない）
+- [ ] structlogを使用している（print文がない）
 - [ ] ログファイルが.log形式で出力される設定がある
 - [ ] グローバル変数が使用されていない
 - [ ] 全てのコメントが日本語

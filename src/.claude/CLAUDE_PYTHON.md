@@ -113,16 +113,19 @@ project-root/
 
 - 推論時には `torch.compile` を活用して最適化
 
-### Linting / Formatting
+### Linting / Formatting: `ruff`
 
-コミット前に必ず以下のツールチェーンを適用すること：
+コミット前に必ず `ruff` を適用すること（lint と format の両方を担う）：
 
-| ツール | 用途 |
-|--------|------|
-| `ruff` | リンティング（静的解析） |
-| `isort` | インポート順序の自動整理 |
-| `black` | コードフォーマット |
+```bash
+# Lint + 自動修正
+uv run ruff check . --fix
 
+# フォーマット
+uv run ruff format .
+```
+
+> ⚠️ `black`, `isort` は使用しない（ruff に統一）
 > Python 3.10+ の最新型ヒント (`X | Y`, `list[int]`) を使用すること
 
 ### Logging
@@ -156,7 +159,7 @@ uv run pytest tests/ -v --cov=src
 uv sync
 
 # Lint & Format
-uv run ruff check . --fix && uv run isort . && uv run black .
+uv run ruff check . --fix && uv run ruff format .
 
 # テスト実行
 uv run pytest tests/
