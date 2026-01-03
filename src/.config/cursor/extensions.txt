@@ -7,7 +7,7 @@ usernamehw.errorlens
 shardulm94.trailing-spaces
 naumovs.color-highlight
 pkief.material-icon-theme
-bceskavich.theme-dracula-at-night
+github.github-vscode-theme
 
 # === Path & Autocomplete ===
 christian-kohler.path-intellisense
