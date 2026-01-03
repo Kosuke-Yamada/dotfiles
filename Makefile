@@ -91,18 +91,25 @@ cursor-extensions:
 		EXTENSION_FILE="$(SRC_DIRECTORY)/.config/cursor/extensions.txt"; \
 		if [ -f "$$EXTENSION_FILE" ]; then \
 			INSTALLED=$$(cursor --list-extensions); \
-			while IFS= read -r ext; do \
-				case "$$ext" in \
-					""|\#*) continue ;; \
-				esac; \
-				if echo "$$INSTALLED" | grep -qFi "$$ext"; then \
+			WANTED=$$(grep -v '^\s*$$' "$$EXTENSION_FILE" | grep -v '^\s*#'); \
+			echo "不要な拡張機能を削除中..."; \
+			for ext in $$INSTALLED; do \
+				if ! echo "$$WANTED" | grep -qFxi "$$ext"; then \
+					echo "  アンインストール: $$ext"; \
+					cursor --uninstall-extension "$$ext" 2>/dev/null || true; \
+				fi; \
+			done; \
+			echo ""; \
+			echo "必要な拡張機能をインストール中..."; \
+			for ext in $$WANTED; do \
+				if echo "$$INSTALLED" | grep -qFxi "$$ext"; then \
 					echo "  既存: $$ext"; \
 				else \
 					echo "  インストール: $$ext"; \
 					cursor --install-extension "$$ext" 2>/dev/null || true; \
 				fi; \
-			done < "$$EXTENSION_FILE"; \
-			echo "Cursor 拡張機能のインストールが完了しました。"; \
+			done; \
+			echo "Cursor 拡張機能の同期が完了しました。"; \
 		else \
 			echo "extensions.txt が見つかりません。スキップします。"; \
 		fi; \
