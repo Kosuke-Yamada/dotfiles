@@ -16,4 +16,4 @@
 	dark = true
 	line-numbers = true
 [merge]
-	conflictstyle = zdiff
+	conflictstyle = diff3
