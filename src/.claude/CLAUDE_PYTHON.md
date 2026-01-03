@@ -9,14 +9,23 @@ Pythonプロジェクト向けのClaude Code指示テンプレート。
 
 ### Golden Rule
 
-> **「1メッセージ＝全Python操作」**
+> **「依存関係は事前管理、実行は uv run」**
 
-パッケージ追加やスクリプト実行を複数のターンに分割してはならない。
-実行には必ず `uv run` を使用し、**アトミックに実行**せよ。
+依存関係の追加（`uv add`）はスクリプト実行とは**分離**して事前に行うこと。
+すべての依存関係は `pyproject.toml` で管理し、実行時には `uv run` のみを使用せよ。
 
 ```bash
-# 例: パッケージ追加と実行を1コマンドで
-uv add pandas && uv run python src/train.py
+# ✅ 正しいフロー
+# 1. 事前に依存関係を追加（開発時のみ）
+uv add pandas polars
+
+# 2. 実行時は uv run のみ
+uv run python src/train.py
+```
+
+```bash
+# ❌ 避けるべきパターン
+uv add pandas && uv run python src/train.py  # 実行時にパッケージ追加しない
 ```
 
 ### Execution
@@ -79,16 +88,21 @@ project-root/
 
 ## 🛠️ Technology Stack & Standards (技術スタック)
 
-### Package Manager: `uv`
+### Package Manager: `uv` + `pyproject.toml`
 
-| 操作 | コマンド |
-|------|---------|
-| パッケージ追加 | `uv add <package>` |
-| パッケージ削除 | `uv remove <package>` |
-| 依存関係同期 | `uv sync` |
+すべての依存関係は `pyproject.toml` で一元管理する。
+
+| 操作 | コマンド | タイミング |
+|------|---------|-----------|
+| パッケージ追加 | `uv add <package>` | 開発時（事前） |
+| 開発用パッケージ追加 | `uv add --dev <package>` | 開発時（事前） |
+| パッケージ削除 | `uv remove <package>` | 開発時 |
+| 依存関係同期 | `uv sync` | clone直後 / CI |
+| スクリプト実行 | `uv run python <script>` | 実行時 |
 
 > ⚠️ `pip` コマンドは直接使用しない
-> 依存関係追加後は `uv.lock` の更新を確認すること
+> 依存関係追加後は `pyproject.toml` と `uv.lock` の更新を確認すること
+> 実行時に `uv add` を行わないこと（依存関係は事前に追加済みであること）
 
 ### DataFrames: Polars (推奨)
 

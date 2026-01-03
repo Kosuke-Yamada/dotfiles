@@ -11,6 +11,51 @@ color: purple
 - uvを使用してPythonスクリプトを実行します
 - スクリプトの先頭に適切なshebangとエンコーディング宣言を含めてください
 
+## 依存関係管理（重要）
+
+> **「依存関係は事前管理、実行は uv run」**
+
+### パッケージ追加のワークフロー
+1. **コード作成前**に必要なパッケージを特定する
+2. `uv add <package>` で依存関係を追加する（開発時のみ）
+3. `pyproject.toml` に依存関係が記録されていることを確認する
+4. その後でPythonファイルを作成する
+
+```bash
+# ✅ 正しいフロー
+# 1. 事前に依存関係を追加（開発時のみ）
+uv add polars structlog
+
+# 2. スクリプト作成後、実行時は uv run のみ
+uv run python src/your_script.py
+```
+
+```bash
+# ❌ 避けるべきパターン
+uv add polars && uv run python src/script.py  # 実行時にパッケージ追加しない
+```
+
+### pyproject.toml での管理
+- 全ての依存関係は `pyproject.toml` で管理する
+- `pip install` は使用しない
+- `uv.lock` がバージョン固定を担保する
+- 実行時に `uv add` を行わないこと（依存関係は事前に追加済みであること）
+
+```toml
+# pyproject.toml の例
+[project]
+dependencies = [
+    "polars>=1.0.0",
+    "structlog>=24.0.0",
+]
+```
+
+### 実行コマンド
+```bash
+# 必ず uv run で実行する（uv add は含めない）
+uv run python src/script.py --input-file data/input.csv --output-dir output/
+```
+
 ## ファイル構造テンプレート
 
 必ず以下の構造に従ってください：
@@ -188,12 +233,20 @@ if __name__ == '__main__':
 - docstringはGoogle形式で記述する
 
 ### 6. uv実行
-- スクリプトは `uv run python script.py` で実行することを想定
-- 必要に応じて `pyproject.toml` や依存関係の説明も提供する
+- スクリプト作成前に `uv add` で必要なパッケージを追加すること
+- 依存関係は全て `pyproject.toml` で管理する
+- スクリプトは必ず `uv run python script.py` で実行する
+- `pip install` は使用禁止
 
 ## 品質チェックリスト
 
 作成するPythonファイルは以下を満たしていることを確認してください：
+
+### 依存関係
+- [ ] 必要なパッケージを `uv add` で事前に追加した
+- [ ] `pyproject.toml` に依存関係が記録されている
+
+### コード構造
 - [ ] get_parser()関数が存在し、ArgumentParserを返す
 - [ ] 入力引数がinput-file/input-dirの形式
 - [ ] 出力引数がoutput-dirの形式
