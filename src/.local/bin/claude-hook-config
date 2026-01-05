@@ -24,6 +24,7 @@ STATE_FILE_MAX_AGE=3600
 # tmux形式: #[fg=#RRGGBB]
 # ==============================================================================
 
+# --- Claude Code用（▲ 三角） ---
 # マゼンタ: permission_prompt（許可待ち）
 COLOR_PERMISSION="#9d74b0"
 
@@ -33,8 +34,15 @@ COLOR_IDLE="#248887"
 # イエロー: run_prompt（処理中）
 COLOR_RUN="#ccb444"
 
-# グレー: non_claude（Claude未起動）
-COLOR_NON_CLAUDE="#4b4b4b"
+# --- 通常シェル用（● 円） ---
+# イエロー: コマンド実行中
+COLOR_SHELL_RUNNING="#ccb444"
+
+# シアン: コマンド終了（成功）
+COLOR_SHELL_IDLE="#248887"
+
+# マゼンタ: コマンド終了（エラー）
+COLOR_SHELL_ERROR="#9d74b0"
 
 # ==============================================================================
 # ユーティリティ関数

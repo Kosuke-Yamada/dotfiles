@@ -5,6 +5,42 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
+# tmuxステータスバー用シェル状態追跡
+# preexec: コマンド実行前に「running」を記録
+# precmd: コマンド実行後に終了コードに応じて「idle」または「error」を記録
+# -----------------------------------------------------------------------------
+if [[ -n "$TMUX" ]]; then
+    _SHELL_STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/claude-code-state"
+    mkdir -p "$_SHELL_STATE_DIR"
+
+    # コマンド実行前: running状態を記録
+    _tmux_shell_preexec() {
+        local pane_id
+        pane_id=$(tmux display-message -p '#{pane_id}' 2>/dev/null)
+        [[ -n "$pane_id" ]] && echo "running" > "$_SHELL_STATE_DIR/shell-${pane_id#%}"
+    }
+
+    # コマンド実行後: 終了コードに応じて状態を記録
+    _tmux_shell_precmd() {
+        local exit_code=$?
+        local pane_id
+        pane_id=$(tmux display-message -p '#{pane_id}' 2>/dev/null)
+        if [[ -n "$pane_id" ]]; then
+            if [[ $exit_code -eq 0 ]]; then
+                echo "idle" > "$_SHELL_STATE_DIR/shell-${pane_id#%}"
+            else
+                echo "error" > "$_SHELL_STATE_DIR/shell-${pane_id#%}"
+            fi
+        fi
+    }
+
+    # フックを登録（既存のフックを上書きしないよう配列に追加）
+    autoload -Uz add-zsh-hook
+    add-zsh-hook preexec _tmux_shell_preexec
+    add-zsh-hook precmd _tmux_shell_precmd
+fi
+
+# -----------------------------------------------------------------------------
 # ghqで管理しているリポジトリをfzfで検索してcdする関数
 # キーバインド: Ctrl+]
 # -----------------------------------------------------------------------------

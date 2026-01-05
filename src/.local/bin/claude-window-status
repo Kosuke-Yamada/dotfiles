@@ -1,16 +1,20 @@
 #!/bin/bash
-# claude-window-status - ウィンドウ内の全ペーンのClaude Code状態を色付きシンボルで表示
+# claude-window-status - ウィンドウ内の全ペーンの状態を色付きシンボルで表示
 #
 # 使用方法: claude-window-status [window_id]
 #   window_id を省略すると現在のウィンドウを対象とする
 #
-# 出力例: "#[fg=#9d74b0]●#[fg=#248887]●#[fg=#ccb444]●" (3ペーン)
+# 出力例: "#[fg=#9d74b0]▲#[fg=#248887]●" (2ペーン)
 #
 # シンボルと色:
-#   ● マゼンタ - permission_prompt (許可待ち)
-#   ● シアン   - idle_prompt (入力待ち)
-#   ● イエロー - run_prompt (処理中)
-#   ● グレー   - non_claude (Claude未起動)
+#   ▲ Claude Code:
+#     マゼンタ - permission_prompt (許可待ち)
+#     グレー   - idle_prompt (入力待ち)
+#     シアン   - run_prompt (処理中)
+#   ● 通常シェル:
+#     シアン   - コマンド実行中
+#     グレー   - コマンド終了（成功）
+#     マゼンタ - コマンド終了（エラー）
 #
 # 色は claude-hook-config で定義されています
 
@@ -31,21 +35,47 @@ fi
 
 [[ -z "$PANES" ]] && exit 0
 
+# シェル状態ファイルを読み取る関数
+get_shell_status() {
+    local pane_id="$1"
+    local state_file="$CLAUDE_STATE_DIR/shell-${pane_id#%}"
+    if [[ -f "$state_file" ]]; then
+        cat "$state_file" 2>/dev/null
+    else
+        echo "idle"
+    fi
+}
+
 OUTPUT=""
 for pane in $PANES; do
     STATUS=$("$CLAUDE_PANE_STATUS" "$pane" 2>/dev/null)
     case "$STATUS" in
         permission_prompt)
-            OUTPUT+="#[fg=${COLOR_PERMISSION}]●"
+            # Claude: 許可待ち（マゼンタ▲）
+            OUTPUT+="#[fg=${COLOR_PERMISSION}]▲"
             ;;
         idle_prompt)
-            OUTPUT+="#[fg=${COLOR_IDLE}]●"
+            # Claude: 入力待ち（グレー▲）
+            OUTPUT+="#[fg=${COLOR_IDLE}]▲"
             ;;
         run_prompt)
-            OUTPUT+="#[fg=${COLOR_RUN}]●"
+            # Claude: 処理中（シアン▲）
+            OUTPUT+="#[fg=${COLOR_RUN}]▲"
             ;;
         *)
-            OUTPUT+="#[fg=${COLOR_NON_CLAUDE}]●"
+            # 通常シェル: 状態に応じて色を変更（●）
+            SHELL_STATUS=$(get_shell_status "$pane")
+            case "$SHELL_STATUS" in
+                running)
+                    OUTPUT+="#[fg=${COLOR_SHELL_RUNNING}]●"
+                    ;;
+                error)
+                    OUTPUT+="#[fg=${COLOR_SHELL_ERROR}]●"
+                    ;;
+                *)
+                    OUTPUT+="#[fg=${COLOR_SHELL_IDLE}]●"
+                    ;;
+            esac
             ;;
     esac
 done
