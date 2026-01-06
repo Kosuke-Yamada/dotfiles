@@ -101,3 +101,4 @@ macos-hidden = always
 
 # 起動時にウィンドウを表示しない
 initial-window = false
+
