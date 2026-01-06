@@ -10,11 +10,10 @@
 #   ▲ Claude Code:
 #     マゼンタ - permission_prompt (許可待ち)
 #     グレー   - idle_prompt (入力待ち)
-#     シアン   - run_prompt (処理中)
+#     イエロー - run_prompt (処理中)
 #   ● 通常シェル:
-#     シアン   - コマンド実行中
-#     グレー   - コマンド終了（成功）
-#     マゼンタ - コマンド終了（エラー）
+#     イエロー - コマンド実行中
+#     シアン   - コマンド終了（成功/エラー共通）
 #
 # 色は claude-hook-config で定義されています
 
@@ -67,12 +66,11 @@ for pane in $PANES; do
             SHELL_STATUS=$(get_shell_status "$pane")
             case "$SHELL_STATUS" in
                 running)
+                    # 実行中: イエロー
                     OUTPUT+="#[fg=${COLOR_SHELL_RUNNING}]●"
                     ;;
-                error)
-                    OUTPUT+="#[fg=${COLOR_SHELL_ERROR}]●"
-                    ;;
                 *)
+                    # 実行していない（成功/エラー共通）: シアン
                     OUTPUT+="#[fg=${COLOR_SHELL_IDLE}]●"
                     ;;
             esac
