@@ -102,3 +102,5 @@ macos-hidden = always
 # 起動時にウィンドウを表示しない
 initial-window = false
 
+macos-auto-secure-input = false
+macos-secure-input-indication = false
