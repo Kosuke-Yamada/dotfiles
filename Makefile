@@ -196,16 +196,6 @@ endif
 	@mkdir -p "$(HOME)/.claude"
 	@ln -snfv "$(SRC_DIRECTORY)/.claude/CLAUDE.md" "$(HOME)/.claude/CLAUDE.md"
 	@ln -snfv "$(SRC_DIRECTORY)/.claude/settings.json" "$(HOME)/.claude/settings.json"
-	@# .claude/agents 配下
-	@echo ""
-	@echo ".claude/agents 配下のエージェント設定をリンク中..."
-	@mkdir -p "$(HOME)/.claude/agents"
-	@cd "$(SRC_DIRECTORY)/.claude/agents" && \
-	for f in *.md; do \
-		if [ -f "$$f" ]; then \
-			ln -snfv "$(SRC_DIRECTORY)/.claude/agents/$$f" "$(HOME)/.claude/agents/$$f"; \
-		fi; \
-	done
 	@# .claude/commands 配下
 	@echo ""
 	@echo ".claude/commands 配下のコマンド設定をリンク中..."

@@ -81,7 +81,6 @@ dotfiles/
     │   ├── CLAUDE_REACT_FASTAPI.md  # React+FastAPI 用ガイドライン
     │   ├── CLAUDE_STREAMLIT.md      # Streamlit 用ガイドライン
     │   ├── settings.json     # Claude Code 設定
-    │   ├── agents/           # カスタムエージェント
     │   ├── commands/         # カスタムコマンド
     │   └── skills/           # カスタムスキル
     ├── .functions            # カスタム関数定義
@@ -177,15 +176,6 @@ sheldon で管理している zsh プラグイン:
 | `CLAUDE_STREAMLIT.md` | Streamlit プロジェクト用 |
 
 プロジェクトルートにコピーして `CLAUDE.md` としてお使いください。
-
-#### カスタムエージェント
-
-`agents/` には以下のカスタムエージェントが含まれます:
-
-| エージェント | 説明 |
-|--------------|------|
-| `git-commit-assistant` | 変更内容を分析して適切なコミットを作成 |
-| `python-file-creator` | Python ファイルのテンプレートに従った新規作成 |
 
 #### カスタムスキル
 

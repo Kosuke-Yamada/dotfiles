@@ -21,6 +21,7 @@ fi
 # ==============================================================================
 export PATH="$HOME/bin:/usr/local/bin:$PATH"
 export PATH=$PATH:$HOME/.cycloud/bin
+export PATH=$PATH:$HOME/.config/cycloud/bin
 
 # ==============================================================================
 # Language

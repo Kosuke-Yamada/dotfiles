@@ -1,4 +1,16 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(zsh:*)",
+      "Bash(find:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(chmod:*)",
+      "Bash(bash:*)"
+    ]
+  },
+  "model": "opus",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -45,16 +57,8 @@
       }
     ]
   },
-  "permissions": {
-    "allow": [
-      "Bash(ls:*)",
-      "Bash(zsh:*)",
-      "Bash(find:*)",
-      "Bash(cp:*)",
-      "Bash(mv:*)",
-      "Bash(chmod:*)",
-      "Bash(bash:*)"
-    ]
-  },
-  "model": "opus"
+  "language": "japanese",
+  "enabledPlugins": {
+    "code-simplifier@claude-plugins-official": true
+  }
 }
