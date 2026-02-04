@@ -1,4 +1,3 @@
-#! /bin/bash
 # =============================================================================
 # カスタムシェル関数定義ファイル
 # fzfを使ったインタラクティブな選択機能とzellij補完を提供
@@ -89,8 +88,8 @@ function _zellij_sessions() {
     sessions=(${(f)"$(zellij list-sessions --no-formatting 2>/dev/null | awk '{print $1}')"})
     _describe 'session' sessions  # 補完候補として登録
 }
-# zeaとzedエイリアスにこの補完関数を適用
-compdef _zellij_sessions zea zed
+# zeaとzedエイリアスにこの補完関数を適用（zellijがある場合のみ）
+type zellij >/dev/null 2>&1 && compdef _zellij_sessions zea zed
 
 # -----------------------------------------------------------------------------
 # メモコマンド

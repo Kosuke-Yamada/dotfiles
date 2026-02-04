@@ -1,12 +1,14 @@
 # ==============================================================================
 # tmux auto start
 # ==============================================================================
-# tmuxがインストールされていて、tmuxセッション外で、IDE内でない場合に自動起動
-if command -v tmux &> /dev/null \
+# tmuxがインストールされていて、対話的シェルで、tmuxセッション外で、IDE内でない場合に自動起動
+if [[ $- == *i* ]] \
+    && command -v tmux &> /dev/null \
     && [[ -z "$TMUX" ]] \
     && [[ -z "$VSCODE_INJECTION" ]] \
     && [[ -z "$VSCODE_GIT_IPC_HANDLE" ]] \
     && [[ "$TERM_PROGRAM" != "vscode" ]] \
+    && [[ -z "$CURSOR_TRACE_ID" ]] \
     && [[ "$TERMINAL_EMULATOR" != "JetBrains-JediTerm" ]]; then
     # セッションの存在を確認してからexecで接続/作成
     if tmux has-session -t default 2>/dev/null; then
@@ -118,7 +120,9 @@ fi
 # ==============================================================================
 # Google Cloud SDK
 # ==============================================================================
-export CLOUDSDK_PYTHON="$(which python3)"
+if command -v python3 &>/dev/null; then
+    export CLOUDSDK_PYTHON="$(command -v python3)"
+fi
 [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ] && source "$HOME/google-cloud-sdk/path.zsh.inc"
 [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ] && source "$HOME/google-cloud-sdk/completion.zsh.inc"
 

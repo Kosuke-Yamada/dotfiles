@@ -1,5 +1,5 @@
 # Editor
-brew "nano"
+brew "neovim"
 
 # AI
 brew "claude-cmd"

@@ -18,7 +18,6 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | タイリングウィンドウマネージャー (macOS) |
 | Git | [git-delta](https://github.com/dandavison/delta) | 0.18.2 | 差分表示の強化 |
 | Git | [gitui](https://github.com/extrawurst/gitui) | nightly | Git TUI クライアント |
-| エディタ | [nano](https://www.nano-editor.org/) | - | Git デフォルトエディタ |
 | ファイル操作 | [eza](https://github.com/eza-community/eza) | 0.23.4 | モダンな ls 代替 |
 | ファイル操作 | [bat](https://github.com/sharkdp/bat) | 0.26.1 | シンタックスハイライト付き cat |
 | ファイル操作 | [fd](https://github.com/sharkdp/fd) | 10.3.0 | 高速な find 代替 |
@@ -85,7 +84,6 @@ dotfiles/
     │   └── skills/           # カスタムスキル
     ├── .functions            # カスタム関数定義
     ├── .gitconfig            # Git 設定
-    ├── .nanorc               # nano 設定
     ├── .tmux.conf            # tmux 設定
     ├── .zshrc                # zsh 設定
     ├── .zshrc.local.example  # ローカル設定のサンプル

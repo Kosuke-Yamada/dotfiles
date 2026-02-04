@@ -17,7 +17,12 @@ alias ln="nocorrect ln -i"       # 上書き前に確認
 alias mkdir="nocorrect mkdir -p" # 親ディレクトリも作成
 alias gcc="nocorrect gcc"
 alias man="nocorrect man"
-alias ls="nocorrect ls --color"
+# macOSはBSD ls (-G)、LinuxはGNU ls (--color)
+if [[ "$(uname)" == "Darwin" ]]; then
+    alias ls="nocorrect ls -G"
+else
+    alias ls="nocorrect ls --color"
+fi
 alias sl="ls"                    # typo対策
 
 # ==============================================================================
