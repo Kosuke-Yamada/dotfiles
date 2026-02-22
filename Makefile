@@ -10,7 +10,7 @@
 # ==============================================================================
 
 SHELL := /bin/bash
-DOT_DIRECTORY := $(HOME)/dotfiles
+DOT_DIRECTORY := $(CURDIR)
 SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
@@ -60,6 +60,8 @@ plugins: packages
 	@echo ""
 	@echo "[init] Sheldon プラグインのインストール"
 	@echo "------------------------------------------"
+	@mkdir -p "$(HOME)/.config/sheldon"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/sheldon/plugins.toml" "$(HOME)/.config/sheldon/plugins.toml"
 	sheldon lock --update
 
 # Claude Code MCP サーバーの設定
@@ -204,15 +206,17 @@ endif
 	@ln -snfv "$(SRC_DIRECTORY)/.claude/CLAUDE.md" "$(HOME)/.claude/CLAUDE.md"
 	@ln -snfv "$(SRC_DIRECTORY)/.claude/settings.json" "$(HOME)/.claude/settings.json"
 	@# .claude/commands 配下
-	@echo ""
-	@echo ".claude/commands 配下のコマンド設定をリンク中..."
-	@mkdir -p "$(HOME)/.claude/commands"
-	@cd "$(SRC_DIRECTORY)/.claude/commands" && \
-	for f in *.md; do \
-		if [ -f "$$f" ]; then \
-			ln -snfv "$(SRC_DIRECTORY)/.claude/commands/$$f" "$(HOME)/.claude/commands/$$f"; \
-		fi; \
-	done
+	@if [ -d "$(SRC_DIRECTORY)/.claude/commands" ]; then \
+		echo ""; \
+		echo ".claude/commands 配下のコマンド設定をリンク中..."; \
+		mkdir -p "$(HOME)/.claude/commands"; \
+		cd "$(SRC_DIRECTORY)/.claude/commands" && \
+		for f in *.md; do \
+			if [ -f "$$f" ]; then \
+				ln -snfv "$(SRC_DIRECTORY)/.claude/commands/$$f" "$(HOME)/.claude/commands/$$f"; \
+			fi; \
+		done; \
+	fi
 	@echo ""
 	@echo "=========================================="
 	@echo "link が完了しました！"
