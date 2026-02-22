@@ -76,8 +76,14 @@ git-delta を使用した見やすい差分表示が設定されています。
 
 Large File Storage が設定されています。
 
+### 認証
+
+| 設定 | 値 | 説明 |
+|------|-----|------|
+| `credential.helper` | osxkeychain | macOS キーチェーンで認証情報を管理 |
+
 ### マージ
 
 | 設定 | 値 | 説明 |
 |------|-----|------|
-| `merge.conflictstyle` | zdiff | zdiff スタイルのコンフリクト表示 |
+| `merge.conflictstyle` | diff3 | diff3 スタイルのコンフリクト表示 |
