@@ -187,6 +187,16 @@ ifeq ($(OS),Darwin)
 	@ln -snfv "$(SRC_DIRECTORY)/.config/skhd/skhdrc" "$(HOME)/.config/skhd/skhdrc"
 	@mkdir -p "$(HOME)/.config/yabai"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/yabai/yabairc" "$(HOME)/.config/yabai/yabairc"
+	@# Cursor settings.json
+	@echo ""
+	@echo "Cursor の設定ファイルをリンク中..."
+	@mkdir -p "$(HOME)/Library/Application Support/Cursor/User"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/cursor/settings.json" "$(HOME)/Library/Application Support/Cursor/User/settings.json"
+	@# VSCode settings.json
+	@echo ""
+	@echo "VSCode の設定ファイルをリンク中..."
+	@mkdir -p "$(HOME)/Library/Application Support/Code/User"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/Code/User/settings.json" "$(HOME)/Library/Application Support/Code/User/settings.json"
 endif
 	@# .local/bin 配下のスクリプト
 	@echo ""

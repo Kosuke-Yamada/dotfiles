@@ -2,3 +2,6 @@
 
 # ローカル設定ファイル（機密情報を含む）
 src/.zshrc.local
+
+# Serena AI設定
+.serena/project.yml

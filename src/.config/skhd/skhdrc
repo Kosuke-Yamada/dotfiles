@@ -24,6 +24,13 @@ alt + cmd - down : yabai -m window --grid 2:1:0:1:1:1
 alt + cmd - 0x5E : yabai -m window --grid 1:1:0:0:1:1
 
 # ===========================================
+# Ghostty Quick Terminal（Ctrl+G）
+# ===========================================
+# Ghosttyのグローバルキーバインドはスリープ復帰後に無効化される問題があるため、
+# skhd経由でメニューアイテムをクリックして呼び出す
+ctrl - g : osascript -e 'tell application "System Events" to tell process "Ghostty" to click menu item "Quick Terminal" of menu "View" of menu bar 1'
+
+# ===========================================
 # その他
 # ===========================================
 # 設定リロード

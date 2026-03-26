@@ -6,13 +6,12 @@ theme = Idea
 # ===========================================
 # フォント設定
 # ===========================================
-font-family = Hakugen Console
 font-size = 14
 
 # ===========================================
 # Quick Terminal設定
 # ===========================================
-# Ctrl+G でクイックターミナルをトグル
+# Quick Terminalのトグル（Ghostty 1.2.3でグローバルキーバインドの問題が修正済み）
 keybind = global:ctrl+g=toggle_quick_terminal
 
 # 画面上部から表示
@@ -67,7 +66,8 @@ cursor-style-blink = true
 link-url = true
 
 # 選択時に自動でクリップボードにコピー
-copy-on-select = clipboard
+# tmux内でMouseDragEnd1Paneのpbcopyと競合するためfalseに設定
+copy-on-select = false
 
 # クリップボードからペースト時に確認しない（安全のため）
 clipboard-paste-protection = false
