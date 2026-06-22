@@ -1,0 +1,120 @@
+{
+    // --- エディタ基本設定 ---
+    "editor.minimap.enabled": false,
+    "editor.formatOnType": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "editor.unicodeHighlight.invisibleCharacters": false,
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+
+    // --- ファイル ---
+    "files.autoSave": "afterDelay",
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "files.associations": {
+        "jsonl": "json"
+    },
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true,
+        "**/.venv/**": true
+    },
+
+    // --- エクスプローラ ---
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+
+    // --- ワークベンチ ---
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.colorTheme": "Default Light Modern",
+    "workbench.startupEditor": "newUntitledFile",
+
+    // --- ターミナル ---
+    "terminal.integrated.inheritEnv": false,
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.profiles.linux": {
+        "bash": {
+            "path": "bash",
+            "args": ["--login"]
+        }
+    },
+
+    // --- Git ---
+    "git.confirmSync": false,
+
+    // --- Python ---
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    },
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.addImport.exactMatchOnly": true,
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.completeFunctionParens": true,
+
+    // --- Jupyter ---
+    "notebook.cellToolbarLocation": {
+        "default": "right",
+        "jupyter-notebook": "left"
+    },
+    "notebook.consolidatedRunButton": true,
+    "notebook.lineNumbers": "on",
+    "notebook.output.textLineLimit": 100,
+    "notebook.output.scrolling": true,
+    "notebook.editorOptionsCustomizations": {
+        "editor.tabSize": 4,
+        "editor.indentSize": 4,
+        "editor.insertSpaces": true
+    },
+    "jupyter.askForKernelRestart": false,
+
+    // --- LaTeX ---
+    "[latex]": {
+        "editor.formatOnSave": false,
+        "editor.wordWrap": "on",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "never",
+            "source.organizeImports": "never"
+        }
+    },
+
+    // --- 言語別フォーマッタ ---
+    "[json][jsonc][jsonl]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[dockerfile]": {
+        "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+    },
+    "[dockercompose]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+
+    // --- Remote SSH ---
+    "remote.SSH.connectTimeout": 10000,
+    "remote.autoForwardPortsSource": "hybrid",
+
+    // --- Cursor ---
+    "cursor.cpp.enablePartialAccepts": true,
+    "cursor.cmdk.useThemedDiffBackground": true,
+    "claudeCode.preferredLocation": "panel",
+    "workbench.colorCustomizations": {},
+    "vs-kubernetes": {
+        "vs-kubernetes.ignore-recommendations": true
+    },
+    "makefile.configureOnOpen": true,
+    "window.autoDetectColorScheme": false
+}
