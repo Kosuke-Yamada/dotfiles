@@ -18,6 +18,7 @@ brew "fzf"
 
 # macOS only
 if OS.mac?
+  tap "koekeishiya/formulae"
   cask "ghostty"
   brew "skhd"
   brew "yabai"
