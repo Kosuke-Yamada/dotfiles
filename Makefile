@@ -185,6 +185,7 @@ ifeq ($(OS),Darwin)
 	@ln -snfv "$(SRC_DIRECTORY)/.config/ghostty/config" "$(HOME)/.config/ghostty/config"
 	@mkdir -p "$(HOME)/.config/skhd"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/skhd/skhdrc" "$(HOME)/.config/skhd/skhdrc"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/skhd/skhdrc" "$(HOME)/.skhdrc"
 	@mkdir -p "$(HOME)/.config/yabai"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/yabai/yabairc" "$(HOME)/.config/yabai/yabairc"
 	@# Cursor settings.json
@@ -197,6 +198,11 @@ ifeq ($(OS),Darwin)
 	@echo "VSCode の設定ファイルをリンク中..."
 	@mkdir -p "$(HOME)/Library/Application Support/Code/User"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/Code/User/settings.json" "$(HOME)/Library/Application Support/Code/User/settings.json"
+	@# skhd と yabai をリロード（設定を即時反映）
+	@echo ""
+	@echo "skhd と yabai の設定をリロード中..."
+	@skhd --reload 2>/dev/null || true
+	@yabai --restart-service 2>/dev/null || true
 endif
 	@# .local/bin 配下のスクリプト
 	@echo ""
