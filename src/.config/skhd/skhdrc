@@ -32,12 +32,16 @@ shift + alt - k : /opt/homebrew/bin/yabai -m window --swap north
 shift + alt - l : /opt/homebrew/bin/yabai -m window --swap east
 
 # ===========================================
-# ウィンドウサイズ変更（50px ステップ）
+# ウィンドウサイズ変更（100px ステップ・拡大/縮小）
 # ===========================================
-ctrl + alt - h : /opt/homebrew/bin/yabai -m window --resize left:-50:0
-ctrl + alt - j : /opt/homebrew/bin/yabai -m window --resize bottom:0:50
-ctrl + alt - k : /opt/homebrew/bin/yabai -m window --resize top:0:-50
-ctrl + alt - l : /opt/homebrew/bin/yabai -m window --resize right:50:0
+# 両辺を同時に動かして中央を基準に拡大/縮小する。
+# こうすることで片方の辺が画面端に達していても、もう片方の辺が動くため
+# float レイアウトでも「効かなくなる」状況を避けられる。
+# h: 幅を縮める / l: 幅を広げる / k: 高さを広げる / j: 高さを縮める
+ctrl + alt - h : /opt/homebrew/bin/yabai -m window --resize left:50:0 ; /opt/homebrew/bin/yabai -m window --resize right:-50:0
+ctrl + alt - l : /opt/homebrew/bin/yabai -m window --resize left:-50:0 ; /opt/homebrew/bin/yabai -m window --resize right:50:0
+ctrl + alt - k : /opt/homebrew/bin/yabai -m window --resize top:0:-50 ; /opt/homebrew/bin/yabai -m window --resize bottom:0:50
+ctrl + alt - j : /opt/homebrew/bin/yabai -m window --resize top:0:50 ; /opt/homebrew/bin/yabai -m window --resize bottom:0:-50
 
 # ===========================================
 # ウィンドウ配置（alt + cmd + 矢印）
@@ -94,3 +98,10 @@ ctrl - g : osascript -e 'tell application "System Events" to tell process "Ghost
 # ===========================================
 # 設定リロード
 ctrl + alt - r : skhd --reload
+
+# yabai 復旧（再起動）
+# yabai サーバはスリープ復帰や特定アプリの Accessibility 応答待ちなどを
+# きっかけにハングし、resize/move/focus などの操作コマンドが数十秒ブロック
+# されることがある（query は正常に返るのが特徴）。動きが重い/効かないと
+# 感じたら、このキーで即座にサービスを再起動して復旧する。
+ctrl + alt - y : /opt/homebrew/bin/yabai --restart-service
