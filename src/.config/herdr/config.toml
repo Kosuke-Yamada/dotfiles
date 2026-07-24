@@ -1,0 +1,73 @@
+# ==============================================================================
+# herdr configuration
+# ==============================================================================
+
+[theme]
+name = "catppuccin"
+auto_switch = false
+
+# ------------------------------------------------------------------------------
+# UI
+# ------------------------------------------------------------------------------
+[ui]
+# タブ作成時に名前入力プロンプトを出さず、デフォルトの連番ラベルで即座に確定する
+prompt_new_tab_name = false
+
+# ------------------------------------------------------------------------------
+# キーバインド
+# herdr は単一 prefix のみ対応（tmux のような複数モード/複数リーダーは不可）。
+# バインドは "prefix+<key>" 形式、または単発チョード（例 "ctrl+alt+n"）のみ。
+# ------------------------------------------------------------------------------
+[keys]
+# 単一 prefix（未指定のためデフォルトの ctrl+b。変更したい場合はここを編集）
+prefix = "ctrl+b"
+
+# --- 全般 ---
+help = "prefix+?"   # prefix+h は上下分割と衝突するためデフォルトのまま
+goto = "prefix+i"
+edit_scrollback = ""  # スクロールバック編集: 不要のため無効化
+open_notification_target = ""  # 通知先を開く: 不要のため無効化
+toggle_sidebar = "prefix+ctrl+s"  # サイドバー開閉（prefix+b は previous_workspace に割当）
+
+# --- ペイン ---
+focus_pane_left  = "prefix+left"    # フォーカス移動: 矢印キー
+focus_pane_down  = "prefix+down"
+focus_pane_up    = "prefix+up"
+focus_pane_right = "prefix+right"
+cycle_pane_next     = ""            # 次のペイン: 定義なし
+cycle_pane_previous = ""            # 前のペイン: 定義なし
+split_horizontal = "prefix+h"       # 上下分割
+split_vertical   = "prefix+v"       # 左右分割（未指定のためデフォルト維持）
+close_pane = "prefix+ctrl+p"        # ペインを閉じる
+last_pane = "prefix+z"              # 直前のペインへ（既定の zoom を転用）
+zoom = ""                           # ズーム（全画面）: 不要のため無効化
+
+# --- タブ ---
+new_tab   = "prefix+t"              # タブ作成
+close_tab = "prefix+ctrl+t"         # タブを閉じる
+
+# --- ワークスペース ---
+new_workspace     = "prefix+w"       # 新規ワークスペース
+close_workspace   = "prefix+ctrl+w"  # ワークスペースを閉じる
+workspace_picker  = ""               # 一覧: 定義なし
+next_workspace    = "prefix+f"       # 次のワークスペース
+previous_workspace = "prefix+b"      # 前のワークスペース
+
+# --- エージェント ---
+previous_agent = "prefix+k"  # 前のエージェント
+next_agent     = "prefix+j"  # 次のエージェント
+
+# --- カスタムコマンド ---
+# ペイン4分割（2x2）: herdr に組み込みアクションが無いため、Socket API の
+# `herdr pane split` を組み合わせて再現する。type="shell" は /bin/sh -lc で
+# デタッチ実行されるため --current（アクティブクライアント依存）は使えない。
+# 代わりに herdr が渡す $HERDR_ACTIVE_PANE_ID を起点とし、分割で生成された
+# ペインIDを捕捉して明示IDで分割する。
+#   A = 起点ペイン
+#   1) A を下に分割 → B（A:上 / B:下、いずれも全幅）
+#   2) A を右に分割 → 上段: A | 右上
+#   3) B を右に分割 → 下段: B | 右下   ＝ 2x2
+[[keys.command]]
+key = "prefix+g"
+type = "shell"
+command = '''BIN="${HERDR_BIN_PATH:-herdr}"; A="${HERDR_ACTIVE_PANE_ID:-$("$BIN" pane current | sed -n 's/.*"pane_id":"\([^"]*\)".*/\1/p' | head -1)}"; B=$("$BIN" pane split --pane "$A" --direction down --no-focus | sed -n 's/.*"pane_id":"\([^"]*\)".*/\1/p' | head -1); "$BIN" pane split --pane "$A" --direction right --no-focus; "$BIN" pane split --pane "$B" --direction right --no-focus'''
