@@ -118,13 +118,15 @@ alias hda="herdr session attach"       # セッション再接続 (hda <name>)
 alias hdl="herdr session list"         # セッション一覧
 
 # セッション削除 (hdd <name> or hdd all)
+# session delete は停止済みセッションのみ対象のため、stop してから delete する
 hdd() {
+    _hdd_one() { herdr session stop "$1" 2>/dev/null; herdr session delete "$1"; }
     if [[ "$1" == "all" ]]; then
         herdr session list 2>/dev/null | awk 'NR>1 {print $1}' | while read -r _s; do
-            [[ -n "$_s" ]] && herdr session delete "$_s"
+            [[ -n "$_s" ]] && _hdd_one "$_s"
         done
     else
-        herdr session delete "$1"
+        _hdd_one "$1"
     fi
 }
 
