@@ -11,7 +11,8 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | シェル | [zsh](https://www.zsh.org/) | - | メインシェル |
 | プラグイン管理 | [sheldon](https://github.com/rossmacarthur/sheldon) | 0.8.5 | zsh プラグインマネージャー |
 | プロンプト | [starship](https://starship.rs/) | 1.24.1 | カスタマイズ可能なプロンプト |
-| ターミナル | [tmux](https://github.com/tmux/tmux) | - | ターミナルマルチプレクサ |
+| ターミナル | [herdr](https://herdr.dev) | 0.7.5 | AI エージェント対応ターミナルマルチプレクサ（デフォルト） |
+| ターミナル | [tmux](https://github.com/tmux/tmux) | - | ターミナルマルチプレクサ（設定ファイルのみ） |
 | ターミナル | [ghostty](https://ghostty.org/) | 1.2.3 | ターミナルエミュレータ (macOS) |
 | ホットキー | [skhd](https://github.com/koekeishiya/skhd) | 0.3.9 | ホットキーデーモン (macOS) |
 | ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | タイリングウィンドウマネージャー (macOS) |
@@ -82,6 +83,7 @@ dotfiles/
     └── .config/
         ├── cursor/           # Cursor 拡張機能リスト
         ├── ghostty/          # Ghostty 設定 (macOS)
+        ├── herdr/            # herdr 設定
         ├── sheldon/          # Sheldon 設定
         ├── skhd/             # skhd 設定 (macOS)
         ├── starship/         # Starship 設定
@@ -149,6 +151,7 @@ sheldon で管理している zsh プラグイン:
 |--------|------|------|
 | zsh | `Ctrl+]` | ghq リポジトリを fzf で検索 |
 | zsh | `Ctrl+R` | コマンド履歴を fzf で検索 |
+| herdr | `Ctrl+B` | Prefix キー（続けてキーを押す） |
 | ghostty | `Ctrl+G` | Quick Terminal の表示/非表示 |
 | skhd + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
 
@@ -157,6 +160,7 @@ sheldon で管理している zsh プラグイン:
 - [エイリアス一覧](./docs/aliases.md)
 - [カスタム関数一覧](./docs/functions.md)
 - [Git コマンド](./docs/git.md)
+- [herdr キーバインド](./docs/herdr.md)
 - [tmux キーバインド](./docs/tmux.md)
 - [skhd & yabai キーバインド](./docs/skhd-yabai.md)
 
