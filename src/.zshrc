@@ -100,7 +100,9 @@ fi
 # ==============================================================================
 # Google Cloud SDK
 # ==============================================================================
-if command -v python3 &>/dev/null; then
+if [ -x /opt/homebrew/bin/python3.14 ]; then
+    export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3.14
+elif command -v python3 &>/dev/null; then
     export CLOUDSDK_PYTHON="$(command -v python3)"
 fi
 [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ] && source "$HOME/google-cloud-sdk/path.zsh.inc"
@@ -113,6 +115,10 @@ fi
 [ -d "$HOME/.rd/bin" ] && export PATH="$HOME/.rd/bin:$PATH"
 [ -d "$HOME/.cycloud/bin" ] && export PATH="$HOME/.cycloud/bin:$PATH"
 [ -d "/opt/homebrew/opt/postgresql@17/bin" ] && export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="/Users/s26310/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 
 # ==============================================================================
 # herdr auto-attach（ターミナル起動時に自動でデフォルトセッションへ）
