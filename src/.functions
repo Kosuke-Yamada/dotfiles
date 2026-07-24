@@ -1,6 +1,6 @@
 # =============================================================================
 # カスタムシェル関数定義ファイル
-# fzfを使ったインタラクティブな選択機能とzellij補完を提供
+# fzfを使ったインタラクティブな選択機能を提供
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -74,93 +74,3 @@ function history_search_with_fzf() {
 # zleウィジェットとして登録し、Ctrl+Rにバインド
 zle -N history_search_with_fzf
 bindkey '^R' history_search_with_fzf
-
-# -----------------------------------------------------------------------------
-# zellijセッション名の補完関数
-# zea（attach）とzed（delete）エイリアス用の補完を提供
-# -----------------------------------------------------------------------------
-function _zellij_sessions() {
-    local sessions
-    # zellij list-sessions: 既存のセッション一覧を取得
-    # --no-formatting: 装飾なしのプレーンテキストで出力
-    # awk '{print $1}': セッション名（最初のフィールド）のみ抽出
-    # ${(f)"..."}: 改行で分割して配列に格納（zsh特有の構文）
-    sessions=(${(f)"$(zellij list-sessions --no-formatting 2>/dev/null | awk '{print $1}')"})
-    _describe 'session' sessions  # 補完候補として登録
-}
-# zeaとzedエイリアスにこの補完関数を適用（zellijがある場合のみ）
-type zellij >/dev/null 2>&1 && compdef _zellij_sessions zea zed
-
-# -----------------------------------------------------------------------------
-# メモコマンド
-# macOS: メモアプリに追加 / Linux: ~/memo ディレクトリにファイルとして保存
-# 使い方:
-#   memo "メモの内容"     - 引数でメモを追加
-#   memo                  - エディタでメモを作成
-#   memo -l               - メモ一覧を表示（Linuxのみ）
-# -----------------------------------------------------------------------------
-function memo() {
-    local content=""
-    local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
-
-    # オプション処理
-    if [[ "$1" == "-l" ]]; then
-        if [[ "$(uname)" == "Darwin" ]]; then
-            echo "メモアプリを開いてください"
-            open -a Notes
-        else
-            local memo_dir="${HOME}/memo"
-            if [[ -d "$memo_dir" ]]; then
-                ls -lt "$memo_dir"
-            else
-                echo "メモがありません"
-            fi
-        fi
-        return 0
-    fi
-
-    # メモ内容の取得
-    if [[ -n "$1" ]]; then
-        # 引数がある場合はそれをメモ内容とする
-        content="$*"
-    else
-        # 引数がない場合はエディタを開く
-        local tmpfile=$(mktemp)
-        nano "$tmpfile"
-        if [[ -s "$tmpfile" ]]; then
-            content=$(cat "$tmpfile")
-        fi
-        rm -f "$tmpfile"
-    fi
-
-    # メモ内容がなければ終了
-    if [[ -z "$content" ]]; then
-        echo "メモが空のため保存しませんでした"
-        return 1
-    fi
-
-    # OS別の保存処理
-    if [[ "$(uname)" == "Darwin" ]]; then
-        # macOS: AppleScriptでメモアプリに追加
-        osascript <<EOF
-tell application "Notes"
-    tell account "iCloud"
-        make new note at folder "Notes" with properties {name:"CLI Memo - ${timestamp}", body:"${content}"}
-    end tell
-end tell
-EOF
-        if [[ $? -eq 0 ]]; then
-            echo "メモを保存しました: CLI Memo - ${timestamp}"
-        else
-            echo "メモの保存に失敗しました"
-            return 1
-        fi
-    else
-        # Linux: ~/memo ディレクトリにファイルとして保存
-        local memo_dir="${HOME}/memo"
-        mkdir -p "$memo_dir"
-        local filename=$(date "+%Y%m%d_%H%M%S").txt
-        echo "$content" > "${memo_dir}/${filename}"
-        echo "メモを保存しました: ${memo_dir}/${filename}"
-    fi
-}

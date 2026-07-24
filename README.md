@@ -154,14 +154,6 @@ sheldon で管理している zsh プラグイン:
 | ghostty | `Ctrl+G` | Quick Terminal の表示/非表示 |
 | skhd + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
 
-## カスタムコマンド
-
-| コマンド | 説明 |
-|----------|------|
-| `memo "内容"` | メモを追加（macOS: メモアプリ / Linux: ~/memo） |
-| `memo` | nano でメモを作成 |
-| `memo -l` | メモ一覧を表示 |
-
 ## ドキュメント
 
 - [エイリアス一覧](./docs/aliases.md)
