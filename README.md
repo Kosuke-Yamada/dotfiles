@@ -6,27 +6,27 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 
 このリポジトリには以下の設定ファイルが含まれています:
 
-| カテゴリ | ツール | バージョン | 説明 |
-|---------|--------|------------|------|
-| シェル | [zsh](https://www.zsh.org/) | - | メインシェル |
-| プラグイン管理 | [sheldon](https://github.com/rossmacarthur/sheldon) | 0.8.5 | zsh プラグインマネージャー |
-| プロンプト | [starship](https://starship.rs/) | 1.24.1 | カスタマイズ可能なプロンプト |
-| ターミナル | [herdr](https://herdr.dev) | 0.7.5 | AI エージェント対応ターミナルマルチプレクサ（デフォルト） |
-| ターミナル | [tmux](https://github.com/tmux/tmux) | - | ターミナルマルチプレクサ（設定ファイルのみ） |
-| ターミナル | [ghostty](https://ghostty.org/) | 1.2.3 | ターミナルエミュレータ (macOS) |
-| ホットキー | [skhd](https://github.com/koekeishiya/skhd) | 0.3.9 | ホットキーデーモン (macOS) |
-| ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | タイリングウィンドウマネージャー (macOS) |
-| Git | [git-delta](https://github.com/dandavison/delta) | 0.18.2 | 差分表示の強化 |
-| Git | [gitui](https://github.com/extrawurst/gitui) | nightly | Git TUI クライアント |
-| ファイル操作 | [eza](https://github.com/eza-community/eza) | 0.23.4 | モダンな ls 代替 |
-| ファイル操作 | [bat](https://github.com/sharkdp/bat) | 0.26.1 | シンタックスハイライト付き cat |
-| ファイル操作 | [fd](https://github.com/sharkdp/fd) | 10.3.0 | 高速な find 代替 |
-| 検索 | [ripgrep](https://github.com/BurntSushi/ripgrep) | 15.1.0 | 高速な grep 代替 |
-| ナビゲーション | [zoxide](https://github.com/ajeetdsouza/zoxide) | 0.9.8 | スマートな cd |
-| リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | Git リポジトリ管理 |
-| 選択UI | [fzf](https://github.com/junegunn/fzf) | 0.67.0 | インタラクティブフィルタリング |
-| エディタ | [Fresh](https://getfresh.dev/) | 0.4.4 | ゼロコンフィグなターミナルエディタ（VS Code 風の操作感） |
-| エディタ | [Cursor](https://cursor.com/) | - | AI 搭載エディタ (VS Code fork) |
+| カテゴリ | ツール | バージョン | 導入 | 説明 |
+|---------|--------|------------|------|------|
+| シェル | [zsh](https://www.zsh.org/) | - | 2022-07 | メインシェル |
+| プラグイン管理 | [sheldon](https://github.com/rossmacarthur/sheldon) | 0.8.5 | 2025-12 | zsh プラグインマネージャー |
+| プロンプト | [starship](https://starship.rs/) | 1.24.1 | 2025-12 | カスタマイズ可能なプロンプト |
+| ターミナル | [herdr](https://herdr.dev) | 0.7.5 | 2026-07 | AI エージェント対応ターミナルマルチプレクサ（デフォルト） |
+| ターミナル | [tmux](https://github.com/tmux/tmux) | - | 2026-01 | ターミナルマルチプレクサ（設定ファイルのみ） |
+| ターミナル | [ghostty](https://ghostty.org/) | 1.2.3 | 2025-12 | ターミナルエミュレータ (macOS) |
+| ホットキー | [skhd](https://github.com/koekeishiya/skhd) | 0.3.9 | 2025-12 | ホットキーデーモン (macOS) |
+| ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | 2025-12 | タイリングウィンドウマネージャー (macOS) |
+| Git | [git-delta](https://github.com/dandavison/delta) | 0.18.2 | 2025-12 | 差分表示の強化 |
+| Git | [gitui](https://github.com/extrawurst/gitui) | nightly | 2025-12 | Git TUI クライアント |
+| ファイル操作 | [eza](https://github.com/eza-community/eza) | 0.23.4 | 2025-12 | モダンな ls 代替 |
+| ファイル操作 | [bat](https://github.com/sharkdp/bat) | 0.26.1 | 2025-12 | シンタックスハイライト付き cat |
+| ファイル操作 | [fd](https://github.com/sharkdp/fd) | 10.3.0 | 2025-12 | 高速な find 代替 |
+| 検索 | [ripgrep](https://github.com/BurntSushi/ripgrep) | 15.1.0 | 2025-12 | 高速な grep 代替 |
+| ナビゲーション | [zoxide](https://github.com/ajeetdsouza/zoxide) | 0.9.8 | 2025-12 | スマートな cd |
+| リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | 2025-12 | Git リポジトリ管理 |
+| 選択UI | [fzf](https://github.com/junegunn/fzf) | 0.67.0 | 2026-01 | インタラクティブフィルタリング |
+| エディタ | [Fresh](https://getfresh.dev/) | 0.4.4 | 2026-07 | ゼロコンフィグなターミナルエディタ（VS Code 風の操作感） |
+| エディタ | [Cursor](https://cursor.com/) | - | 2026-01 | AI 搭載エディタ (VS Code fork) |
 
 ## セットアップ
 
