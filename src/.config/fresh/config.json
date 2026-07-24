@@ -1,0 +1,35 @@
+{
+  // ==========================================================================
+  // Fresh 設定 (https://getfresh.dev/docs)
+  // --------------------------------------------------------------------------
+  // Fresh は「ゼロコンフィグ」が売りのターミナルエディタなので、ここには
+  // 既定値から変更したい項目のみを記述する（未記載のキーは既定値が使われる）。
+  // 全設定項目は `fresh --cmd config show` で確認できる。
+  // ==========================================================================
+
+  // インターフェース言語（en / es / fr / ja / zh-CN ...）
+  "locale": "ja",
+
+  // テーマ。既定は "high-contrast"。GUI から変更する場合はメニューバー
+  // またはコマンドパレット（テーマ選択）で切り替えられる。
+  // "theme": "high-contrast",
+
+  "editor": {
+    // Nerd Font アイコンを使用（HackGen Nerd Font を導入済みのため有効化）
+    "nerd_font_icons": true,
+
+    // インデントはスペース 2 つ
+    "use_tabs": false,
+    "tab_size": 2,
+
+    // 保存時のクリーンアップ
+    "trim_trailing_whitespace_on_save": true,
+    "ensure_final_newline_on_save": true
+  },
+
+  "clipboard": {
+    // OSC52 とシステムクリップボードの両方を利用（SSH 越しでもコピー可能）
+    "use_osc52": true,
+    "use_system_clipboard": true
+  }
+}

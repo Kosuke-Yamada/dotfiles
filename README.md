@@ -25,6 +25,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | ナビゲーション | [zoxide](https://github.com/ajeetdsouza/zoxide) | 0.9.8 | スマートな cd |
 | リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | Git リポジトリ管理 |
 | 選択UI | [fzf](https://github.com/junegunn/fzf) | 0.67.0 | インタラクティブフィルタリング |
+| エディタ | [Fresh](https://getfresh.dev/) | 0.4.4 | ゼロコンフィグなターミナルエディタ（VS Code 風の操作感） |
 | エディタ | [Cursor](https://cursor.com/) | - | AI 搭載エディタ (VS Code fork) |
 
 ## セットアップ
@@ -82,6 +83,7 @@ dotfiles/
     ├── .zshrc.local.example  # ローカル設定のサンプル
     └── .config/
         ├── cursor/           # Cursor 拡張機能リスト
+        ├── fresh/            # Fresh 設定 (config.json)
         ├── ghostty/          # Ghostty 設定 (macOS)
         ├── herdr/            # herdr 設定
         ├── sheldon/          # Sheldon 設定
@@ -89,6 +91,16 @@ dotfiles/
         ├── starship/         # Starship 設定
         └── yabai/            # yabai 設定 (macOS)
 ```
+
+### Fresh 設定
+
+`src/.config/fresh/config.json` で管理しています。Fresh は「ゼロコンフィグ」が売りのターミナルエディタなので、この設定ファイルには**既定値から変更したい項目のみ**を記述しています（未記載のキーは既定値が使われます）。`make link` で `~/.config/fresh/config.json` にシンボリックリンクされます。
+
+- インターフェース言語を日本語 (`ja`) に設定
+- Nerd Font アイコンを有効化（HackGen Nerd Font を利用）
+- インデントはスペース 2、保存時に末尾空白の除去と最終改行の付与を実行
+
+全設定項目は `fresh --cmd config show`、アプリ内キーバインドは Help メニュー →「Keyboard Shortcuts」またはコマンドパレット（`Ctrl+T`）で確認できます。詳細は [docs/fresh.md](./docs/fresh.md) を参照してください。
 
 ### Cursor 拡張機能
 
@@ -152,6 +164,8 @@ sheldon で管理している zsh プラグイン:
 | zsh | `Ctrl+]` | ghq リポジトリを fzf で検索 |
 | zsh | `Ctrl+R` | コマンド履歴を fzf で検索 |
 | herdr | `Ctrl+B` | Prefix キー（続けてキーを押す） |
+| Fresh | `Ctrl+P` | クイックオープン（ファイル / コマンド / バッファ / 行） |
+| Fresh | `Ctrl+T` | コマンドパレット |
 | ghostty | `Ctrl+G` | Quick Terminal の表示/非表示 |
 | skhd + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
 
@@ -160,6 +174,7 @@ sheldon で管理している zsh プラグイン:
 - [エイリアス一覧](./docs/aliases.md)
 - [カスタム関数一覧](./docs/functions.md)
 - [Git コマンド](./docs/git.md)
+- [Fresh エディタ](./docs/fresh.md)
 - [herdr キーバインド](./docs/herdr.md)
 - [tmux キーバインド](./docs/tmux.md)
 - [skhd & yabai キーバインド](./docs/skhd-yabai.md)

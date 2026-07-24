@@ -1,9 +1,7 @@
-# Editor
-brew "neovim"
-
 # Terminal
 brew "tmux"
 brew "herdr"
+brew "fresh-editor"
 brew "sheldon"
 brew "zoxide"
 brew "eza"

@@ -168,13 +168,10 @@ link:
 	@ln -snfv "$(SRC_DIRECTORY)/.config/sheldon/plugins.toml" "$(HOME)/.config/sheldon/plugins.toml"
 	@mkdir -p "$(HOME)/.config/starship"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/starship/starship.toml" "$(HOME)/.config/starship/starship.toml"
-	@# Neovim: ディレクトリ全体をリンク（既存ディレクトリがあればバックアップ）
-	@if [ -d "$(HOME)/.config/nvim" ] && [ ! -L "$(HOME)/.config/nvim" ]; then \
-		echo "  バックアップ: ~/.config/nvim -> $(BACKUP_DIRECTORY)/nvim"; \
-		mkdir -p "$(BACKUP_DIRECTORY)"; \
-		mv "$(HOME)/.config/nvim" "$(BACKUP_DIRECTORY)/nvim"; \
-	fi
-	@ln -snfv "$(SRC_DIRECTORY)/.config/nvim" "$(HOME)/.config/nvim"
+	@mkdir -p "$(HOME)/.config/herdr"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/herdr/config.toml" "$(HOME)/.config/herdr/config.toml"
+	@mkdir -p "$(HOME)/.config/fresh"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/fresh/config.json" "$(HOME)/.config/fresh/config.json"
 	@# .config 配下（macOS専用）
 ifeq ($(OS),Darwin)
 	@echo ""
