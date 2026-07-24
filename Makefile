@@ -164,8 +164,6 @@ link:
 	@# .config 配下（共通）
 	@echo ""
 	@echo ".config 配下の設定ファイルをリンク中（共通）..."
-	@mkdir -p "$(HOME)/.config/zellij"
-	@ln -snfv "$(SRC_DIRECTORY)/.config/zellij/config.kdl" "$(HOME)/.config/zellij/config.kdl"
 	@mkdir -p "$(HOME)/.config/sheldon"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/sheldon/plugins.toml" "$(HOME)/.config/sheldon/plugins.toml"
 	@mkdir -p "$(HOME)/.config/starship"

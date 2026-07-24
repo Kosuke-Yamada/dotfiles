@@ -113,3 +113,15 @@ fi
 [ -d "$HOME/.rd/bin" ] && export PATH="$HOME/.rd/bin:$PATH"
 [ -d "$HOME/.cycloud/bin" ] && export PATH="$HOME/.cycloud/bin:$PATH"
 [ -d "/opt/homebrew/opt/postgresql@17/bin" ] && export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+
+# ==============================================================================
+# herdr auto-attach（ターミナル起動時に自動でデフォルトセッションへ）
+# ==============================================================================
+# 対話シェルのみ / herdr・tmux の中では起動しない / herdr がある場合のみ。
+# 一時的に無効化したいときは `NO_HERDR=1` を付けて起動する。
+if [[ $- == *i* ]] \
+  && [[ -z "$HERDR_ENV" ]] \
+  && [[ -z "$TMUX" ]] \
+  && [[ -z "$NO_HERDR" ]]; then
+  type herdr >/dev/null 2>&1 && exec herdr
+fi

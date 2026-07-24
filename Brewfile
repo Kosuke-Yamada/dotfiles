@@ -3,7 +3,7 @@ brew "neovim"
 
 # Terminal
 brew "tmux"
-brew "zellij"
+brew "herdr"
 brew "sheldon"
 brew "zoxide"
 brew "eza"

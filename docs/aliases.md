@@ -137,16 +137,6 @@ eza がインストールされている場合のみ有効になります。
 |------------|------|
 | `gua` | dev と main を最新化して元のブランチに戻る |
 
-## Zellij
-
-| エイリアス | 展開後 | 説明 |
-|------------|--------|------|
-| `ze` | `zellij` | zellij 起動 |
-| `zes` | `zellij -s` | 新規セッション作成 |
-| `zea` | `zellij a` | セッション再接続 |
-| `zed` | `zellij delete-session --force` | セッション強制削除 |
-| `zels` | `zellij ls` | セッション一覧 |
-
 ## tmux
 
 | エイリアス/関数 | 展開後 | 説明 |
@@ -164,6 +154,28 @@ tmuxd my-session
 
 # 全セッションを削除（kill-server）
 tmuxd all
+```
+
+## herdr
+
+tmux 風の AI エージェント対応ターミナルマルチプレクサ。ターミナル起動時に `.zshrc` が自動でデフォルトセッションへアタッチします（`NO_HERDR=1` を付けて起動すると無効化）。
+
+| エイリアス/関数 | 展開後 | 説明 |
+|-----------------|--------|------|
+| `hd` | `herdr` | 起動 / デフォルトセッションにアタッチ |
+| `hdn` | `herdr --session` | 新規/名前付きセッション作成・アタッチ（`hdn <name>`） |
+| `hda` | `herdr session attach` | セッション再接続（`hda <name>`） |
+| `hdl` | `herdr session list` | セッション一覧 |
+| `hdd` | 関数 | セッション削除（`hdd <name>` または `hdd all`） |
+
+### hdd 関数
+
+```bash
+# 特定のセッションを削除
+hdd my-session
+
+# 全セッションを削除
+hdd all
 ```
 
 ## その他
