@@ -14,6 +14,12 @@ brew "git-delta"
 brew "ghq"
 brew "fzf"
 
+# AI Coding Agent (macOS cask のみ提供)
+if OS.mac?
+  cask "claude-code"
+  cask "codex"
+end
+
 # macOS only
 if OS.mac?
   tap "koekeishiya/formulae"
