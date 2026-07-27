@@ -1,0 +1,55 @@
+{
+  "skill_name": "top-conference-survey",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Survey recent work on retrieval-augmented generation (RAG) from NLP conferences in the last 3 years",
+      "expected_output": "A categorized Markdown survey document with papers from top NLP conferences about RAG",
+      "files": [],
+      "assertions": [
+        {"name": "output_file_exists", "description": "A .md survey file is generated"},
+        {"name": "contains_categories", "description": "Contains 5-8 category sections"},
+        {"name": "minimum_paper_count", "description": "At least 10 paper entries"},
+        {"name": "japanese_summaries", "description": "Summaries written in Japanese"},
+        {"name": "summary_table_present", "description": "Summary tables with pipe columns"},
+        {"name": "details_tags", "description": "Collapsible <details> tags for paper details"},
+        {"name": "metadata_header", "description": "Metadata header with date/query/range"},
+        {"name": "paper_links", "description": "Links to Semantic Scholar or arXiv"}
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need a literature review on multimodal large language models. Include papers from both NLP and CV conferences.",
+      "expected_output": "A categorized Markdown survey covering multimodal LLM papers from NLP and CV conferences",
+      "files": [],
+      "assertions": [
+        {"name": "output_file_exists", "description": "A .md survey file is generated"},
+        {"name": "contains_categories", "description": "Contains 5-8 category sections"},
+        {"name": "minimum_paper_count", "description": "At least 10 paper entries"},
+        {"name": "japanese_summaries", "description": "Summaries written in Japanese"},
+        {"name": "summary_table_present", "description": "Summary tables present"},
+        {"name": "details_tags", "description": "Collapsible <details> tags"},
+        {"name": "metadata_header", "description": "Metadata header present"},
+        {"name": "paper_links", "description": "Links to Semantic Scholar or arXiv"},
+        {"name": "cross_domain_coverage", "description": "Papers from both NLP and CV venues"}
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Find papers about code generation published at ACL and EMNLP in the last 3 years and create a survey document",
+      "expected_output": "A focused Markdown survey of code generation papers from ACL and EMNLP",
+      "files": [],
+      "assertions": [
+        {"name": "output_file_exists", "description": "A .md survey file is generated"},
+        {"name": "contains_categories", "description": "Contains category sections"},
+        {"name": "minimum_paper_count", "description": "At least 5 paper entries"},
+        {"name": "japanese_summaries", "description": "Summaries written in Japanese"},
+        {"name": "summary_table_present", "description": "Summary tables present"},
+        {"name": "details_tags", "description": "Collapsible <details> tags"},
+        {"name": "metadata_header", "description": "Metadata header present"},
+        {"name": "paper_links", "description": "Links to Semantic Scholar or arXiv"},
+        {"name": "venue_filtering", "description": "Papers primarily from ACL/EMNLP"}
+      ]
+    }
+  ]
+}

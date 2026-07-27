@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link brew packages plugins macos-setup claude-mcp cursor-extensions help
+.PHONY: all init link brew packages plugins macos-setup claude-mcp cursor-extensions cursor-agent-permissions help
 
 # デフォルトターゲット
 all: init link
@@ -27,7 +27,7 @@ all: init link
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages plugins claude-mcp cursor-extensions macos-setup
+init: brew packages plugins claude-mcp cursor-extensions cursor-agent-permissions macos-setup
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -120,6 +120,22 @@ cursor-extensions:
 		echo "Cursor をインストール後、'cursor' コマンドを PATH に追加してください。"; \
 	fi
 
+# cursor-agent の permissions を Claude Code settings からマージ
+cursor-agent-permissions:
+	@echo ""
+	@echo "[init] cursor-agent permissions のマージ"
+	@echo "------------------------------------------"
+	@CLI_CONFIG="$(HOME)/.cursor/cli-config.json"; \
+	if [ -f "$$CLI_CONFIG" ]; then \
+		echo "cli-config.json の permissions をマージ中..."; \
+		python3 "$(SRC_DIRECTORY)/.cursor/merge_permissions.py" \
+			"$(SRC_DIRECTORY)/.claude/settings.json" \
+			"$$CLI_CONFIG"; \
+	else \
+		echo "[スキップ] $$CLI_CONFIG が見つかりません。"; \
+		echo "  cursor-agent を一度起動してから 'make cursor-agent-permissions' を実行してください。"; \
+	fi
+
 # macOS 固有の設定
 macos-setup:
 	@echo ""
@@ -151,7 +167,7 @@ link:
 	@echo "ホームディレクトリのドットファイルをリンク中..."
 	@cd "$(SRC_DIRECTORY)" && \
 	for f in .??*; do \
-		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".local" ]; then \
+		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".cursor" ] || [ "$$f" = ".local" ]; then \
 			continue; \
 		fi; \
 		if [ -e "$(HOME)/$$f" ] && [ ! -L "$(HOME)/$$f" ]; then \
@@ -200,16 +216,18 @@ ifeq ($(OS),Darwin)
 	@yabai --restart-service 2>/dev/null || true
 endif
 	@# .local/bin 配下のスクリプト
-	@echo ""
-	@echo ".local/bin 配下のスクリプトをリンク中..."
-	@mkdir -p "$(HOME)/.local/bin"
-	@cd "$(SRC_DIRECTORY)/.local/bin" && \
-	for f in *; do \
-		if [ -f "$$f" ]; then \
-			chmod +x "$(SRC_DIRECTORY)/.local/bin/$$f"; \
-			ln -snfv "$(SRC_DIRECTORY)/.local/bin/$$f" "$(HOME)/.local/bin/$$f"; \
-		fi; \
-	done
+	@if [ -d "$(SRC_DIRECTORY)/.local/bin" ]; then \
+		echo ""; \
+		echo ".local/bin 配下のスクリプトをリンク中..."; \
+		mkdir -p "$(HOME)/.local/bin"; \
+		cd "$(SRC_DIRECTORY)/.local/bin" && \
+		for f in *; do \
+			if [ -f "$$f" ]; then \
+				chmod +x "$(SRC_DIRECTORY)/.local/bin/$$f"; \
+				ln -snfv "$(SRC_DIRECTORY)/.local/bin/$$f" "$(HOME)/.local/bin/$$f"; \
+			fi; \
+		done; \
+	fi
 	@# ホームディレクトリ配下（個別ファイル）
 	@echo ""
 	@echo "ホームディレクトリ配下の設定ファイルをリンク中..."
@@ -228,6 +246,39 @@ endif
 			fi; \
 		done; \
 	fi
+	@# .claude/skills 配下（各スキルディレクトリを symlink）
+	@if [ -d "$(SRC_DIRECTORY)/.claude/skills" ]; then \
+		echo ""; \
+		echo ".claude/skills 配下のスキルをリンク中..."; \
+		mkdir -p "$(HOME)/.claude/skills"; \
+		for d in "$(SRC_DIRECTORY)/.claude/skills"/*/; do \
+			if [ -d "$$d" ]; then \
+				ln -snfv "$$d" "$(HOME)/.claude/skills/$$(basename "$$d")"; \
+			fi; \
+		done; \
+	fi
+	@# .cursor（cursor-agent）配下のルールをリンク
+	@if [ -d "$(SRC_DIRECTORY)/.cursor/rules" ]; then \
+		echo ""; \
+		echo ".cursor/rules 配下のルールをリンク中..."; \
+		mkdir -p "$(HOME)/.cursor/rules"; \
+		for f in "$(SRC_DIRECTORY)/.cursor/rules"/*.mdc; do \
+			if [ -f "$$f" ]; then \
+				ln -snfv "$$f" "$(HOME)/.cursor/rules/$$(basename "$$f")"; \
+			fi; \
+		done; \
+	fi
+	@# cursor-agent は claude-code のスキルを共有
+	@if [ -d "$(SRC_DIRECTORY)/.claude/skills" ]; then \
+		echo ""; \
+		echo ".cursor/skills に claude-code のスキルを共有リンク中..."; \
+		mkdir -p "$(HOME)/.cursor/skills"; \
+		for d in "$(SRC_DIRECTORY)/.claude/skills"/*/; do \
+			if [ -d "$$d" ]; then \
+				ln -snfv "$$d" "$(HOME)/.cursor/skills/$$(basename "$$d")"; \
+			fi; \
+		done; \
+	fi
 	@echo ""
 	@echo "=========================================="
 	@echo "link が完了しました！"
@@ -243,6 +294,7 @@ help:
 	@echo "  make all               - init と link を実行（フルセットアップ）"
 	@echo "  make init              - Homebrew とパッケージをインストール"
 	@echo "  make link              - シンボリックリンクを作成"
-	@echo "  make claude-mcp        - Claude Code MCP サーバーを設定"
-	@echo "  make cursor-extensions - Cursor 拡張機能をインストール"
-	@echo "  make help              - このヘルプを表示"
+	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
+	@echo "  make cursor-extensions      - Cursor 拡張機能をインストール"
+	@echo "  make cursor-agent-permissions - cursor-agent の permissions をマージ"
+	@echo "  make help                   - このヘルプを表示"
