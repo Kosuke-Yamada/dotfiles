@@ -88,5 +88,8 @@
   "effortLevel": "xhigh",
   "preferredNotifChannel": "ghostty",
   "autoCompactEnabled": false,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "theme": "auto",
+  "model": "opus[1m]",
+  "tui": "fullscreen"
 }
