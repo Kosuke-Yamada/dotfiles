@@ -93,7 +93,7 @@ dotfiles/
     │   ├── CLAUDE.md         # グローバル指示
     │   ├── settings.json     # 権限・プラグイン・MCP 等の設定
     │   ├── skills/           # アクティブなスキル（symlink 対象）
-    │   │   ├── claude-md-catalog/  # CLAUDE.md をカタログから登録するスキル
+    │   │   ├── create-claude-md/  # プロジェクトの CLAUDE.md を作成・登録するスキル
     │   │   └── related-work-survey/
     │   └── skills_catalog/   # 参考用スキルカタログ（symlink はしない）
     ├── .cursor/              # cursor-agent 設定
@@ -163,7 +163,7 @@ MCP サーバー（context7 / Playwright / serena / github）は `make claude-mc
 
 | スキル | 呼び出し | 内容 |
 |--------|----------|------|
-| `claude-md-catalog` | `/claude-md-catalog` | 新規プロジェクト作成時に、スタック別テンプレート（Python / React+FastAPI / Streamlit）から `./CLAUDE.md` を選んで登録する。テンプレートは `skills/claude-md-catalog/templates/` に同梱 |
+| `create-claude-md` | `/create-claude-md` | プロジェクトの `./CLAUDE.md` を作成・登録する。スタック別テンプレート（Python / React+FastAPI / Streamlit）から選ぶか、いずれにも当てはまらない場合はその場で推奨 CLAUDE.md を日本語で生成する。登録前に内容を表示して確認。テンプレートは `skills/create-claude-md/templates/` に同梱 |
 | `related-work-survey` | `/related-work-survey` | 研究テーマの関連研究を国際会議・arXiv からサーベイし Markdown を生成 |
 
 `skills_catalog/` は参考用のスキルカタログで、シンボリックリンクはされません。
