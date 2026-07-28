@@ -1,7 +1,7 @@
 ---
-name: create-claude-md
+name: claude-md-creator
 description: >
-  プロジェクトの CLAUDE.md を作成・登録するスキル。/create-claude-md で呼び出す。
+  プロジェクトの CLAUDE.md を作成・登録するスキル。/claude-md-creator で呼び出す。
   「CLAUDE.md を作って」「CLAUDE.md を作成して」「プロジェクトの CLAUDE.md を初期化して」
   「CLAUDE.md のテンプレートを登録して」「このプロジェクト用の CLAUDE.md を用意して」
   「新しいプロジェクトをセットアップして」といった発言があった場合や、
