@@ -139,3 +139,6 @@ if [[ $- == *i* ]] \
   && [[ -z "$NO_HERDR" ]]; then
   type herdr >/dev/null 2>&1 && exec herdr
 fi
+
+# bun (mem-sync CLI)
+export PATH="$HOME/.bun/bin:$PATH"
