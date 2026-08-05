@@ -246,6 +246,19 @@ endif
 			fi; \
 		done; \
 	fi
+	@# .claude/scripts 配下
+	@if [ -d "$(SRC_DIRECTORY)/.claude/scripts" ]; then \
+		echo ""; \
+		echo ".claude/scripts 配下のスクリプトをリンク中..."; \
+		mkdir -p "$(HOME)/.claude/scripts"; \
+		cd "$(SRC_DIRECTORY)/.claude/scripts" && \
+		for f in *.sh; do \
+			if [ -f "$$f" ]; then \
+				chmod +x "$(SRC_DIRECTORY)/.claude/scripts/$$f"; \
+				ln -snfv "$(SRC_DIRECTORY)/.claude/scripts/$$f" "$(HOME)/.claude/scripts/$$f"; \
+			fi; \
+		done; \
+	fi
 	@# .claude/skills 配下（各スキルディレクトリを symlink）
 	@if [ -d "$(SRC_DIRECTORY)/.claude/skills" ]; then \
 		echo ""; \
