@@ -54,7 +54,9 @@ make all    # または make init && make link
 | `make all` | init と link を実行（フルセットアップ） |
 | `make init` | Homebrew とパッケージをインストール |
 | `make link` | シンボリックリンクを作成 |
+| `make codex-skills` | Claude Code のスキルを Codex に共有 |
 | `make claude-mcp` | Claude Code の MCP サーバーを設定 |
+| `make claude-mem` | claude-mem を Claude Code と Codex にインストール |
 | `make cursor-extensions` | Cursor 拡張機能をインストール |
 | `make cursor-agent-permissions` | cursor-agent の permissions をマージ |
 | `make help` | ヘルプを表示 |
@@ -65,9 +67,10 @@ make all    # または make init && make link
 2. **パッケージのインストール** - Brewfile に定義されたツール群（Claude Code / Codex を含む）
 3. **Sheldon プラグインのインストール** - zsh プラグインの取得
 4. **Claude Code MCP サーバーの設定** - context7 / Playwright / serena / github
-5. **Cursor 拡張機能のインストール** - extensions.txt に基づき同期
-6. **cursor-agent permissions のマージ** - Claude Code の settings.json を cli-config.json に反映
-7. **macOS 固有の設定** - skhd / yabai サービスの起動など
+5. **claude-mem のインストール** - Claude Code と Codex へ共有メモリ機能を登録
+6. **Cursor 拡張機能のインストール** - extensions.txt に基づき同期
+7. **cursor-agent permissions のマージ** - Claude Code の settings.json を cli-config.json に反映
+8. **macOS 固有の設定** - skhd / yabai サービスの起動など
 
 #### `make link` の処理内容
 
@@ -143,7 +146,7 @@ cursor --list-extensions | sort > ~/dotfiles/src/.config/cursor/extensions.txt
 | Git | eamodio.gitlens, mhutchie.git-graph |
 | AI | anthropic.claude-code |
 
-### AI エージェント設定（Claude Code / cursor-agent）
+### AI エージェント設定（Claude Code / Codex / cursor-agent）
 
 [agent-config](https://github.com/Kosuke-Yamada/agent-config) から統合した AI エージェント設定を管理しています。
 
@@ -159,6 +162,13 @@ cursor --list-extensions | sort > ~/dotfiles/src/.config/cursor/extensions.txt
 
 MCP サーバー（context7 / Playwright / serena / github）は `make claude-mcp` で登録されます。GitHub MCP には `GITHUB_TOKEN` 環境変数が必要です（`~/.zshrc.local` に設定）。
 
+#### claude-mem（Claude Code / Codex 共通）
+
+`make init` または `make claude-mem` は公式インストーラを実行し、claude-mem を
+Claude Code (`claude-code`) と Codex (`codex-cli`) の両方へ明示的に登録した後、
+共有 worker を起動します。両者は `~/.claude-mem/` のランタイムとメモリデータを
+共有します。再実行時は最新版へ更新されます。
+
 #### スキル
 
 | スキル | 呼び出し | 内容 |
@@ -167,6 +177,10 @@ MCP サーバー（context7 / Playwright / serena / github）は `make claude-mc
 | `related-work-survey` | `/related-work-survey` | 研究テーマの関連研究を国際会議・arXiv からサーベイし Markdown を生成 |
 
 `skills_catalog/` は参考用のスキルカタログで、シンボリックリンクはされません。
+
+Claude Code のアクティブなスキルは、`make link` または `make codex-skills` で
+`~/.codex/skills/<name>` にも共有リンクされます。Codex 固有のシステムスキルや
+プラグインスキルには触れず、`src/.claude/skills/` で管理するスキルだけが対象です。
 
 #### cursor-agent (`src/.cursor/`)
 

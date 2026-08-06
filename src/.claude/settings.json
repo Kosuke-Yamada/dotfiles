@@ -56,7 +56,6 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5[1m]",
   "skillOverrides": {
     "claude-mem:babysit": "off",
     "claude-mem:cloud-sync": "off",
