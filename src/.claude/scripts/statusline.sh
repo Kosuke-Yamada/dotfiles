@@ -110,6 +110,10 @@ credits_segment() {
 # --- レート制限 (used_percentage / utilization はバージョン差異を吸収) ---
 # 起動直後は入力に rate_limits が載らないため、SessionStart フック
 # (statusline-refresh.sh) が書き出すキャッシュへフォールバックする
+# 注意: キャッシュの書き込みは statusline-refresh.sh のみが行う。
+# ライブ入力の used_percentage は各セッションが最後に API 応答を受けた時点の値のため、
+# アイドル中のセッションが古い値を共有キャッシュに書き込むと
+# 他セッションの初回表示 (キャッシュフォールバック) が誤った % になる
 CACHE_FILE="${HOME}/.claude/cache/statusline-usage.json"
 
 input_rl=$(echo "$input" | jq -c '.rate_limits // empty' 2>/dev/null)
@@ -118,19 +122,12 @@ cached_rl=$(cat "$CACHE_FILE" 2>/dev/null)
 
 if [ -n "$input_rl" ]; then
   # 入力は five_hour / seven_day のみのことが多いため、入力に無いキー
-  # (model_scoped / extra_usage 等) はキャッシュ側の値を残して統合する
+  # (model_scoped / extra_usage 等) はキャッシュ側の値で補完する (表示用のみ)
   rate_limits=""
   if [ -n "$cached_rl" ]; then
     rate_limits=$(jq -cn --argjson cache "$cached_rl" --argjson live "$input_rl" '$cache * $live' 2>/dev/null)
   fi
   [ -z "$rate_limits" ] && rate_limits="$input_rl"
-
-  # 次回起動時のフォールバック用にキャッシュへ反映する
-  if [ "$rate_limits" != "$cached_rl" ]; then
-    mkdir -p "$(dirname "$CACHE_FILE")" 2>/dev/null
-    tmp="${CACHE_FILE}.tmp.$$"
-    printf '%s' "$rate_limits" > "$tmp" 2>/dev/null && mv "$tmp" "$CACHE_FILE" 2>/dev/null
-  fi
 else
   rate_limits="$cached_rl"
 fi
@@ -157,3 +154,14 @@ line+=$(usage_segment "Fable" "$fable_pct" "$fable_reset")
 line+=$(credits_segment "$extra_used" "$extra_limit" "$extra_util")
 
 printf "%b" "$line"
+
+# 取得データ (Fable / Credits 等) が古ければバックグラウンドで再取得する。
+# 描画 (refreshInterval とイベント駆動) のたびに TTL を確認するため、
+# セッション中も約 REFRESH_TTL 間隔で使用状況が更新され続ける (描画はブロックしない)
+REFRESH_TTL=60
+fetched_at=$(printf '%s' "$rate_limits" | jq -r '._fetched_at // 0' 2>/dev/null)
+case "$fetched_at" in ''|*[!0-9]*) fetched_at=0 ;; esac
+if [ $(( $(date +%s) - fetched_at )) -ge "$REFRESH_TTL" ]; then
+  refresh_script="$(dirname "$0")/statusline-refresh.sh"
+  [ -x "$refresh_script" ] && nohup "$refresh_script" >/dev/null 2>&1 &
+fi

@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link brew packages plugins macos-setup claude-mcp cursor-extensions cursor-agent-permissions help
+.PHONY: all init link codex-skills brew packages plugins macos-setup claude-mcp claude-mem cursor-extensions cursor-agent-permissions help
 
 # デフォルトターゲット
 all: init link
@@ -27,7 +27,7 @@ all: init link
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages plugins claude-mcp cursor-extensions cursor-agent-permissions macos-setup
+init: brew packages plugins claude-mcp claude-mem cursor-extensions cursor-agent-permissions macos-setup
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -82,6 +82,20 @@ claude-mcp: packages
 		echo "  2. GITHUB_TOKEN を設定（https://github.com/settings/tokens で作成）"; \
 	else \
 		echo "Claude Code がインストールされていません。スキップします。"; \
+	fi
+
+# claude-mem を Claude Code / Codex の両方へインストール
+claude-mem: packages
+	@echo ""
+	@echo "[init] claude-mem のインストール"
+	@echo "------------------------------------------"
+	@if command -v npx &> /dev/null; then \
+		npx --yes claude-mem@latest install --ide claude-code --provider claude --runtime worker --no-auto-start && \
+		npx --yes claude-mem@latest install --ide codex-cli --provider claude --runtime worker --no-auto-start && \
+		npx --yes claude-mem@latest start; \
+	else \
+		echo "npx が見つかりません。Node.js のインストールを確認してください。"; \
+		exit 1; \
 	fi
 
 # Cursor 拡張機能のインストール
@@ -156,9 +170,27 @@ else
 endif
 
 # ------------------------------------------------------------------------------
+# codex-skills: Claude Code と同じスキルを Codex に共有
+# ------------------------------------------------------------------------------
+codex-skills:
+	@echo ""
+	@echo "[link] Claude Code のスキルを Codex に共有"
+	@echo "------------------------------------------"
+	@if [ -d "$(SRC_DIRECTORY)/.claude/skills" ]; then \
+		mkdir -p "$(HOME)/.codex/skills"; \
+		for d in "$(SRC_DIRECTORY)/.claude/skills"/*/; do \
+			if [ -d "$$d" ]; then \
+				ln -snfv "$$d" "$(HOME)/.codex/skills/$$(basename "$$d")"; \
+			fi; \
+		done; \
+	else \
+		echo "Claude Code のスキルが見つかりません。スキップします。"; \
+	fi
+
+# ------------------------------------------------------------------------------
 # link: シンボリックリンクの作成
 # ------------------------------------------------------------------------------
-link:
+link: codex-skills
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
@@ -307,7 +339,9 @@ help:
 	@echo "  make all               - init と link を実行（フルセットアップ）"
 	@echo "  make init              - Homebrew とパッケージをインストール"
 	@echo "  make link              - シンボリックリンクを作成"
+	@echo "  make codex-skills      - Claude Code のスキルを Codex に共有"
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
+	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
 	@echo "  make cursor-extensions      - Cursor 拡張機能をインストール"
 	@echo "  make cursor-agent-permissions - cursor-agent の permissions をマージ"
 	@echo "  make help                   - このヘルプを表示"

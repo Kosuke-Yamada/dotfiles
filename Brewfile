@@ -14,6 +14,9 @@ brew "git-delta"
 brew "ghq"
 brew "fzf"
 
+# JavaScript runtime (npx / claude-mem installer)
+brew "node"
+
 # AI Coding Agent (macOS cask のみ提供)
 if OS.mac?
   cask "claude-code"
