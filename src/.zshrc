@@ -140,5 +140,47 @@ if [[ $- == *i* ]] \
   type herdr >/dev/null 2>&1 && exec herdr
 fi
 
+# ==============================================================================
+# herdr: シェルの実行状態を agents 画面に表示
+# ==============================================================================
+# コマンド実行中だけ agents 一覧に "shell" として現れ、終了すると消える。
+# preexec で working を報告し、precmd（＝プロンプト復帰）で解除する。
+# claude 等の対話エージェントは herdr の統合が自前で状態を報告するため、
+# 権限の奪い合いを避けて報告対象から除外する。
+if [[ $- == *i* ]] && [[ -n "$HERDR_PANE_ID" ]] && type herdr >/dev/null 2>&1; then
+  # 状態報告しないコマンド（herdr 統合済みのエージェント類 + シェル終了系）
+  _herdr_skip_cmds=(
+    claude codex copilot cursor devin droid kimi opencode
+    kilo hermes qodercli mastracode pi omp exit logout
+  )
+  _herdr_reported=0
+
+  # agents 一覧から自分の報告を取り下げる（未報告なら何もせず CLI 呼び出しを省く）
+  _herdr_release() {
+    (( _herdr_reported )) || return
+    _herdr_reported=0
+    herdr pane report-metadata "$HERDR_PANE_ID" --source zsh --clear-display-agent >/dev/null 2>&1
+    herdr pane release-agent "$HERDR_PANE_ID" --source zsh --agent shell >/dev/null 2>&1
+  }
+
+  _herdr_preexec() {
+    # 先頭トークンをコマンド名（basename）として取り出す。
+    # ${${(z)1}[1]} は単語が1個のとき「先頭文字」を返すため、必ず配列に受ける。
+    local -a _words
+    _words=(${(z)1})
+    local cmd=${_words[1]:t}
+    (( ${_herdr_skip_cmds[(Ie)$cmd]} )) && return
+    _herdr_reported=1
+    # display-agent に実行中コマンド名を出し、続けて working を報告する
+    herdr pane report-metadata "$HERDR_PANE_ID" --source zsh --display-agent "$cmd" >/dev/null 2>&1
+    herdr pane report-agent "$HERDR_PANE_ID" --source zsh --agent shell --state working >/dev/null 2>&1
+  }
+
+  autoload -Uz add-zsh-hook
+  add-zsh-hook preexec _herdr_preexec
+  add-zsh-hook precmd  _herdr_release
+  add-zsh-hook zshexit _herdr_release  # 実行中に exec/exit した場合の取り残し防止
+fi
+
 # bun (mem-sync CLI)
 export PATH="$HOME/.bun/bin:$PATH"
