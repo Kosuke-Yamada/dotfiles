@@ -1,16 +1,23 @@
 #!/usr/bin/env bash
 
-# Claude Code statusline
-# モデル名 / セッション(5h)使用率 / 週間使用率 / Fable 使用率と各リセットまでの残り時間を表示する
+# Claude Code statusline (2 行構成)
+# 1 行目: モデル名 / セッション(5h)使用率 / 週間使用率 / Fable 使用率 / クレジット消費
+#         (各使用率にはリセットまでの残り時間を併記)
+# 2 行目: 現在の作業内容の要約 / 作業ディレクトリと git ブランチ
 
 NC="\033[0m"
-DIM="\033[2m"
+# Claude Code は statusline の各行を dim 属性 (\033[2m) で包んで描画するため、
+# こちらで dim を重ねると二重に薄くなって読みにくい。
+# 行頭で dim を解除 (\033[22m) し、フッターのヒント (shift+tab to cycle) と
+# 同程度の明るさになるグレーを明示指定する。
+UNDIM="\033[22m"
+MUTED="\033[38;5;245m"
+FAINT="\033[38;5;243m"
 GREEN="\033[32m"
 YELLOW="\033[33m"
 RED="\033[31m"
-GRAY="\033[38;5;241m"
 
-DIVIDER="${GRAY}∣${NC}"
+DIVIDER="${FAINT}∣${NC}"
 
 input=$(cat)
 
@@ -78,9 +85,9 @@ usage_segment() {
     return
   fi
   time_str=$(format_time_until "$reset_epoch")
-  [ -n "$time_str" ] && reset_str=$(printf " ${DIM}(%s)${NC}" "$time_str")
+  [ -n "$time_str" ] && reset_str=$(printf " ${MUTED}(%s)${NC}" "$time_str")
 
-  printf " ${DIVIDER} ${DIM}%s${NC} ${color}%d%%${NC}%s" "$label" "$pct" "$reset_str"
+  printf " ${DIVIDER} ${MUTED}%s${NC} ${color}%d%%${NC}%s" "$label" "$pct" "$reset_str"
 }
 
 # extra_usage のクレジット額はセント単位で渡される
@@ -101,10 +108,65 @@ credits_segment() {
     [ -z "$pct" ] && pct=0
     local color
     color=$(color_for_pct "$pct")
-    printf " ${DIVIDER} ${DIM}Credits${NC} ${color}%s${NC}${DIM}/%s${NC}" "$used_str" "$(fmt_cents "$limit")"
+    printf " ${DIVIDER} ${MUTED}Credits${NC} ${color}%s${NC}${MUTED}/%s${NC}" "$used_str" "$(fmt_cents "$limit")"
   else
-    printf " ${DIVIDER} ${DIM}Credits${NC} ${GREEN}%s${NC}" "$used_str"
+    printf " ${DIVIDER} ${MUTED}Credits${NC} ${GREEN}%s${NC}" "$used_str"
   fi
+}
+
+# 2 行目の前半: 現在の作業内容 (Claude Code が端末タイトルへ出しているタスク要約)。
+# herdr のペインではタイトルバーが見えないため、ここに再掲する。
+# 取得元は herdr の Socket API (自分のペイン)。herdr 外では何も表示しない。
+# 使用率と行を分けたため既定では切り詰めない (端末幅を超えた分は Claude Code 側が切る)。
+# STATUSLINE_TASK_MAX_LEN に正の値を設定した場合のみ、その文字数で切り詰める。
+TASK_MAX_LEN=${STATUSLINE_TASK_MAX_LEN:-0}
+
+task_segment() {
+  [ -n "${HERDR_PANE_ID:-}" ] || return
+  command -v herdr >/dev/null 2>&1 || return
+
+  # 先頭のスピナー記号 (◐ ✳ など) は文字・数字が現れるまで削り、末尾の空白も落とす
+  local task
+  task=$(herdr pane get "$HERDR_PANE_ID" 2>/dev/null \
+    | jq -r --argjson maxlen "$TASK_MAX_LEN" '
+        .result.pane
+        | (.terminal_title_stripped // .terminal_title // "")
+        | sub("^[^\\p{L}\\p{N}]+"; "")
+        | sub("\\s+$"; "")
+        | if $maxlen > 0 then .[0:$maxlen] else . end
+      ' 2>/dev/null)
+
+  [ -n "$task" ] || return
+  # 出力は最後に printf %b へ渡すため、タイトル中のバックスラッシュは解釈されないよう退避する
+  printf "${FAINT}▸${NC} %s" "${task//\\/\\\\}"
+}
+
+# 2 行目の後半: 作業ディレクトリと git ブランチ。
+# statusline の入力 JSON には branch が含まれないため git に問い合わせる
+# (いずれも索引参照のみの軽量コマンド。ロックを取らないよう --no-optional-locks を付ける)
+context_segment() {
+  local cwd
+  cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // empty' 2>/dev/null)
+  [ -n "$cwd" ] || return
+
+  local root label branch="" dirty=""
+  root=$(git -C "$cwd" --no-optional-locks rev-parse --show-toplevel 2>/dev/null)
+  if [ -n "$root" ]; then
+    # リポジトリ名 + リポジトリルートからの相対パス
+    label="$(basename "$root")${cwd#"$root"}"
+    # detached HEAD ではブランチ名が取れないため短縮コミットハッシュで代替する
+    branch=$(git -C "$cwd" --no-optional-locks symbolic-ref --quiet --short HEAD 2>/dev/null) \
+      || branch=$(git -C "$cwd" --no-optional-locks rev-parse --short HEAD 2>/dev/null)
+    # 差分の件数は不要なので最初の 1 行が出た時点で打ち切る
+    if [ -n "$(git -C "$cwd" --no-optional-locks status --porcelain --untracked-files=no 2>/dev/null | head -n 1)" ]; then
+      dirty="*"
+    fi
+  else
+    label="${cwd/#$HOME/~}"
+  fi
+
+  printf "${MUTED}%s${NC}" "$label"
+  [ -n "$branch" ] && printf " ${DIVIDER} ${MUTED}%s%s${NC}" "$branch" "$dirty"
 }
 
 # --- レート制限 (used_percentage / utilization はバージョン差異を吸収) ---
@@ -147,13 +209,27 @@ extra_used=$(echo "$rate_limits" | jq -r '.extra_usage.used_credits // empty' 2>
 extra_limit=$(echo "$rate_limits" | jq -r '.extra_usage.monthly_limit // empty' 2>/dev/null)
 extra_util=$(echo "$rate_limits" | jq -r '.extra_usage.utilization // empty' 2>/dev/null)
 
-line="${DIM}${model}${NC}"
-line+=$(usage_segment "Session" "$session_pct" "$session_reset")
-line+=$(usage_segment "Week" "$week_pct" "$week_reset")
-line+=$(usage_segment "Fable" "$fable_pct" "$fable_reset")
-line+=$(credits_segment "$extra_used" "$extra_limit" "$extra_util")
+# Claude Code は改行区切りで複数行を描画する (各行は端末幅で切り詰め)
+usage_line="${MUTED}${model}${NC}"
+usage_line+=$(usage_segment "Session" "$session_pct" "$session_reset")
+usage_line+=$(usage_segment "Week" "$week_pct" "$week_reset")
+usage_line+=$(usage_segment "Fable" "$fable_pct" "$fable_reset")
+usage_line+=$(credits_segment "$extra_used" "$extra_limit" "$extra_util")
 
-printf "%b" "$line"
+# 2 行目は作業内容と作業ディレクトリを区切り記号でつなぐ (片方だけでも成立させる)
+info_line=$(task_segment)
+context=$(context_segment)
+if [ -n "$context" ]; then
+  [ -n "$info_line" ] && info_line+=" ${DIVIDER} "
+  info_line+="$context"
+fi
+
+# dim の解除は Text 単位 (= 行単位) に効くため、行ごとに付ける
+lines="${UNDIM}${usage_line}"
+# 2 行目が空になる場合は空行を残さず省略する
+[ -n "$info_line" ] && lines+="\n${UNDIM}${info_line}"
+
+printf "%b" "$lines"
 
 # 取得データ (Fable / Credits 等) が古ければバックグラウンドで再取得する。
 # 描画 (refreshInterval とイベント駆動) のたびに TTL を確認するため、
