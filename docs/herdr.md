@@ -95,9 +95,37 @@ Claude Code の hooks から Socket API の `report-metadata` を呼ぶだけの
 | フック | 実行内容 |
 |-------|---------|
 | `PreToolUse`（matcher `Bash`） | `herdr-shell-token.sh running` → `--token shell=●` |
-| `PostToolUse`（matcher `Bash`） | `herdr-shell-token.sh idle` → `--token shell=○` |
-| `Stop` / `SessionEnd` | `herdr-shell-token.sh idle`（実行中に中断された場合の取り残し防止） |
-| `SessionStart` | `herdr-shell-token.sh idle`（`○` の初期表示） |
+| `PostToolUse`（matcher `Bash`） | `herdr-shell-token.sh idle` → 実プロセスに合わせて `●` / `○` |
+| `Stop` / `SessionEnd` | `herdr-shell-token.sh reset`（同上。中断時の取り残し防止） |
+| `SessionStart` | `herdr-shell-token.sh reset`（初期表示） |
+
+状態はフックの回数ではなく **実際のプロセス** から判定します。Claude Code は Bash ツール
+呼び出しごとに `zsh -c source ~/.claude/shell-snapshots/snapshot-*.sh …` を claude 本体の
+直下に生やすため、その本数がそのまま実行中のシェル数になります。
+
+```sh
+ps -ax -o ppid=,command= | awk -v cp="$CLAUDE_PID" \
+  '$1 == cp && /shell-snapshots\/snapshot-/ { n++ } END { print n + 0 }'
+```
+
+本数を見るので、次のすべてが 1 つのロジックで正しく出ます。
+
+- **並列実行** — 先に終わった呼び出しが、まだ動いている呼び出しの表示を消さない
+- **サブエージェント経由の実行** — 同じ claude 直下に生えるので同様に数えられる
+- **バックグラウンド実行**（`run_in_background`）— 起動直後に `PostToolUse` が届くが、
+  シェルは生き続けるので `●` のまま
+
+バックグラウンド実行は終了時にフックが届きません。そのためシェルが残っているときは
+**見張りプロセス** を 1 つ切り離して起動し、3 秒ごとに本数を確認して 0 になった時点で
+`○` を報告させます。実測では、タスク終了から 1〜3 秒で `○` に戻ります。
+
+```
+06秒 token=● シェル=1本   ← バックグラウンドタスク走行中
+…
+19秒 token=● シェル=1本
+20秒 token=● シェル=0本   ← タスク終了（見張りの次の巡回待ち）
+21秒 token=○ シェル=0本   ← 見張りが ○ を報告
+```
 
 - スクリプトは `src/.claude/scripts/herdr-shell-token.sh`、登録は `src/.claude/settings.json` の `hooks`
 - 表示位置は `config.toml` の `[ui.sidebar.agents]` の `rows`。1 行目を
@@ -108,11 +136,22 @@ Claude Code の hooks から Socket API の `report-metadata` を呼ぶだけの
 - `report-metadata` は display-only のメタデータ報告なので、herdr 組み込みの claude 統合
   （`herdr integration install claude`）が持つエージェント状態の報告権限とは競合しない。
   混ざらないよう `--source claude-shell` と分けている
+- claude 本体の PID はフックに渡る `CLAUDE_PID` を使う。無い場合は
+  `CLAUDE_CODE_MESSAGING_SOCKET`（`<pid>.sock`）から拾い、それも無ければ `$PPID` から祖先を辿る。
+  祖先の照合は `comm` ではなく `command` で行う（バージョン切り替え時の実行ファイル名が
+  `2.1.234` のような数字になり、`comm` では claude と判別できないため）
+- 判定に `pgrep` は使えない。`pgrep` は自分のプロセスグループを除外するため、
+  実行中の自分のシェルが見えず 0 本と誤判定する。`ps` を使う
+- 見張りはペインごとに 1 つだけ。ロックは `mkdir` のアトミック性で取り、
+  `trap '' HUP INT TERM` でフックの終了に道連れにされないようにし、最大 2 時間で諦める。
+  異常終了でロックだけ残った場合に備え、150 分より古いロックは奪う
 - ペインの識別には herdr が各ペインに渡す `$HERDR_PANE_ID` を使用。
   herdr 外（`HERDR_PANE_ID` なし）では何もせず終了する
 - `PreToolUse` はツールの実行をブロックするため、スクリプトは失敗しても必ず `exit 0` で返す。
-  フックの標準入力（JSON）は使わないが、読み捨てないと書き込み側がブロックし得るので必ず消費する
-- CLI 呼び出しは 1 回あたり約 9ms。Bash ツール 1 回につき往復 2 回で、体感への影響はほぼ無し
+  シェルがまだ生えていない時点なので `ps` は見ず、無条件に `●` を報告して待たせない
+- フックの標準入力（JSON）は使わないが、読み捨てないと書き込み側がブロックし得るので必ず消費する
+- コストは `herdr` CLI が 1 回約 9ms、`ps` の全プロセス列挙が約 20〜40ms。
+  `PostToolUse` 側だけが `ps` を叩く
 - 以前は `src/.zshrc` の `preexec`/`precmd` フックで「素の zsh ペイン」を `shell` エージェントとして
   一覧に出していたが、見たいのは agents に並ぶエージェント側のシェル実行状態なので置き換えた
 

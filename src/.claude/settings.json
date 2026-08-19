@@ -102,7 +102,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh idle",
+            "command": "bash ~/.claude/scripts/herdr-shell-token.sh reset",
             "timeout": 5
           }
         ]
@@ -113,7 +113,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh idle",
+            "command": "bash ~/.claude/scripts/herdr-shell-token.sh reset",
             "timeout": 5
           }
         ]
@@ -136,7 +136,7 @@
           },
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh idle",
+            "command": "bash ~/.claude/scripts/herdr-shell-token.sh reset",
             "timeout": 5
           }
         ]
