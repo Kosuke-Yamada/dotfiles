@@ -14,6 +14,36 @@ auto_switch = false
 # タブ作成時に名前入力プロンプトを出さず、デフォルトの連番ラベルで即座に確定する
 prompt_new_tab_name = false
 
+# --- サイドバーの表示 ---
+# 既定では 2 行目以降や補助トークンが dim 属性で描かれ、端末によっては前景色が
+# 背景と強くブレンドされて読みにくい。トークン単位で dim を解除し、
+# 補助情報には subtext0 相当の明るいグレーを明示指定する。
+# state_icon と git_status は状態を色で示すため fg は指定せず既定色を保つ。
+[ui.sidebar.agents]
+# 行の構成。$shell は Claude Code の PreToolUse/PostToolUse フック
+# （src/.claude/scripts/herdr-shell-token.sh）が report-metadata --token で報告する
+# カスタムトークンで、シェルコマンド実行中は ●、待機中は ○ が入る。
+# 稼働アイコンのすぐ右へ置き、どのエージェントがシェルを回しているか一目で分かるようにする。
+rows = [
+  [
+    "state_icon",
+    { token = "$shell", dim = false, fg = "#89b4fa" },
+    { token = "workspace", dim = false },
+    { token = "tab", dim = false, fg = "#a6adc8" },
+  ],
+  [{ token = "agent", dim = false, fg = "#a6adc8" }],
+]
+
+[ui.sidebar.spaces]
+# 既定の行構成と同じ内容を、dim を解除した状態で明示する
+rows = [
+  ["state_icon", { token = "workspace", dim = false }],
+  [
+    { token = "branch", dim = false, fg = "#a6adc8" },
+    { token = "git_status", dim = false },
+  ],
+]
+
 # ------------------------------------------------------------------------------
 # キーバインド
 # herdr は単一 prefix のみ対応（tmux のような複数モード/複数リーダーは不可）。
