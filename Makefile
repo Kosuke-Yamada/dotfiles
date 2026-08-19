@@ -220,6 +220,8 @@ link: codex-skills
 	@ln -snfv "$(SRC_DIRECTORY)/.config/herdr/config.toml" "$(HOME)/.config/herdr/config.toml"
 	@mkdir -p "$(HOME)/.config/fresh"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/fresh/config.json" "$(HOME)/.config/fresh/config.json"
+	@mkdir -p "$(HOME)/.config/leaf"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/leaf/config.toml" "$(HOME)/.config/leaf/config.toml"
 	@# .config 配下（macOS専用）
 ifeq ($(OS),Darwin)
 	@echo ""

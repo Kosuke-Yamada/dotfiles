@@ -6,6 +6,8 @@ brew "sheldon"
 brew "zoxide"
 brew "eza"
 brew "bat"
+# Markdown ビューア（formula 名は leaf-markdown-viewer、コマンド名は leaf）
+brew "leaf-markdown-viewer"
 brew "ripgrep"
 brew "fd"
 brew "starship"

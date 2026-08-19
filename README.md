@@ -25,6 +25,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | ナビゲーション | [zoxide](https://github.com/ajeetdsouza/zoxide) | 0.9.8 | 2025-12 | スマートな cd |
 | リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | 2025-12 | Git リポジトリ管理 |
 | 選択UI | [fzf](https://github.com/junegunn/fzf) | 0.67.0 | 2026-01 | インタラクティブフィルタリング |
+| ビューア | [leaf](https://leaf.rivolink.mg/) | 1.28.0 | 2026-08 | GUI 風の操作感を持つターミナル Markdown ビューア |
 | エディタ | [Fresh](https://getfresh.dev/) | 0.4.4 | 2026-07 | ゼロコンフィグなターミナルエディタ（VS Code 風の操作感） |
 | エディタ | [Cursor](https://cursor.com/) | - | 2026-01 | AI 搭載エディタ (VS Code fork) |
 | AIエージェント | [Claude Code](https://claude.com/product/claude-code) | 2.1.206 | 2026-07 | ターミナル AI コーディングエージェント (macOS) |
@@ -108,6 +109,7 @@ dotfiles/
         ├── fresh/            # Fresh 設定 (config.json)
         ├── ghostty/          # Ghostty 設定 (macOS)
         ├── herdr/            # herdr 設定
+        ├── leaf/             # leaf 設定 (config.toml)
         ├── sheldon/          # Sheldon 設定
         ├── skhd/             # skhd 設定 (macOS)
         ├── starship/         # Starship 設定
@@ -123,6 +125,18 @@ dotfiles/
 - インデントはスペース 2、保存時に末尾空白の除去と最終改行の付与を実行
 
 全設定項目は `fresh --cmd config show`、アプリ内キーバインドは Help メニュー →「Keyboard Shortcuts」またはコマンドパレット（`Ctrl+T`）で確認できます。詳細は [docs/fresh.md](./docs/fresh.md) を参照してください。
+
+### leaf 設定
+
+`src/.config/leaf/config.toml` で管理しています。leaf は設定なしでも動作するターミナル Markdown ビューアなので、この設定ファイルには**既定値から変更したい項目のみ**を記述しています。`make link` で `~/.config/leaf/config.toml` にシンボリックリンクされます。
+
+- 外部エディタ（`Ctrl+E`）に Fresh を使用: `editor = "fresh {$path}:{$line}"`
+  - `{$path}` / `{$line}` は leaf が展開するプレースホルダで、表示中の先頭行に対応する位置で Fresh が開きます
+  - 優先順位は `--editor` フラグ > `LEAF_EDITOR` > この設定 > `nano`
+
+既定値付きのフルテンプレート（全設定項目とコメント）は `leaf --config` で生成・確認できます。アプリ内キーバインドは leaf 起動中に `?` で表示できます。
+
+> leaf は Homebrew（`leaf-markdown-viewer`）で管理しているため、更新は `brew upgrade` を使用します。自己更新機能の `leaf --update` は使いません（Homebrew の管理外にバイナリが分岐するため）。
 
 ### Cursor 拡張機能
 
@@ -231,6 +245,9 @@ sheldon で管理している zsh プラグイン:
 | herdr | `Ctrl+B` | Prefix キー（続けてキーを押す） |
 | Fresh | `Ctrl+P` | クイックオープン（ファイル / コマンド / バッファ / 行） |
 | Fresh | `Ctrl+T` | コマンドパレット |
+| leaf | `Ctrl+E` | 表示中のファイルを外部エディタ (Fresh) で開く |
+| leaf | `Ctrl+F` | ドキュメント内を検索 |
+| leaf | `Ctrl+W` | ウォッチモード（変更時の自動リロード）の切替 |
 | ghostty | `Ctrl+G` | Quick Terminal の表示/非表示 |
 | skhd + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
 
