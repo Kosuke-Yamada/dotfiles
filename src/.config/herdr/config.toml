@@ -20,10 +20,12 @@ prompt_new_tab_name = false
 # 補助情報には subtext0 相当の明るいグレーを明示指定する。
 # state_icon と git_status は状態を色で示すため fg は指定せず既定色を保つ。
 [ui.sidebar.agents]
-# 行の構成。$shell は Claude Code の PreToolUse/PostToolUse フック
+# 行の構成。$shell は Claude Code の PostToolUse フック
 # （src/.claude/scripts/herdr-shell-token.sh）が report-metadata --token で報告する
-# カスタムトークンで、シェルコマンド実行中は ●、待機中は ○ が入る。
-# 稼働アイコンのすぐ右へ置き、どのエージェントがシェルを回しているか一目で分かるようにする。
+# カスタムトークンで、run_in_background で切り離したシェルが動いている間は ●、
+# 裏で走っているシェルが無ければ ○ が入る。フォアグラウンドの実行は state_icon と
+# 情報が重複するため対象にしない。稼働アイコンのすぐ右へ置き、待機に戻ったのに
+# まだ裏でシェルが回っているエージェントが一目で分かるようにする。
 rows = [
   [
     "state_icon",

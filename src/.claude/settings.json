@@ -73,25 +73,13 @@
     "related-work-survey": "off"
   },
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh running",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh idle",
+            "command": "bash ~/.claude/scripts/herdr-shell-token.sh",
             "timeout": 5
           }
         ]
@@ -102,7 +90,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh reset",
+            "command": "bash ~/.claude/scripts/herdr-shell-token.sh",
             "timeout": 5
           }
         ]
@@ -113,7 +101,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh reset",
+            "command": "bash ~/.claude/scripts/herdr-shell-token.sh",
             "timeout": 5
           }
         ]
@@ -136,7 +124,7 @@
           },
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh reset",
+            "command": "bash ~/.claude/scripts/herdr-shell-token.sh",
             "timeout": 5
           }
         ]
