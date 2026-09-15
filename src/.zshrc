@@ -20,6 +20,15 @@ if type fresh >/dev/null 2>&1; then
 fi
 
 # ==============================================================================
+# Browser
+# ==============================================================================
+# gcloud / gh などが URL を開くときの起動コマンド。
+# 素の `open` だと、chrome-devtools-mcp 等が残した一時プロファイルの Chrome へ
+# LaunchServices が URL を配送してしまい、ゲストモードのように見える。
+# ラッパー経由で Chrome バイナリを直接呼び、プロファイルを固定する。
+[ -x "$HOME/.local/bin/browser" ] && export BROWSER="$HOME/.local/bin/browser"
+
+# ==============================================================================
 # History
 # ==============================================================================
 export HISTFILE="$HOME/.zsh_history"
@@ -142,3 +151,4 @@ fi
 
 # bun (mem-sync CLI)
 export PATH="$HOME/.bun/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
