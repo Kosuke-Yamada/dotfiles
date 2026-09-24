@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link codex-skills brew packages plugins macos-setup claude-mcp claude-mem vscode-extensions cursor-agent-permissions skim-setup help
+.PHONY: all init link codex-skills brew packages plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init link
@@ -27,7 +27,7 @@ all: init link
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages plugins claude-mcp claude-mem vscode-extensions cursor-agent-permissions skim-setup macos-setup
+init: brew packages plugins claude-mcp claude-mem vscode-extensions skim-setup macos-setup
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -99,7 +99,7 @@ claude-mem: packages
 	fi
 
 # VSCode 拡張機能のインストール
-# PATH 上の code が Cursor など別エディタを指す場合があるため、アプリ同梱の CLI を優先する
+# PATH 上の code が別エディタを指す場合があるため、アプリ同梱の CLI を優先する
 VSCODE_CLI := $(shell p="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"; [ -x "$$p" ] && echo "$$p" || echo code)
 vscode-extensions:
 	@echo ""
@@ -133,22 +133,6 @@ vscode-extensions:
 		fi; \
 	else \
 		echo "VSCode がインストールされていません。スキップします。"; \
-	fi
-
-# cursor-agent の permissions を Claude Code settings からマージ
-cursor-agent-permissions:
-	@echo ""
-	@echo "[init] cursor-agent permissions のマージ"
-	@echo "------------------------------------------"
-	@CLI_CONFIG="$(HOME)/.cursor/cli-config.json"; \
-	if [ -f "$$CLI_CONFIG" ]; then \
-		echo "cli-config.json の permissions をマージ中..."; \
-		python3 "$(SRC_DIRECTORY)/.cursor/merge_permissions.py" \
-			"$(SRC_DIRECTORY)/.claude/settings.json" \
-			"$$CLI_CONFIG"; \
-	else \
-		echo "[スキップ] $$CLI_CONFIG が見つかりません。"; \
-		echo "  cursor-agent を一度起動してから 'make cursor-agent-permissions' を実行してください。"; \
 	fi
 
 # Skim の SyncTeX 逆方向検索（PDF → Fresh）と自動再読み込みを設定
@@ -216,7 +200,7 @@ link: codex-skills
 	@echo "ホームディレクトリのドットファイルをリンク中..."
 	@cd "$(SRC_DIRECTORY)" && \
 	for f in .??*; do \
-		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".cursor" ] || [ "$$f" = ".local" ]; then \
+		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".local" ]; then \
 			continue; \
 		fi; \
 		if [ -e "$(HOME)/$$f" ] && [ ! -L "$(HOME)/$$f" ]; then \
@@ -317,28 +301,6 @@ endif
 			fi; \
 		done; \
 	fi
-	@# .cursor（cursor-agent）配下のルールをリンク
-	@if [ -d "$(SRC_DIRECTORY)/.cursor/rules" ]; then \
-		echo ""; \
-		echo ".cursor/rules 配下のルールをリンク中..."; \
-		mkdir -p "$(HOME)/.cursor/rules"; \
-		for f in "$(SRC_DIRECTORY)/.cursor/rules"/*.mdc; do \
-			if [ -f "$$f" ]; then \
-				ln -snfv "$$f" "$(HOME)/.cursor/rules/$$(basename "$$f")"; \
-			fi; \
-		done; \
-	fi
-	@# cursor-agent は claude-code のスキルを共有
-	@if [ -d "$(SRC_DIRECTORY)/.claude/skills" ]; then \
-		echo ""; \
-		echo ".cursor/skills に claude-code のスキルを共有リンク中..."; \
-		mkdir -p "$(HOME)/.cursor/skills"; \
-		for d in "$(SRC_DIRECTORY)/.claude/skills"/*/; do \
-			if [ -d "$$d" ]; then \
-				ln -snfv "$$d" "$(HOME)/.cursor/skills/$$(basename "$$d")"; \
-			fi; \
-		done; \
-	fi
 	@echo ""
 	@echo "=========================================="
 	@echo "link が完了しました！"
@@ -358,5 +320,4 @@ help:
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
 	@echo "  make vscode-extensions      - VSCode 拡張機能をインストール"
-	@echo "  make cursor-agent-permissions - cursor-agent の permissions をマージ"
 	@echo "  make help                   - このヘルプを表示"
