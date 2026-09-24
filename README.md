@@ -27,7 +27,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | 選択UI | [fzf](https://github.com/junegunn/fzf) | 0.67.0 | 2026-01 | インタラクティブフィルタリング |
 | ビューア | [leaf](https://leaf.rivolink.mg/) | 1.28.0 | 2026-08 | GUI 風の操作感を持つターミナル Markdown ビューア |
 | エディタ | [Fresh](https://getfresh.dev/) | 0.4.4 | 2026-07 | ゼロコンフィグなターミナルエディタ（VS Code 風の操作感） |
-| エディタ | [Cursor](https://cursor.com/) | - | 2026-01 | AI 搭載エディタ (VS Code fork) |
+| エディタ | [Visual Studio Code](https://code.visualstudio.com/) | - | 2026-09 | GUI エディタ |
 | AIエージェント | [Claude Code](https://claude.com/product/claude-code) | 2.1.206 | 2026-07 | ターミナル AI コーディングエージェント (macOS) |
 | AIエージェント | [Codex](https://github.com/openai/codex) | 0.145.0 | 2026-07 | OpenAI のターミナル AI コーディングエージェント (macOS) |
 
@@ -58,8 +58,7 @@ make all    # または make init && make link
 | `make codex-skills` | Claude Code のスキルを Codex に共有 |
 | `make claude-mcp` | Claude Code の MCP サーバーを設定 |
 | `make claude-mem` | claude-mem を Claude Code と Codex にインストール |
-| `make cursor-extensions` | Cursor 拡張機能をインストール |
-| `make cursor-agent-permissions` | cursor-agent の permissions をマージ |
+| `make vscode-extensions` | VS Code 拡張機能をインストール |
 | `make help` | ヘルプを表示 |
 
 #### `make init` の処理内容
@@ -69,9 +68,8 @@ make all    # または make init && make link
 3. **Sheldon プラグインのインストール** - zsh プラグインの取得
 4. **Claude Code MCP サーバーの設定** - context7 / Playwright / serena / github
 5. **claude-mem のインストール** - Claude Code と Codex へ共有メモリ機能を登録
-6. **Cursor 拡張機能のインストール** - extensions.txt に基づき同期
-7. **cursor-agent permissions のマージ** - Claude Code の settings.json を cli-config.json に反映
-8. **macOS 固有の設定** - skhd / yabai サービスの起動など
+6. **VS Code 拡張機能のインストール** - extensions.txt に基づき同期
+7. **macOS 固有の設定** - skhd / yabai サービスの起動など
 
 #### `make link` の処理内容
 
@@ -100,12 +98,8 @@ dotfiles/
     │   │   ├── claude-md-creator/  # プロジェクトの CLAUDE.md を作成・登録するスキル
     │   │   └── related-work-survey/
     │   └── skills_catalog/   # 参考用スキルカタログ（symlink はしない）
-    ├── .cursor/              # cursor-agent 設定
-    │   ├── rules/            # グローバルルール (*.mdc)
-    │   └── merge_permissions.py  # settings.json → cli-config.json 変換
     └── .config/
-        ├── Code/             # VS Code 設定 (settings.json)
-        ├── cursor/           # Cursor 拡張機能リスト
+        ├── Code/             # VS Code 設定 (settings.json) と拡張機能リスト
         ├── fresh/            # Fresh 設定 (config.json)
         ├── ghostty/          # Ghostty 設定 (macOS)
         ├── herdr/            # herdr 設定
@@ -138,15 +132,15 @@ dotfiles/
 
 > leaf は Homebrew（`leaf-markdown-viewer`）で管理しているため、更新は `brew upgrade` を使用します。自己更新機能の `leaf --update` は使いません（Homebrew の管理外にバイナリが分岐するため）。
 
-### Cursor 拡張機能
+### VS Code 拡張機能
 
-`src/.config/cursor/extensions.txt` で管理しています。`make init` または `make cursor-extensions` でインストールされます。
+`src/.config/Code/extensions.txt` で管理しています。`make init` または `make vscode-extensions` でインストールされます。
 
 #### 拡張機能の更新方法
 
 ```bash
 # 現在の拡張機能リストを更新
-cursor --list-extensions | sort > ~/dotfiles/src/.config/cursor/extensions.txt
+code --list-extensions | sort > ~/dotfiles/src/.config/Code/extensions.txt
 ```
 
 #### 主な拡張機能カテゴリ
@@ -160,7 +154,7 @@ cursor --list-extensions | sort > ~/dotfiles/src/.config/cursor/extensions.txt
 | Git | eamodio.gitlens, mhutchie.git-graph |
 | AI | anthropic.claude-code |
 
-### AI エージェント設定（Claude Code / Codex / cursor-agent）
+### AI エージェント設定（Claude Code / Codex）
 
 [agent-config](https://github.com/Kosuke-Yamada/agent-config) から統合した AI エージェント設定を管理しています。
 
@@ -195,12 +189,6 @@ Claude Code (`claude-code`) と Codex (`codex-cli`) の両方へ明示的に登�
 Claude Code のアクティブなスキルは、`make link` または `make codex-skills` で
 `~/.codex/skills/<name>` にも共有リンクされます。Codex 固有のシステムスキルや
 プラグインスキルには触れず、`src/.claude/skills/` で管理するスキルだけが対象です。
-
-#### cursor-agent (`src/.cursor/`)
-
-- `rules/*.mdc` → `~/.cursor/rules/` にリンク（全プロジェクト共通のグローバルルール）
-- `make link` で claude-code のスキルを `~/.cursor/skills/` にも共有リンク
-- `make cursor-agent-permissions` で Claude Code の `settings.json` の permissions を cursor-agent の `~/.cursor/cli-config.json` にマージ（`Bash()` → `Shell()`、`Write()` → `Edit()` に変換）。cursor-agent を一度起動して `cli-config.json` を生成してから実行してください。
 
 ## 注意事項
 

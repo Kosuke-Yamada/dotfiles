@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link codex-skills brew packages plugins macos-setup claude-mcp claude-mem cursor-extensions cursor-agent-permissions skim-setup help
+.PHONY: all init link codex-skills brew packages plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init link
@@ -27,7 +27,7 @@ all: init link
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages plugins claude-mcp claude-mem cursor-extensions cursor-agent-permissions skim-setup macos-setup
+init: brew packages plugins claude-mcp claude-mem vscode-extensions skim-setup macos-setup
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -98,21 +98,23 @@ claude-mem: packages
 		exit 1; \
 	fi
 
-# Cursor 拡張機能のインストール
-cursor-extensions:
+# VSCode 拡張機能のインストール
+# PATH 上の code が別エディタを指す場合があるため、アプリ同梱の CLI を優先する
+VSCODE_CLI := $(shell p="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"; [ -x "$$p" ] && echo "$$p" || echo code)
+vscode-extensions:
 	@echo ""
-	@echo "[init] Cursor 拡張機能のインストール"
+	@echo "[init] VSCode 拡張機能のインストール"
 	@echo "------------------------------------------"
-	@if command -v cursor &> /dev/null; then \
-		EXTENSION_FILE="$(SRC_DIRECTORY)/.config/cursor/extensions.txt"; \
+	@if command -v "$(VSCODE_CLI)" &> /dev/null; then \
+		EXTENSION_FILE="$(SRC_DIRECTORY)/.config/Code/extensions.txt"; \
 		if [ -f "$$EXTENSION_FILE" ]; then \
-			INSTALLED=$$(cursor --list-extensions); \
+			INSTALLED=$$("$(VSCODE_CLI)" --list-extensions); \
 			WANTED=$$(grep -v '^\s*$$' "$$EXTENSION_FILE" | grep -v '^\s*#'); \
 			echo "不要な拡張機能を削除中..."; \
 			for ext in $$INSTALLED; do \
 				if ! echo "$$WANTED" | grep -qFxi "$$ext"; then \
 					echo "  アンインストール: $$ext"; \
-					cursor --uninstall-extension "$$ext" 2>/dev/null || true; \
+					"$(VSCODE_CLI)" --uninstall-extension "$$ext" 2>/dev/null || true; \
 				fi; \
 			done; \
 			echo ""; \
@@ -122,32 +124,15 @@ cursor-extensions:
 					echo "  既存: $$ext"; \
 				else \
 					echo "  インストール: $$ext"; \
-					cursor --install-extension "$$ext" 2>/dev/null || true; \
+					"$(VSCODE_CLI)" --install-extension "$$ext" 2>/dev/null || true; \
 				fi; \
 			done; \
-			echo "Cursor 拡張機能の同期が完了しました。"; \
+			echo "VSCode 拡張機能の同期が完了しました。"; \
 		else \
 			echo "extensions.txt が見つかりません。スキップします。"; \
 		fi; \
 	else \
-		echo "Cursor がインストールされていません。スキップします。"; \
-		echo "Cursor をインストール後、'cursor' コマンドを PATH に追加してください。"; \
-	fi
-
-# cursor-agent の permissions を Claude Code settings からマージ
-cursor-agent-permissions:
-	@echo ""
-	@echo "[init] cursor-agent permissions のマージ"
-	@echo "------------------------------------------"
-	@CLI_CONFIG="$(HOME)/.cursor/cli-config.json"; \
-	if [ -f "$$CLI_CONFIG" ]; then \
-		echo "cli-config.json の permissions をマージ中..."; \
-		python3 "$(SRC_DIRECTORY)/.cursor/merge_permissions.py" \
-			"$(SRC_DIRECTORY)/.claude/settings.json" \
-			"$$CLI_CONFIG"; \
-	else \
-		echo "[スキップ] $$CLI_CONFIG が見つかりません。"; \
-		echo "  cursor-agent を一度起動してから 'make cursor-agent-permissions' を実行してください。"; \
+		echo "VSCode がインストールされていません。スキップします。"; \
 	fi
 
 # Skim の SyncTeX 逆方向検索（PDF → Fresh）と自動再読み込みを設定
@@ -215,7 +200,7 @@ link: codex-skills
 	@echo "ホームディレクトリのドットファイルをリンク中..."
 	@cd "$(SRC_DIRECTORY)" && \
 	for f in .??*; do \
-		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".cursor" ] || [ "$$f" = ".local" ]; then \
+		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".local" ]; then \
 			continue; \
 		fi; \
 		if [ -e "$(HOME)/$$f" ] && [ ! -L "$(HOME)/$$f" ]; then \
@@ -250,11 +235,6 @@ ifeq ($(OS),Darwin)
 	@ln -snfv "$(SRC_DIRECTORY)/.config/skhd/skhdrc" "$(HOME)/.skhdrc"
 	@mkdir -p "$(HOME)/.config/yabai"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/yabai/yabairc" "$(HOME)/.config/yabai/yabairc"
-	@# Cursor settings.json
-	@echo ""
-	@echo "Cursor の設定ファイルをリンク中..."
-	@mkdir -p "$(HOME)/Library/Application Support/Cursor/User"
-	@ln -snfv "$(SRC_DIRECTORY)/.config/cursor/settings.json" "$(HOME)/Library/Application Support/Cursor/User/settings.json"
 	@# VSCode settings.json
 	@echo ""
 	@echo "VSCode の設定ファイルをリンク中..."
@@ -321,28 +301,6 @@ endif
 			fi; \
 		done; \
 	fi
-	@# .cursor（cursor-agent）配下のルールをリンク
-	@if [ -d "$(SRC_DIRECTORY)/.cursor/rules" ]; then \
-		echo ""; \
-		echo ".cursor/rules 配下のルールをリンク中..."; \
-		mkdir -p "$(HOME)/.cursor/rules"; \
-		for f in "$(SRC_DIRECTORY)/.cursor/rules"/*.mdc; do \
-			if [ -f "$$f" ]; then \
-				ln -snfv "$$f" "$(HOME)/.cursor/rules/$$(basename "$$f")"; \
-			fi; \
-		done; \
-	fi
-	@# cursor-agent は claude-code のスキルを共有
-	@if [ -d "$(SRC_DIRECTORY)/.claude/skills" ]; then \
-		echo ""; \
-		echo ".cursor/skills に claude-code のスキルを共有リンク中..."; \
-		mkdir -p "$(HOME)/.cursor/skills"; \
-		for d in "$(SRC_DIRECTORY)/.claude/skills"/*/; do \
-			if [ -d "$$d" ]; then \
-				ln -snfv "$$d" "$(HOME)/.cursor/skills/$$(basename "$$d")"; \
-			fi; \
-		done; \
-	fi
 	@echo ""
 	@echo "=========================================="
 	@echo "link が完了しました！"
@@ -361,6 +319,5 @@ help:
 	@echo "  make codex-skills      - Claude Code のスキルを Codex に共有"
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
-	@echo "  make cursor-extensions      - Cursor 拡張機能をインストール"
-	@echo "  make cursor-agent-permissions - cursor-agent の permissions をマージ"
+	@echo "  make vscode-extensions      - VSCode 拡張機能をインストール"
 	@echo "  make help                   - このヘルプを表示"

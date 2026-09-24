@@ -141,8 +141,12 @@ export PATH="/Users/s26310/.rd/bin:$PATH"
 # herdr auto-attach（ターミナル起動時に自動でデフォルトセッションへ）
 # ==============================================================================
 # 対話シェルのみ / herdr・tmux の中では起動しない / herdr がある場合のみ。
+# VSCode の環境解決（zsh -i -l -c）や統合ターミナルでも起動しない。
 # 一時的に無効化したいときは `NO_HERDR=1` を付けて起動する。
 if [[ $- == *i* ]] \
+  && [[ -t 0 && -t 1 ]] \
+  && [[ -z "$VSCODE_RESOLVING_ENVIRONMENT" ]] \
+  && [[ "$TERM_PROGRAM" != "vscode" ]] \
   && [[ -z "$HERDR_ENV" ]] \
   && [[ -z "$TMUX" ]] \
   && [[ -z "$NO_HERDR" ]]; then
