@@ -1,0 +1,49 @@
+#!/bin/sh
+# =============================================================================
+# ターミナル発の URL を、意図した Chrome プロファイルで開くためのラッパー
+# =============================================================================
+#
+# 【背景】
+# macOS の LaunchServices は、同一アプリバンドルの複数インスタンスのうち
+# 「先に起動して登録されたもの」へ URL の open イベントを配送する。
+# chrome-devtools-mcp や Playwright などが
+#   --user-data-dir=/tmp/... を付けた Chrome を残したままにしていると、
+# `gcloud auth login` や `gh auth login` が発行する `open location` が
+# その空のテンポラリプロファイル側に届いてしまい、
+# ブックマークもログインも無い「ゲストモード」のように見える。
+#
+# 【対策】
+# LaunchServices を経由せず Chrome バイナリを直接呼ぶ。
+# Chrome のシングルトンロックは --user-data-dir 単位なので、
+# 既定のユーザーデータディレクトリで動いているインスタンスへ確実に届く。
+#
+# 【使い方】
+# .zshrc で `export BROWSER="$HOME/.local/bin/browser"` を設定する。
+# 開くプロファイルは BROWSER_CHROME_PROFILE で上書きできる。
+
+set -eu
+
+CHROME_BIN="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+# Default = 業務用アカウントのプロファイル
+CHROME_PROFILE="${BROWSER_CHROME_PROFILE:-Default}"
+
+# 引数（URL）が無ければ何もしない
+[ "$#" -gt 0 ] || exit 0
+
+if [ -x "$CHROME_BIN" ]; then
+    # バックグラウンド起動して即座に制御を返す。
+    # Python の webbrowser.GenericBrowser は子プロセスの終了を待つため、
+    # 前面実行すると Chrome 未起動時に呼び出し元がブロックされてしまう。
+    "$CHROME_BIN" --profile-directory="$CHROME_PROFILE" "$@" >/dev/null 2>&1 &
+    exit 0
+fi
+
+# Chrome が無い環境では OS 既定のハンドラへフォールバック
+if command -v open >/dev/null 2>&1; then
+    exec open "$@"
+elif command -v xdg-open >/dev/null 2>&1; then
+    exec xdg-open "$@"
+fi
+
+echo "browser: URL を開けるコマンドが見つかりません: $*" >&2
+exit 1
