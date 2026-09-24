@@ -26,41 +26,35 @@ const findLatexRoot = (path: string): string | null => {
   }
 };
 
-// Fresh 起動後に MacTeX を入れた場合でも見つかるよう texbin を PATH の先頭に足す
-const texPath = (): string => `PATH=${TEXBIN}:${ed.getEnv("PATH") ?? "/usr/bin:/bin"}`;
-
-// -file-line-error 形式（file:line: message）の最初のエラー行
-const firstError = (log: string): string | null =>
-  log.split("\n").find((l) => /^[^\s:]+:\d+: /.test(l)) ?? null;
-
-// ビルド中に再保存されたら、終了後にもう 1 回だけ走らせる
-const buildState = new Map<string, { running: boolean; pending: boolean }>();
+// Fresh の子プロセスは Fresh の終了と一緒に止まるため、latexmk はバックグラウンドの
+// サブシェルに切り離して起動する（保存直後に Fresh を閉じてもビルドが最後まで走る）。
+//   - lockf で同一プロジェクトのビルドを直列化（連続保存で latexmk が競合しない）
+//   - 失敗時は Fresh が閉じていても気づけるよう macOS 通知に最初のエラー行を出す
+//   - Fresh 起動後に MacTeX を入れた場合でも見つかるよう texbin を PATH の先頭に足す
+const BUILD_SCRIPT = `
+trap '' HUP
+export PATH="${TEXBIN}:$PATH"
+mkdir -p build
+if ! /usr/bin/lockf build/.latexmk.lock latexmk >build/latexmk-on-save.log 2>&1; then
+  err=$(grep -m1 -E '^[^[:space:]:]+:[0-9]+: ' build/main.log | tr -d '"\\\\')
+  osascript -e "display notification \\"\${err:-build/latexmk-on-save.log を確認してください}\\" with title \\"LaTeX: ビルド失敗\\""
+fi
+`;
 
 const buildLatex = async (root: string): Promise<void> => {
-  const state = buildState.get(root) ?? { running: false, pending: false };
-  buildState.set(root, state);
-  if (state.running) {
-    state.pending = true;
-    return;
-  }
-  state.running = true;
-  ed.setStatus("LaTeX: ビルド中…");
   try {
-    const result = await ed.spawnProcess("/usr/bin/env", [texPath(), "latexmk"], root);
-    if (result.exit_code === 0) {
-      ed.setStatus("LaTeX: ビルド成功");
-    } else {
-      const error = firstError(result.stdout) ?? result.stderr.trim().split("\n").pop() ?? "";
-      ed.setStatus(`LaTeX: ビルド失敗 (exit ${result.exit_code}) ${error}`);
-    }
+    const result = await ed.spawnProcess(
+      "/bin/sh",
+      ["-c", `(${BUILD_SCRIPT}) </dev/null >/dev/null 2>&1 &`],
+      root,
+    );
+    ed.setStatus(
+      result.exit_code === 0
+        ? "LaTeX: ビルド開始（失敗時は macOS 通知）"
+        : `LaTeX: ビルドを起動できません (exit ${result.exit_code}) ${result.stderr.trim()}`,
+    );
   } catch (e) {
-    ed.setStatus(`LaTeX: latexmk を起動できません: ${String(e)}`);
-  } finally {
-    state.running = false;
-  }
-  if (state.pending) {
-    state.pending = false;
-    await buildLatex(root);
+    ed.setStatus(`LaTeX: ビルドを起動できません: ${String(e)}`);
   }
 };
 
