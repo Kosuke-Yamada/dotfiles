@@ -29,6 +29,10 @@ end
 if OS.mac?
   tap "koekeishiya/formulae"
   cask "ghostty"
+
+  # LaTeX（TeX Live full、GUI アプリなし）と SyncTeX 対応 PDF ビューア
+  cask "mactex-no-gui"
+  cask "skim"
   brew "skhd"
   brew "yabai"
 

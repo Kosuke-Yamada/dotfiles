@@ -1,0 +1,40 @@
+#!/bin/sh
+# =============================================================================
+# Skim の SyncTeX 逆方向検索（PDF → ソース）を Fresh に渡すラッパー
+# =============================================================================
+#
+# 使い方: fresh-synctex <file> <line>
+#   Skim > 設定 > 同期 > プリセット「カスタム」
+#     コマンド: ~/.local/bin/fresh-synctex   引数: "%file" %line
+#   （dotfiles の `make skim-setup` で自動設定される）
+#
+# Fresh のデーモンは作業ディレクトリ単位で識別されるため、
+# .latexmkrc のあるプロジェクトルート（無ければファイルのディレクトリ）に移動し、
+# そこで起動中の Fresh に `file:line` を開かせる。
+# =============================================================================
+
+set -eu
+
+if [ $# -ne 2 ]; then
+  echo "usage: fresh-synctex <file> <line>" >&2
+  exit 2
+fi
+
+# Skim から起動されると PATH が最小構成なので Homebrew を足す
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+file_dir=$(cd "$(dirname "$1")" && pwd -P)
+file="$file_dir/$(basename "$1")"
+line=$2
+
+root=$file_dir
+while [ "$root" != "/" ] && [ ! -f "$root/.latexmkrc" ]; do
+  root=$(dirname "$root")
+done
+[ -f "$root/.latexmkrc" ] || root=$file_dir
+
+cd "$root"
+if ! fresh --cmd daemon open-file . "$file:$line"; then
+  osascript -e "display notification \"$root で起動中の Fresh が見つかりません\" with title \"fresh-synctex\""
+  exit 1
+fi
