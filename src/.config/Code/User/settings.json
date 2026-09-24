@@ -6,7 +6,6 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit"
     },
-
     // --- ファイル ---
     "files.autoSave": "afterDelay",
     "files.trimFinalNewlines": true,
@@ -20,23 +19,18 @@
         "**/node_modules/*/**": true,
         "**/.venv/**": true
     },
-
     // --- エクスプローラ ---
     "explorer.confirmDragAndDrop": false,
     "explorer.confirmDelete": false,
-
     // --- ワークベンチ ---
     "workbench.iconTheme": "material-icon-theme",
-    "workbench.colorTheme": "Dracula At Night",
+    "workbench.colorTheme": "Default High Contrast Light",
     "workbench.startupEditor": "newUntitledFile",
     "workbench.settings.openDefaultSettings": true,
-
     // --- ターミナル ---
     "terminal.integrated.inheritEnv": false,
-
     // --- Git ---
     "git.confirmSync": false,
-
     // --- Python ---
     "[python]": {
         "editor.formatOnSave": true,
@@ -51,7 +45,6 @@
     "python.analysis.addImport.exactMatchOnly": true,
     "python.analysis.autoFormatStrings": true,
     "python.analysis.completeFunctionParens": true,
-
     // --- Jupyter ---
     "notebook.cellToolbarLocation": {
         "default": "right",
@@ -66,7 +59,6 @@
     },
     "jupyter.askForKernelRestart": false,
     "jupyter.searchForJupyter": false,
-
     // --- LaTeX ---
     "[latex]": {
         "editor.formatOnSave": false,
@@ -75,7 +67,6 @@
             "source.organizeImports": "never"
         }
     },
-
     // --- 言語別フォーマッタ ---
     "[json][jsonc][jsonl]": {
         "editor.defaultFormatter": "vscode.json-language-features"
@@ -92,11 +83,9 @@
     "[github-actions-workflow]": {
         "editor.defaultFormatter": "redhat.vscode-yaml"
     },
-
     // --- Remote SSH ---
     "remote.SSH.connectTimeout": 10000,
     "remote.autoForwardPortsSource": "hybrid",
-
     // --- Live Server ---
     "liveServer.settings.donotShowInfoMsg": true
 }
