@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link codex-skills brew packages plugins macos-setup claude-mcp claude-mem cursor-extensions cursor-agent-permissions help
+.PHONY: all init link codex-skills brew packages plugins macos-setup claude-mcp claude-mem cursor-extensions cursor-agent-permissions skim-setup help
 
 # デフォルトターゲット
 all: init link
@@ -27,7 +27,7 @@ all: init link
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages plugins claude-mcp claude-mem cursor-extensions cursor-agent-permissions macos-setup
+init: brew packages plugins claude-mcp claude-mem cursor-extensions cursor-agent-permissions skim-setup macos-setup
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -150,6 +150,22 @@ cursor-agent-permissions:
 		echo "  cursor-agent を一度起動してから 'make cursor-agent-permissions' を実行してください。"; \
 	fi
 
+# Skim の SyncTeX 逆方向検索（PDF → Fresh）と自動再読み込みを設定
+skim-setup:
+	@echo ""
+	@echo "[init] Skim の設定"
+	@echo "------------------------------------------"
+ifeq ($(OS),Darwin)
+	@defaults write -app Skim SKTeXEditorPreset -string ""
+	@defaults write -app Skim SKTeXEditorCommand -string "$(HOME)/.local/bin/fresh-synctex"
+	@defaults write -app Skim SKTeXEditorArguments -string '"%file" %line'
+	@defaults write -app Skim SKAutoCheckFileUpdate -bool true
+	@defaults write -app Skim SKAutoReloadFileUpdate -bool true
+	@echo "Skim: 逆方向検索を fresh-synctex に設定し、PDF の自動再読み込みを有効化しました"
+else
+	@echo "macOS ではないためスキップします。"
+endif
+
 # macOS 固有の設定
 macos-setup:
 	@echo ""
@@ -220,6 +236,7 @@ link: codex-skills
 	@ln -snfv "$(SRC_DIRECTORY)/.config/herdr/config.toml" "$(HOME)/.config/herdr/config.toml"
 	@mkdir -p "$(HOME)/.config/fresh"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/fresh/config.json" "$(HOME)/.config/fresh/config.json"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/fresh/init.ts" "$(HOME)/.config/fresh/init.ts"
 	@mkdir -p "$(HOME)/.config/leaf"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/leaf/config.toml" "$(HOME)/.config/leaf/config.toml"
 	@# .config 配下（macOS専用）
