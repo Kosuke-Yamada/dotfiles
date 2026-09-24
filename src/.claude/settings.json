@@ -5,6 +5,17 @@
     "pr": ""
   },
   "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(pnpm *)",
+      "Bash(make *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git stash *)",
+      "Bash(git switch *)",
+      "Bash(gh pr view *)",
+      "Bash(gh issue view *)"
+    ],
     "deny": [
       "Read(//**/.env)",
       "Read(//**/.env.*)",
@@ -24,19 +35,9 @@
       "Bash(terraform apply *)",
       "Bash(kubectl apply *)"
     ],
-    "allow": [
-      "Bash(npm run *)",
-      "Bash(pnpm *)",
-      "Bash(make *)",
-      "Bash(git add *)",
-      "Bash(git commit *)",
-      "Bash(git stash *)",
-      "Bash(git switch *)",
-      "Bash(gh pr view *)",
-      "Bash(gh issue view *)"
-    ],
     "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "skillOverrides": {
     "claude-mem:babysit": "off",
     "claude-mem:cloud-sync": "off",
@@ -124,6 +125,9 @@
       }
     ]
   },
+  "worktree": {
+    "baseRef": "fresh"
+  },
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/scripts/statusline.sh",
@@ -171,17 +175,14 @@
       }
     }
   },
-  "language": "japanese",
   "outputStyle": "Concise",
+  "language": "japanese",
   "effortLevel": "xhigh",
+  "autoCompactWindow": 500000,
   "tui": "fullscreen",
-  "theme": "auto",
   "timeFormat": "24-hour",
+  "theme": "auto",
   "preferredNotifChannel": "ghostty",
   "autoCompactEnabled": true,
-  "autoCompactWindow": 500000,
-  "skipAutoPermissionPrompt": true,
-  "worktree": {
-    "baseRef": "fresh"
-  }
+  "skipAutoPermissionPrompt": true
 }
