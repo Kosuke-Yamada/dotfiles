@@ -1,5 +1,5 @@
-# Cursor Extensions
-# インストール: cat extensions.txt | xargs -L 1 cursor --install-extension
+# VSCode Extensions
+# インストール: make vscode-extensions
 
 # === Editor Enhancement ===
 aaron-bond.better-comments
@@ -8,6 +8,7 @@ shardulm94.trailing-spaces
 naumovs.color-highlight
 pkief.material-icon-theme
 github.github-vscode-theme
+bceskavich.theme-dracula-at-night
 
 # === Path ===
 christian-kohler.path-intellisense
@@ -21,7 +22,7 @@ ziyasal.vscode-open-in-github
 # === Python ===
 ms-python.python
 ms-python.debugpy
-anysphere.cursorpyright
+ms-python.vscode-pylance
 charliermarsh.ruff
 mgesbert.python-path
 
@@ -68,7 +69,7 @@ ms-vscode-remote.remote-ssh
 ms-vscode-remote.vscode-remote-extensionpack
 ms-vscode.remote-explorer
 ms-vscode.remote-server
-anysphere.remote-containers
+ms-vscode-remote.remote-containers
 
 # === API Testing ===
 humao.rest-client
@@ -82,7 +83,6 @@ ms-vscode.makefile-tools
 
 # === AI ===
 anthropic.claude-code
-beilunyang.cursor-rules
 
 # === Language Pack ===
 ms-ceintl.vscode-language-pack-ja
