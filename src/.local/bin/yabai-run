@@ -1,0 +1,54 @@
+#!/bin/sh
+# yabai -m <args> をタイムアウト付きで実行する。
+#
+# yabai サーバは応答しないアプリ（例: Dock のウィジェット拡張）への
+# Accessibility 問い合わせでイベントループごとハングすることがあり、
+# その間 skhd から叩いたコマンドが無期限にブロックされて溜まっていく。
+# タイムアウトしたらサービスを再起動し、1 回だけ再試行する。
+#
+# 使い方: yabai-run window --grid 1:2:0:0:1:1
+
+yabai=/opt/homebrew/bin/yabai
+timeout_sec=${YABAI_RUN_TIMEOUT:-2}
+lock_dir=${TMPDIR:-/tmp}/yabai-run.restart.lock
+
+# alarm は exec 後も引き継がれるため、タイムアウト時は SIGALRM で終了し 142 を返す
+# (macOS には coreutils の timeout が無いので perl で代用する)
+run() {
+	perl -e 'alarm shift; exec @ARGV or die "exec failed: $!\n"' "$timeout_sec" "$yabai" -m "$@"
+}
+
+wait_until_ready() {
+	i=0
+	while [ "$i" -lt 10 ]; do
+		run query --spaces --space >/dev/null 2>&1 && return 0
+		sleep 0.2
+		i=$((i + 1))
+	done
+	return 1
+}
+
+run "$@"
+rc=$?
+[ "$rc" -eq 142 ] || exit "$rc"
+
+echo "yabai-run: 'yabai -m $*' が ${timeout_sec}s 応答しないため yabai を再起動します" >&2
+
+# 連打で同時にタイムアウトしても再起動は 1 回だけにする
+if mkdir "$lock_dir" 2>/dev/null; then
+	"$yabai" --restart-service
+	sleep 0.5
+	wait_until_ready
+	ready=$?
+	rmdir "$lock_dir"
+else
+	sleep 0.5
+	wait_until_ready
+	ready=$?
+fi
+[ "$ready" -eq 0 ] || {
+	echo "yabai-run: 再起動後も yabai が応答しません" >&2
+	exit 1
+}
+
+run "$@"
