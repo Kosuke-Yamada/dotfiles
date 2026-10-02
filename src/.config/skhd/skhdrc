@@ -18,18 +18,18 @@ alt - e      : open -na "Finder"
 # ===========================================
 # ウィンドウフォーカス移動（HJKL）
 # ===========================================
-alt - h : /opt/homebrew/bin/yabai -m window --focus west
-alt - j : /opt/homebrew/bin/yabai -m window --focus south
-alt - k : /opt/homebrew/bin/yabai -m window --focus north
-alt - l : /opt/homebrew/bin/yabai -m window --focus east
+alt - h : $HOME/.local/bin/yabai-run window --focus west
+alt - j : $HOME/.local/bin/yabai-run window --focus south
+alt - k : $HOME/.local/bin/yabai-run window --focus north
+alt - l : $HOME/.local/bin/yabai-run window --focus east
 
 # ===========================================
 # ウィンドウ移動（スワップ）
 # ===========================================
-shift + alt - h : /opt/homebrew/bin/yabai -m window --swap west
-shift + alt - j : /opt/homebrew/bin/yabai -m window --swap south
-shift + alt - k : /opt/homebrew/bin/yabai -m window --swap north
-shift + alt - l : /opt/homebrew/bin/yabai -m window --swap east
+shift + alt - h : $HOME/.local/bin/yabai-run window --swap west
+shift + alt - j : $HOME/.local/bin/yabai-run window --swap south
+shift + alt - k : $HOME/.local/bin/yabai-run window --swap north
+shift + alt - l : $HOME/.local/bin/yabai-run window --swap east
 
 # ===========================================
 # ウィンドウサイズ変更（100px ステップ・拡大/縮小）
@@ -38,53 +38,53 @@ shift + alt - l : /opt/homebrew/bin/yabai -m window --swap east
 # こうすることで片方の辺が画面端に達していても、もう片方の辺が動くため
 # float レイアウトでも「効かなくなる」状況を避けられる。
 # h: 幅を縮める / l: 幅を広げる / k: 高さを広げる / j: 高さを縮める
-ctrl + alt - h : /opt/homebrew/bin/yabai -m window --resize left:50:0 ; /opt/homebrew/bin/yabai -m window --resize right:-50:0
-ctrl + alt - l : /opt/homebrew/bin/yabai -m window --resize left:-50:0 ; /opt/homebrew/bin/yabai -m window --resize right:50:0
-ctrl + alt - k : /opt/homebrew/bin/yabai -m window --resize top:0:-50 ; /opt/homebrew/bin/yabai -m window --resize bottom:0:50
-ctrl + alt - j : /opt/homebrew/bin/yabai -m window --resize top:0:50 ; /opt/homebrew/bin/yabai -m window --resize bottom:0:-50
+ctrl + alt - h : $HOME/.local/bin/yabai-run window --resize left:50:0 ; $HOME/.local/bin/yabai-run window --resize right:-50:0
+ctrl + alt - l : $HOME/.local/bin/yabai-run window --resize left:-50:0 ; $HOME/.local/bin/yabai-run window --resize right:50:0
+ctrl + alt - k : $HOME/.local/bin/yabai-run window --resize top:0:-50 ; $HOME/.local/bin/yabai-run window --resize bottom:0:50
+ctrl + alt - j : $HOME/.local/bin/yabai-run window --resize top:0:50 ; $HOME/.local/bin/yabai-run window --resize bottom:0:-50
 
 # ===========================================
 # ウィンドウ配置（alt + cmd + 矢印）
 # ===========================================
 # 右半分に配置
-alt + cmd - right : /opt/homebrew/bin/yabai -m window --grid 1:2:1:0:1:1
+alt + cmd - right : $HOME/.local/bin/yabai-run window --grid 1:2:1:0:1:1
 
 # 左半分に配置
-alt + cmd - left : /opt/homebrew/bin/yabai -m window --grid 1:2:0:0:1:1
+alt + cmd - left : $HOME/.local/bin/yabai-run window --grid 1:2:0:0:1:1
 
 # 上半分に配置
-alt + cmd - up : /opt/homebrew/bin/yabai -m window --grid 2:1:0:0:1:1
+alt + cmd - up : $HOME/.local/bin/yabai-run window --grid 2:1:0:0:1:1
 
 # 下半分に配置
-alt + cmd - down : /opt/homebrew/bin/yabai -m window --grid 2:1:0:1:1:1
+alt + cmd - down : $HOME/.local/bin/yabai-run window --grid 2:1:0:1:1:1
 
 # 全画面に配置（JISキーボード: _ キー）
-alt + cmd - 0x5E : /opt/homebrew/bin/yabai -m window --grid 1:1:0:0:1:1
+alt + cmd - 0x5E : $HOME/.local/bin/yabai-run window --grid 1:1:0:0:1:1
 
 # ===========================================
 # スペース（デスクトップ）操作
 # ===========================================
-alt - 1 : /opt/homebrew/bin/yabai -m space --focus 1
-alt - 2 : /opt/homebrew/bin/yabai -m space --focus 2
-alt - 3 : /opt/homebrew/bin/yabai -m space --focus 3
-alt - 4 : /opt/homebrew/bin/yabai -m space --focus 4
-alt - 5 : /opt/homebrew/bin/yabai -m space --focus 5
+alt - 1 : $HOME/.local/bin/yabai-run space --focus 1
+alt - 2 : $HOME/.local/bin/yabai-run space --focus 2
+alt - 3 : $HOME/.local/bin/yabai-run space --focus 3
+alt - 4 : $HOME/.local/bin/yabai-run space --focus 4
+alt - 5 : $HOME/.local/bin/yabai-run space --focus 5
 
-shift + alt - 1 : /opt/homebrew/bin/yabai -m window --space 1
-shift + alt - 2 : /opt/homebrew/bin/yabai -m window --space 2
-shift + alt - 3 : /opt/homebrew/bin/yabai -m window --space 3
-shift + alt - 4 : /opt/homebrew/bin/yabai -m window --space 4
-shift + alt - 5 : /opt/homebrew/bin/yabai -m window --space 5
+shift + alt - 1 : $HOME/.local/bin/yabai-run window --space 1
+shift + alt - 2 : $HOME/.local/bin/yabai-run window --space 2
+shift + alt - 3 : $HOME/.local/bin/yabai-run window --space 3
+shift + alt - 4 : $HOME/.local/bin/yabai-run window --space 4
+shift + alt - 5 : $HOME/.local/bin/yabai-run window --space 5
 
 # ===========================================
 # ウィンドウレイアウト
 # ===========================================
-alt - f : /opt/homebrew/bin/yabai -m window --toggle zoom-fullscreen
-alt - t : /opt/homebrew/bin/yabai -m window --toggle float
+alt - f : $HOME/.local/bin/yabai-run window --toggle zoom-fullscreen
+alt - t : $HOME/.local/bin/yabai-run window --toggle float
 
-ctrl + alt - b : /opt/homebrew/bin/yabai -m space --layout bsp
-ctrl + alt - s : /opt/homebrew/bin/yabai -m space --layout stack
-ctrl + alt - f : /opt/homebrew/bin/yabai -m space --layout float
+ctrl + alt - b : $HOME/.local/bin/yabai-run space --layout bsp
+ctrl + alt - s : $HOME/.local/bin/yabai-run space --layout stack
+ctrl + alt - f : $HOME/.local/bin/yabai-run space --layout float
 
 # ===========================================
 # Ghostty Quick Terminal（Ctrl+G）
@@ -104,4 +104,6 @@ ctrl + alt - r : skhd --reload
 # きっかけにハングし、resize/move/focus などの操作コマンドが数十秒ブロック
 # されることがある（query は正常に返るのが特徴）。動きが重い/効かないと
 # 感じたら、このキーで即座にサービスを再起動して復旧する。
+# 通常のバインドは yabai-run 経由で 2 秒のタイムアウト付きで実行し、
+# タイムアウト時は自動で再起動・再試行する（src/.local/bin/yabai-run）。
 ctrl + alt - y : /opt/homebrew/bin/yabai --restart-service
