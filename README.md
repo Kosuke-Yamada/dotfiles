@@ -56,6 +56,7 @@ make all    # または make init && make link
 | `make init` | Homebrew とパッケージをインストール |
 | `make link` | シンボリックリンクを作成 |
 | `make codex-skills` | Claude Code のスキルを Codex に共有 |
+| `make codex-config` | Codex の共通設定を `~/.codex/config.toml` にマージ |
 | `make claude-mcp` | Claude Code の MCP サーバーを設定 |
 | `make claude-mem` | claude-mem を Claude Code と Codex にインストール |
 | `make vscode-extensions` | VS Code 拡張機能をインストール |

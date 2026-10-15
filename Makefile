@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link codex-skills brew packages plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
+.PHONY: all init link codex-skills codex-config brew packages plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init link
@@ -189,9 +189,25 @@ codex-skills:
 	fi
 
 # ------------------------------------------------------------------------------
+# codex-config: Codex の共通設定を ~/.codex/config.toml にマージ
+# ~/.codex/config.toml には Codex アプリが書く端末固有の状態が混ざるため
+# シンボリックリンクにはせず、src/.codex/config.toml のキーだけを上書きする
+# ------------------------------------------------------------------------------
+codex-config:
+	@echo ""
+	@echo "[link] Codex の共通設定をマージ"
+	@echo "------------------------------------------"
+	@if ! command -v uv &> /dev/null; then \
+		echo "uv が見つからないため Codex の設定をマージできません。uv をインストールしてから make codex-config を実行してください。" >&2; \
+		exit 1; \
+	fi
+	@uv run --quiet --no-project --with tomlkit python "$(SRC_DIRECTORY)/.codex/scripts/merge-config.py" \
+		"$(SRC_DIRECTORY)/.codex/config.toml" "$(HOME)/.codex/config.toml"
+
+# ------------------------------------------------------------------------------
 # link: シンボリックリンクの作成
 # ------------------------------------------------------------------------------
-link: codex-skills
+link: codex-skills codex-config
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
@@ -200,7 +216,7 @@ link: codex-skills
 	@echo "ホームディレクトリのドットファイルをリンク中..."
 	@cd "$(SRC_DIRECTORY)" && \
 	for f in .??*; do \
-		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".local" ]; then \
+		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".codex" ] || [ "$$f" = ".local" ]; then \
 			continue; \
 		fi; \
 		if [ -e "$(HOME)/$$f" ] && [ ! -L "$(HOME)/$$f" ]; then \
@@ -317,6 +333,7 @@ help:
 	@echo "  make init              - Homebrew とパッケージをインストール"
 	@echo "  make link              - シンボリックリンクを作成"
 	@echo "  make codex-skills      - Claude Code のスキルを Codex に共有"
+	@echo "  make codex-config      - Codex の共通設定を ~/.codex/config.toml にマージ"
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
 	@echo "  make vscode-extensions      - VSCode 拡張機能をインストール"
