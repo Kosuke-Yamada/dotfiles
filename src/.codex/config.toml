@@ -1,0 +1,29 @@
+# Codex の共通設定 (dotfiles 管理)
+#
+# ~/.codex/config.toml には Codex アプリが書き込む端末固有の状態
+# (projects の信頼設定・plugins・hooks.state など) が混ざるため、丸ごとリンクはしない。
+# `make codex-config` でこのファイルのキーだけを ~/.codex/config.toml へ上書きマージする。
+# テーブルは再帰的にマージされるため、ここから消したキーは ~/.codex/config.toml 側に残る。
+
+# .env 系の秘密情報は読み書きさせない (.env.sample / .env.example などは許可)
+# Claude Code (src/.claude/settings.json の permissions.deny) と同じファイル名を拒否する
+default_permissions = "workspace-no-env"
+
+[permissions.workspace-no-env]
+extends = ":workspace"
+
+[permissions.workspace-no-env.filesystem.":workspace_roots"]
+"**/.env" = "deny"
+"**/.env.local" = "deny"
+"**/.env.*.local" = "deny"
+"**/.env.dev" = "deny"
+"**/.env.development" = "deny"
+"**/.env.stg" = "deny"
+"**/.env.staging" = "deny"
+"**/.env.prod" = "deny"
+"**/.env.production" = "deny"
+"**/.env.test" = "deny"
+
+[tui]
+# Claude Code の statusline に合わせる: モデル / 5h・週間の使用上限 / スレッド名 / プロジェクト / ブランチ
+status_line = ["model-name", "five-hour-limit", "weekly-limit", "thread-title", "project-name", "git-branch"]
