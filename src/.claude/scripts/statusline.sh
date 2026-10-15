@@ -56,6 +56,12 @@ format_time_until() {
   delta=$(( reset_epoch - now_epoch ))
   [ "$delta" -le 0 ] && { printf "now"; return; }
 
+  format_duration "$delta"
+}
+
+# 秒数を "2d 3h" / "3h 5m" / "5m" 形式にする
+format_duration() {
+  local delta=$1
   local days hours minutes
   days=$(( delta / 86400 ))
   hours=$(( (delta % 86400) / 3600 ))
@@ -215,6 +221,15 @@ usage_line+=$(usage_segment "Session" "$session_pct" "$session_reset")
 usage_line+=$(usage_segment "Week" "$week_pct" "$week_reset")
 usage_line+=$(usage_segment "Fable" "$fable_pct" "$fable_reset")
 usage_line+=$(credits_segment "$extra_used" "$extra_limit" "$extra_util")
+
+# 使用状況 API の取得に失敗し続けているとキャッシュの値が古いまま残るため、
+# 一定時間以上前の値を表示しているときは取得からの経過時間を併記する
+STALE_AFTER=600
+fetched_at=$(printf '%s' "$rate_limits" | jq -r '._fetched_at // 0' 2>/dev/null)
+case "$fetched_at" in ''|*[!0-9]*) fetched_at=0 ;; esac
+if [ "$fetched_at" -gt 0 ] && [ $(( $(date +%s) - fetched_at )) -ge "$STALE_AFTER" ]; then
+  usage_line+=$(printf " ${DIVIDER} ${YELLOW}stale %s${NC}" "$(format_duration $(( $(date +%s) - fetched_at )))")
+fi
 
 # 2 行目は作業内容と作業ディレクトリを区切り記号でつなぐ (片方だけでも成立させる)
 info_line=$(task_segment)
