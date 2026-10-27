@@ -34,6 +34,10 @@ if OS.mac?
   # LaTeX（TeX Live full、GUI アプリなし）と SyncTeX 対応 PDF ビューア
   cask "mactex-no-gui"
   cask "skim"
+
+  # メニューバーにスクリプト出力を表示 (Claude Code / Codex の残クレジット)
+  cask "swiftbar"
+
   brew "skhd"
   brew "yabai"
 

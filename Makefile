@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link codex-skills codex-config brew packages plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
+.PHONY: all init link codex-skills codex-config swiftbar brew packages plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init link
@@ -205,9 +205,37 @@ codex-config:
 		"$(SRC_DIRECTORY)/.codex/config.toml" "$(HOME)/.codex/config.toml"
 
 # ------------------------------------------------------------------------------
+# swiftbar: メニューバーに Claude Code / Codex の月間残クレジットを表示
+# プラグインディレクトリを指定し、ログイン時に SwiftBar を起動する LaunchAgent を登録する
+# LaunchAgent の plist は symlink だと launchd に読まれないことがあるためコピーする
+# ------------------------------------------------------------------------------
+SWIFTBAR_AGENT := local.dotfiles.swiftbar
+swiftbar:
+	@echo ""
+	@echo "[link] SwiftBar プラグインの設定"
+	@echo "------------------------------------------"
+ifeq ($(OS),Darwin)
+	@mkdir -p "$(HOME)/.config/swiftbar"
+	@chmod +x "$(SRC_DIRECTORY)/.config/swiftbar/plugins"/*
+	@ln -snfv "$(SRC_DIRECTORY)/.config/swiftbar/plugins" "$(HOME)/.config/swiftbar/plugins"
+	@defaults write com.ameba.SwiftBar PluginDirectory -string "$(HOME)/.config/swiftbar/plugins"
+	@mkdir -p "$(HOME)/Library/LaunchAgents"
+	@install -m 644 "$(SRC_DIRECTORY)/Library/LaunchAgents/$(SWIFTBAR_AGENT).plist" "$(HOME)/Library/LaunchAgents/$(SWIFTBAR_AGENT).plist"
+	@if [ -d /Applications/SwiftBar.app ]; then \
+		launchctl bootout "gui/$$(id -u)/$(SWIFTBAR_AGENT)" 2>/dev/null || true; \
+		launchctl bootstrap "gui/$$(id -u)" "$(HOME)/Library/LaunchAgents/$(SWIFTBAR_AGENT).plist"; \
+		echo "SwiftBar をログイン時に起動するよう登録しました"; \
+	else \
+		echo "SwiftBar がインストールされていません。make packages の後に make swiftbar を実行してください。"; \
+	fi
+else
+	@echo "macOS ではないためスキップします。"
+endif
+
+# ------------------------------------------------------------------------------
 # link: シンボリックリンクの作成
 # ------------------------------------------------------------------------------
-link: codex-skills codex-config
+link: codex-skills codex-config swiftbar
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
@@ -334,6 +362,7 @@ help:
 	@echo "  make link              - シンボリックリンクを作成"
 	@echo "  make codex-skills      - Claude Code のスキルを Codex に共有"
 	@echo "  make codex-config      - Codex の共通設定を ~/.codex/config.toml にマージ"
+	@echo "  make swiftbar          - メニューバーに AI 使用量を表示 (SwiftBar)"
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
 	@echo "  make vscode-extensions      - VSCode 拡張機能をインストール"
