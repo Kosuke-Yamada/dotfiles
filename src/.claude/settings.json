@@ -13,6 +13,7 @@
       "Bash(git commit *)",
       "Bash(git stash *)",
       "Bash(git switch *)",
+      "Bash(git worktree remove *)",
       "Bash(gh pr view *)",
       "Bash(gh issue view *)"
     ],
