@@ -61,7 +61,7 @@ class RenderTest(unittest.TestCase):
         out = aiusage.render(aiusage.parse_claude(CLAUDE_CACHE), aiusage.parse_codex(CODEX_RESPONSE, NOW), NOW)
         title = out.splitlines()[0]
         # SwiftBar は最初の "|" 以降をパラメータとみなすため、表示部分に "|" を含めない
-        self.assertEqual(title.split(' | ')[0], 'CC 77% · CX 18%')
+        self.assertEqual(title.split(' | ')[0], 'CC 77% CX 18%')
         self.assertIn('--残り $275.23 / $1,200.00', out)
         # Claude の残りが 23% なので警告色になる
         self.assertIn('color=#f5a524', title)
@@ -70,7 +70,7 @@ class RenderTest(unittest.TestCase):
 
     def test_failure_is_shown_with_message(self):
         out = aiusage.render(aiusage.Failure('boom'), aiusage.parse_codex(CODEX_RESPONSE, NOW), NOW)
-        self.assertTrue(out.startswith('CC - · CX 18% |'))
+        self.assertTrue(out.startswith('CC - CX 18% |'))
         self.assertIn('--boom | color=#e5484d', out)
 
     def test_stale_value_is_marked(self):

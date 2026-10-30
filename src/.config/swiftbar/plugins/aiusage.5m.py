@@ -162,7 +162,7 @@ def detail_lines(name: str, r: Result, now: float) -> list:
 
 def render(claude: Result, codex: Result, now: float) -> str:
     # SwiftBar は最初の "|" 以降をパラメータとして解釈するため、区切りに "|" は使えない
-    title = f"{title_segment('CC', claude)} · {title_segment('CX', codex)}"
+    title = f"{title_segment('CC', claude)} {title_segment('CX', codex)}"
     warn = [c for c in (claude, codex) if isinstance(c, Budget) and color_for(c)]
     title_color = f" color={color_for(warn[0])}" if warn else ""
     lines = [
