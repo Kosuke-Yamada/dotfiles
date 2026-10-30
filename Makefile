@@ -309,6 +309,8 @@ endif
 	@mkdir -p "$(HOME)/.claude"
 	@ln -snfv "$(SRC_DIRECTORY)/.claude/CLAUDE.md" "$(HOME)/.claude/CLAUDE.md"
 	@ln -snfv "$(SRC_DIRECTORY)/.claude/settings.json" "$(HOME)/.claude/settings.json"
+	@mkdir -p "$(HOME)/.codex"
+	@ln -snfv "$(SRC_DIRECTORY)/.codex/AGENTS.md" "$(HOME)/.codex/AGENTS.md"
 	@# .claude/commands 配下
 	@if [ -d "$(SRC_DIRECTORY)/.claude/commands" ]; then \
 		echo ""; \
