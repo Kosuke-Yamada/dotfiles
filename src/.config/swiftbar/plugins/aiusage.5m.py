@@ -136,8 +136,8 @@ def color_for(b: Budget) -> Optional[str]:
 
 def title_segment(label: str, r: Result) -> str:
     if isinstance(r, Failure):
-        return f"{label} -"
-    return f"{label} {used_percent(r):.0f}%"
+        return f"{label}-"
+    return f"{label}{used_percent(r):.0f}%"
 
 
 def detail_lines(name: str, r: Result, now: float) -> list:
