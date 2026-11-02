@@ -1,0 +1,19 @@
+prefix_rule(
+    pattern = ["git", "worktree", "remove", "--"],
+    decision = "allow",
+    justification = "ユーザー承認済みの通常のworktree削除を自動許可する。--でオプションを終了し、強制削除は自動許可しない。",
+    match = [
+        "git worktree remove -- .worktrees/feature-a",
+        "git worktree remove -- /tmp/example-worktree",
+    ],
+    not_match = [
+        "git worktree remove --force .worktrees/feature-a",
+        "git worktree remove -f .worktrees/feature-a",
+        "git worktree remove .worktrees/feature-a --force",
+        "git worktree prune",
+        "git worktree add .worktrees/feature-a",
+        "git commit -m test",
+        "git push",
+        "rm -rf .git/worktrees/feature-a",
+    ],
+)
