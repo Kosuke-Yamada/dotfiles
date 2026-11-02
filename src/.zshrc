@@ -255,23 +255,6 @@ fi
 export PATH="/Users/s26310/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 
-# ==============================================================================
-# herdr auto-attach（ターミナル起動時に自動でデフォルトセッションへ）
-# ==============================================================================
-# 対話シェルのみ / herdr・herdr-core・tmux の中では起動しない / herdr がある場合のみ。
-# VSCode の環境解決（zsh -i -l -c）や統合ターミナルでも起動しない。
-# 一時的に無効化したいときは `NO_HERDR=1` を付けて起動する。
-if [[ $- == *i* ]] \
-  && [[ -t 0 && -t 1 ]] \
-  && [[ -z "$VSCODE_RESOLVING_ENVIRONMENT" ]] \
-  && [[ "$TERM_PROGRAM" != "vscode" ]] \
-  && [[ -z "$HERDR_ENV" ]] \
-  && [[ -z "$HC_TERMINAL_ID" ]] \
-  && [[ -z "$TMUX" ]] \
-  && [[ -z "$NO_HERDR" ]]; then
-  type herdr >/dev/null 2>&1 && exec herdr
-fi
-
 # bun (mem-sync CLI)
 export PATH="$HOME/.bun/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
