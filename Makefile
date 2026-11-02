@@ -263,6 +263,12 @@ link: codex-skills codex-config swiftbar
 	@ln -snfv "$(SRC_DIRECTORY)/.config/starship/starship.toml" "$(HOME)/.config/starship/starship.toml"
 	@mkdir -p "$(HOME)/.config/herdr"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/herdr/config.toml" "$(HOME)/.config/herdr/config.toml"
+	@mkdir -p "$(HOME)/.config/herdr-app/mods"
+	@if [ -f "$(HOME)/.config/herdr-app/keys.json" ] && [ ! -L "$(HOME)/.config/herdr-app/keys.json" ]; then \
+		cp -p "$(HOME)/.config/herdr-app/keys.json" "$(HOME)/.config/herdr-app/keys.json.backup-$$(date +%Y%m%d%H%M%S)"; \
+	fi
+	@ln -snfv "$(SRC_DIRECTORY)/.config/herdr-app/keys.json" "$(HOME)/.config/herdr-app/keys.json"
+	@ln -snfv "$(SRC_DIRECTORY)/.config/herdr-app/mods/dotfiles-prefix" "$(HOME)/.config/herdr-app/mods/dotfiles-prefix"
 	@mkdir -p "$(HOME)/.config/fresh"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/fresh/config.json" "$(HOME)/.config/fresh/config.json"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/fresh/init.ts" "$(HOME)/.config/fresh/init.ts"

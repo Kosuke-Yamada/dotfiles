@@ -1,0 +1,11 @@
+{
+  "place": "none",
+  "title": "Herdr shortcuts",
+  "overlay": {
+    "kind": "popup",
+    "at": "top",
+    "offset": 64,
+    "width": 560,
+    "height": 440
+  }
+}
