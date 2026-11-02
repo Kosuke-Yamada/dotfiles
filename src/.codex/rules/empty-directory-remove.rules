@@ -1,0 +1,16 @@
+prefix_rule(
+    pattern = ["rmdir", "--"],
+    decision = "allow",
+    justification = "空ディレクトリの削除を自動許可する。--でオプションを終了し、ファイルや空でないディレクトリは削除しない。",
+    match = [
+        "rmdir -- .worktrees/feature-a",
+        "rmdir -- .git/worktrees/feature-a",
+        "rmdir -- /tmp/empty-child /tmp/empty-parent",
+    ],
+    not_match = [
+        "rmdir -p .worktrees/feature-a",
+        "rmdir .worktrees/feature-a",
+        "rm -rf .worktrees/feature-a",
+        "find .worktrees -delete",
+    ],
+)
