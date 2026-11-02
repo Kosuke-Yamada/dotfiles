@@ -9,8 +9,14 @@
 # Claude Code (src/.claude/settings.json の permissions.deny) と同じファイル名を拒否する
 default_permissions = "workspace-no-env"
 
+# サンドボックス外への昇格要求を人間ではなく自動レビューに回す (Claude Code の auto モード相当)
+approvals_reviewer = "auto_review"
+
 [permissions.workspace-no-env]
 extends = ":workspace"
+
+[permissions.workspace-no-env.network]
+enabled = true
 
 [permissions.workspace-no-env.filesystem.":workspace_roots"]
 "**/.env" = "deny"
