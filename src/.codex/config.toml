@@ -29,6 +29,11 @@ enabled = true
 "**/.env.prod" = "deny"
 "**/.env.production" = "deny"
 "**/.env.test" = "deny"
+# :workspace は .git を読み取り専用にするため、git worktree remove が .git/worktrees/<name> を消せず止まる。
+# commit・worktree 削除ができるよう .git は書き込み可にし、サンドボックス外で実行されうる hooks と config は読み取り専用に保つ
+".git" = "write"
+".git/hooks" = "read"
+".git/config" = "read"
 
 [tui]
 # Claude Code の statusline に合わせる: モデル / 5h・週間の使用上限 / 消費 credits・推定 USD / スレッド名 / プロジェクト / ブランチ
