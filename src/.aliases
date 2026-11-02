@@ -18,7 +18,7 @@ alias mkdir="nocorrect mkdir -p" # 親ディレクトリも作成
 alias gcc="nocorrect gcc"
 alias man="nocorrect man"
 # macOSはBSD ls (-G)、LinuxはGNU ls (--color)
-if [[ "$(uname)" == "Darwin" ]]; then
+if [[ "$OSTYPE" == darwin* ]]; then
     alias ls="nocorrect ls -G"
 else
     alias ls="nocorrect ls --color"

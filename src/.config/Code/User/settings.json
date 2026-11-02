@@ -113,5 +113,6 @@
     "remote.autoForwardPortsSource": "hybrid",
     // --- Live Server ---
     "liveServer.settings.donotShowInfoMsg": true,
-    "makefile.configureOnOpen": true
+    "makefile.configureOnOpen": true,
+    "editor.accessibilitySupport": "on"
 }

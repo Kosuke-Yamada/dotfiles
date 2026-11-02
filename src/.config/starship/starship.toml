@@ -5,11 +5,12 @@
 format = """
 $directory\
 $git_branch\
-$git_status
+$git_status\
+$cmd_duration
 $character"""
 
-# 右側プロンプト（実行時間を表示）
-right_format = """$cmd_duration"""
+# 実行時間も左側に表示し、右側用の starship 起動を省く
+right_format = ""
 
 # コマンド入力の行
 [character]

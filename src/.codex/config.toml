@@ -25,5 +25,7 @@ extends = ":workspace"
 "**/.env.test" = "deny"
 
 [tui]
-# Claude Code の statusline に合わせる: モデル / 5h・週間の使用上限 / スレッド名 / プロジェクト / ブランチ
-status_line = ["model-name", "five-hour-limit", "weekly-limit", "thread-title", "project-name", "git-branch"]
+# Claude Code の statusline に合わせる: モデル / 5h・週間の使用上限 / 消費 credits・推定 USD / スレッド名 / プロジェクト / ブランチ
+# credits と USD は現在のスレッドの推定使用量 (残高ではない)。
+# Enterprise ワークスペースで料金データが提供される場合のみ表示される。
+status_line = ["model-name", "five-hour-limit", "weekly-limit", "thread-credits", "estimated-thread-cost", "thread-title", "project-name", "git-branch"]

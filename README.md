@@ -171,6 +171,14 @@ code --list-extensions | sort > ~/dotfiles/src/.config/Code/extensions.txt
 
 MCP サーバー（context7 / Playwright / serena / github）は `make claude-mcp` で登録されます。GitHub MCP には `GITHUB_TOKEN` 環境変数が必要です（`~/.zshrc.local` に設定）。
 
+#### Codex (`src/.codex/`)
+
+`make codex-config`（`make link` にも含まれる）で共通設定を `~/.codex/config.toml` にマージします。
+端末固有のプロジェクト・プラグイン設定は保持します。反映後は Codex CLI を再起動してください。
+
+下部のステータス行には、モデル、5 時間・週間の使用上限、現在のスレッドの消費 credits・推定金額（USD）、スレッド名、プロジェクト、ブランチを表示します。
+`thread-credits` / `estimated-thread-cost` は Enterprise ワークスペースで料金データが提供される場合のみ表示され、データがない場合は省略されます。購入済み credits の残高や月間合計ではありません。
+
 #### claude-mem（Claude Code / Codex 共通）
 
 `make init` または `make claude-mem` は公式インストーラを実行し、claude-mem を
@@ -222,6 +230,12 @@ sheldon で管理している zsh プラグイン:
 - **zsh-autosuggestions** - コマンド入力補完の提案
 - **zsh-syntax-highlighting** - コマンドのシンタックスハイライト
 - **zsh-completions** - 追加の補完定義
+
+sheldon・starship・zoxide の初期化コードは `${XDG_CACHE_HOME:-~/.cache}/dotfiles/zsh/` にキャッシュします。ツール本体・`.zshrc`・関連設定を更新すると自動で再生成されます。手動で作り直す場合は、このディレクトリ内の `.zsh` ファイルを削除して新しいシェルを開いてください。キャッシュに書き込めない環境でも通常の初期化に戻ります。
+
+標準のプロンプトは zsh の組み込み機能だけで動きます。ディレクトリ・Git ブランチ（worktree を含む）・終了状態の色・1秒以上の実行時間を表示し、Enter のたびに Starship や Git の外部プロセスを起動しません。Git の変更件数は `gst` で確認してください。
+
+Starship の表示を使う場合は `~/.zshrc.local` に `DOTFILES_PROMPT=starship` を設定し、新しいシェルを開いてください。Starship でも右プロンプト用の追加プロセス起動は省きます。標準の表示に戻すには、この設定を削除して `source ~/.zshrc` を実行します。
 
 ## キーバインド
 

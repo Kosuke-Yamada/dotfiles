@@ -6,7 +6,6 @@
   },
   "permissions": {
     "allow": [
-      "Bash(npm run *)",
       "Bash(pnpm *)",
       "Bash(make *)",
       "Bash(git add *)",

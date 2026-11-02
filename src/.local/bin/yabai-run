@@ -1,54 +1,107 @@
-#!/bin/sh
-# yabai -m <args> をタイムアウト付きで実行する。
-#
-# yabai サーバは応答しないアプリ（例: Dock のウィジェット拡張）への
-# Accessibility 問い合わせでイベントループごとハングすることがあり、
-# その間 skhd から叩いたコマンドが無期限にブロックされて溜まっていく。
-# タイムアウトしたらサービスを再起動し、1 回だけ再試行する。
-#
-# 使い方: yabai-run window --grid 1:2:0:0:1:1
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Fcntl qw(:flock SEEK_SET);
+use File::Temp qw(tempfile);
+use IO::Handle;
+use POSIX qw(WNOHANG);
+use Time::HiRes qw(time sleep);
 
-yabai=/opt/homebrew/bin/yabai
-timeout_sec=${YABAI_RUN_TIMEOUT:-2}
-lock_dir=${TMPDIR:-/tmp}/yabai-run.restart.lock
+# 通常操作は2秒で打ち切るが、再起動の完了は最大30秒待つ。
+# 復旧中の入力は溜めずに終了する。flock は異常終了時にも解放される。
+my $yabai = $ENV{YABAI_RUN_BIN} // '/opt/homebrew/bin/yabai';
+sub seconds {
+    my ($name, $default) = @_;
+    my $value = $ENV{$name} // $default;
+    die "yabai-run: $name must be a positive number\n"
+        unless $value =~ /\A\d+(?:\.\d+)?\z/ && $value > 0;
+    return $value;
+}
+my $timeout = seconds('YABAI_RUN_TIMEOUT', 2);
+my $ready_timeout = seconds('YABAI_RUN_READY_TIMEOUT', 30);
+my $restart_timeout = seconds('YABAI_RUN_RESTART_TIMEOUT', 10);
+my $lock_path = ($ENV{TMPDIR} // '/tmp') . "/yabai-run-$<.lock";
+open my $lock, '+>>', $lock_path or die "yabai-run: $lock_path: $!\n";
 
-# alarm は exec 後も引き継がれるため、タイムアウト時は SIGALRM で終了し 142 を返す
-# (macOS には coreutils の timeout が無いので perl で代用する)
-run() {
-	perl -e 'alarm shift; exec @ARGV or die "exec failed: $!\n"' "$timeout_sec" "$yabai" -m "$@"
+sub generation {
+    seek($lock, 0, SEEK_SET) or die "yabai-run: seek: $!\n";
+    return 0 + (<$lock> // 0);
 }
 
-wait_until_ready() {
-	i=0
-	while [ "$i" -lt 10 ]; do
-		run query --spaces --space >/dev/null 2>&1 && return 0
-		sleep 0.2
-		i=$((i + 1))
-	done
-	return 1
+# 親プロセス側で期限を管理し、タイムアウトしたクライアントを必ず回収する。
+# エラー出力は保持し、接続失敗と通常の操作エラーを区別する。
+sub run {
+    my ($limit, $quiet, @args) = @_;
+    my ($err) = tempfile(UNLINK => 1);
+    my $pid = fork();
+    die "yabai-run: fork: $!\n" unless defined $pid;
+    if ($pid == 0) {
+        open STDERR, '>&', $err or die "redirect stderr: $!";
+        if ($quiet) {
+            open STDOUT, '>', '/dev/null' or die "redirect stdout: $!";
+        }
+        exec {$yabai} $yabai, @args;
+        die "yabai-run: exec $yabai: $!\n";
+    }
+    my $deadline = time + $limit;
+    my $rc;
+    while (1) {
+        my $result = waitpid($pid, WNOHANG);
+        if ($result == $pid) {
+            $rc = ($? & 127) ? 128 + ($? & 127) : $? >> 8;
+            last;
+        }
+        die "yabai-run: waitpid: $!\n" if $result == -1;
+        if (time >= $deadline) {
+            kill 'KILL', $pid;
+            waitpid($pid, 0);
+            $rc = 142;
+            last;
+        }
+        sleep 0.01;
+    }
+    seek($err, 0, SEEK_SET);
+    local $/;
+    my $message = <$err> // '';
+    return ($rc, $message);
 }
 
-run "$@"
-rc=$?
-[ "$rc" -eq 142 ] || exit "$rc"
-
-echo "yabai-run: 'yabai -m $*' が ${timeout_sec}s 応答しないため yabai を再起動します" >&2
-
-# 連打で同時にタイムアウトしても再起動は 1 回だけにする
-if mkdir "$lock_dir" 2>/dev/null; then
-	"$yabai" --restart-service
-	sleep 0.5
-	wait_until_ready
-	ready=$?
-	rmdir "$lock_dir"
-else
-	sleep 0.5
-	wait_until_ready
-	ready=$?
-fi
-[ "$ready" -eq 0 ] || {
-	echo "yabai-run: 再起動後も yabai が応答しません" >&2
-	exit 1
+# 再起動中は即終了。開始時の世代を記録し、遅れてタイムアウトした別の
+# コマンドが、復旧したばかりのサービスを再び再起動するのを防ぐ。
+flock($lock, LOCK_SH | LOCK_NB) or exit 75;
+my $generation = generation();
+flock($lock, LOCK_UN) or die "yabai-run: unlock: $!\n";
+my ($rc, $error) = run($timeout, 0, '-m', @ARGV);
+if ($rc != 142 && $error !~ /yabai-msg: failed to connect to socket/) {
+    print STDERR $error;
+    exit $rc;
 }
 
-run "$@"
+flock($lock, LOCK_EX | LOCK_NB) or exit 75;
+exit 75 if generation() != $generation;
+seek($lock, 0, SEEK_SET) or die "yabai-run: seek: $!\n";
+truncate($lock, 0) or die "yabai-run: truncate: $!\n";
+print {$lock} $generation + 1, "\n";
+$lock->flush();
+print STDERR "yabai-run: 応答がないため yabai を再起動します\n";
+($rc, $error) = run($restart_timeout, 0, '--restart-service');
+if ($rc != 0) {
+    print STDERR $error, "yabai-run: 再起動に失敗しました (exit $rc)\n";
+    exit $rc;
+}
+
+my $deadline = time + $ready_timeout;
+while (time < $deadline) {
+    my $remaining = $deadline - time;
+    ($rc, $error) = run($remaining < $timeout ? $remaining : $timeout, 1,
+                        '-m', 'query', '--spaces', '--space');
+    if ($rc == 0) {
+        # 復旧を確認してから元の操作を1回だけ再試行する。
+        ($rc, $error) = run($timeout, 0, '-m', @ARGV);
+        print STDERR $error;
+        exit $rc;
+    }
+    sleep 0.2 if time < $deadline;
+}
+print STDERR "yabai-run: 再起動後 ${ready_timeout}s 経っても応答しません\n";
+exit 1;

@@ -15,7 +15,7 @@ if [[ -n "$TMUX" ]]; then
     # コマンド実行前: running状態を記録
     _tmux_shell_preexec() {
         local pane_id
-        pane_id=$(tmux display-message -p '#{pane_id}' 2>/dev/null)
+        pane_id="$TMUX_PANE"
         [[ -n "$pane_id" ]] && echo "running" > "$_SHELL_STATE_DIR/shell-${pane_id#%}"
     }
 
@@ -23,7 +23,7 @@ if [[ -n "$TMUX" ]]; then
     _tmux_shell_precmd() {
         local exit_code=$?
         local pane_id
-        pane_id=$(tmux display-message -p '#{pane_id}' 2>/dev/null)
+        pane_id="$TMUX_PANE"
         if [[ -n "$pane_id" ]]; then
             if [[ $exit_code -eq 0 ]]; then
                 echo "idle" > "$_SHELL_STATE_DIR/shell-${pane_id#%}"
