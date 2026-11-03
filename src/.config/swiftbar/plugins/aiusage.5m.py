@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 # <swiftbar.title>AI Usage</swiftbar.title>
-# <swiftbar.desc>Claude Code / Codex の月間残クレジットを表示する</swiftbar.desc>
+# <swiftbar.desc>Claude Code / Codex / Copilot の月間使用量を表示する</swiftbar.desc>
 # <swiftbar.hideAbout>true</swiftbar.hideAbout>
 # <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
 # <swiftbar.hideDisablePlugin>true</swiftbar.hideDisablePlugin>
 
-"""SwiftBar プラグイン: Claude Code と Codex の月間クレジット残量をメニューバーに出す。
+"""SwiftBar プラグイン: Claude Code / Codex / Copilot の月間使用率を表示する。
 
 - Claude Code: statusline-refresh.sh が書く ~/.claude/cache/statusline-usage.json の
   extra_usage (セント単位)。キャッシュが古ければ同スクリプトで更新する
   (TTL・失敗時バックオフ・ロックは同スクリプト側が持つ)
 - Codex: ~/.codex/auth.json のトークンで使用状況 API を叩き、
   spend_control.individual_limit (ワークスペースの月間上限, credit 単位) を読む
+- Copilot: gh api /copilot_internal/user の月間使用枠を読む (非公開 API)
 
-macOS 同梱の /usr/bin/python3 (3.9) で動くよう標準ライブラリのみを使う。
+macOS 同梱の /usr/bin/python3 (3.9) と、ログイン済みの gh CLI を使う。
 """
 
 import json
@@ -23,7 +24,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, NamedTuple, Optional, Union
 
@@ -32,6 +33,7 @@ CLAUDE_CACHE = HOME / ".claude/cache/statusline-usage.json"
 CLAUDE_REFRESH = HOME / ".claude/scripts/statusline-refresh.sh"
 CODEX_AUTH = HOME / ".codex/auth.json"
 CODEX_CACHE = HOME / ".cache/aiusage/codex-usage.json"
+COPILOT_CACHE = HOME / ".cache/aiusage/copilot-usage.json"
 CODEX_USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"
 
 # SwiftBar の更新間隔 (5m) より短くして、毎回のメニュー描画で最新値を取りにいく
@@ -54,6 +56,7 @@ class Budget(NamedTuple):
     unit: str  # "usd" | "credit"
     fetched_at: Optional[float]
     reset_at: Optional[float]
+    overage_allowed: Optional[bool] = None
 
 
 class Failure(NamedTuple):
@@ -90,6 +93,37 @@ def parse_codex(resp: dict, fetched_at: Optional[float]) -> Result:
         fetched_at=fetched_at,
         reset_at=limit.get("reset_at"),
     )
+
+
+def parse_copilot(response: dict[str, object], fetched_at: Optional[float]) -> Result:
+    snapshots = response.get("quota_snapshots")
+    if not isinstance(snapshots, dict):
+        return Failure("Copilot の使用枠を取得できません")
+    quota = snapshots.get("premium_interactions")
+    if not isinstance(quota, dict):
+        return Failure("Copilot の月間使用枠がありません")
+    if quota.get("unlimited"):
+        return Failure("Copilot の月間使用枠は無制限です")
+    try:
+        return copilot_budget(quota, response.get("quota_reset_date_utc") or response.get("quota_reset_date"), fetched_at)
+    except (ValueError, TypeError) as error:
+        return Failure(f"Copilot の使用量データが不正です: {error}")
+
+
+def copilot_budget(quota: dict[str, object], reset: object, fetched_at: Optional[float]) -> Budget:
+    limit = quota.get("entitlement")
+    available = quota.get("remaining")
+    if not isinstance(limit, (int, float)) or limit <= 0:
+        raise ValueError("月間使用枠が正の数ではありません")
+    if not isinstance(available, (int, float)) or not 0 <= available <= limit:
+        raise ValueError("月間残量が使用枠の範囲外です")
+    reset_at = None
+    if isinstance(reset, str):
+        reset_at = datetime.fromisoformat(reset.replace("Z", "+00:00")).replace(tzinfo=timezone.utc).timestamp()
+    allowed = quota.get("overage_permitted")
+    unit = "credit" if quota.get("token_based_billing") else "request"
+    return Budget(float(limit - available), float(limit), unit, fetched_at, reset_at,
+                  allowed if isinstance(allowed, bool) else None)
 
 
 # --- 表示 (純粋関数) ---------------------------------------------------------
@@ -155,15 +189,20 @@ def detail_lines(name: str, r: Result, now: float) -> list:
     if r.reset_at:
         reset = datetime.fromtimestamp(r.reset_at).strftime("%m/%d %H:%M")
         lines.append(f"--リセット {reset} (あと {fmt_duration(max(r.reset_at - now, 0))})")
+    if r.overage_allowed is not None:
+        permission = "許可（この枠で停止するとは限りません）" if r.overage_allowed else "不可"
+        lines.append(f"--超過利用: {permission}")
     if r.fetched_at and now - r.fetched_at >= STALE_AFTER:
         lines.append(f"--{fmt_duration(now - r.fetched_at)}前の値 | color=#f5a524")
     return lines
 
 
-def render(claude: Result, codex: Result, now: float) -> str:
+def render(claude: Result, codex: Result, now: float, copilot: Optional[Result] = None) -> str:
     # SwiftBar は最初の "|" 以降をパラメータとして解釈するため、区切りに "|" は使えない
     title = f"{title_segment('CC', claude)} {title_segment('CX', codex)}"
-    warn = [c for c in (claude, codex) if isinstance(c, Budget) and color_for(c)]
+    if copilot is not None:
+        title += f" {title_segment('CP', copilot)}"
+    warn = [c for c in (claude, codex, copilot) if isinstance(c, Budget) and color_for(c)]
     title_color = f" color={color_for(warn[0])}" if warn else ""
     lines = [
         f"{title} | font=Menlo size=12{title_color}",
@@ -171,6 +210,7 @@ def render(claude: Result, codex: Result, now: float) -> str:
         "月間クレジット",
         *detail_lines("Claude Code", claude, now),
         *detail_lines("Codex", codex, now),
+        *(detail_lines("GitHub Copilot", copilot, now) if copilot is not None else []),
         "---",
         "今すぐ更新 | refresh=true",
     ]
@@ -261,9 +301,41 @@ def load_codex(now: float, fetch: Callable[[], dict] = fetch_codex_usage) -> Res
         return Failure(error)
 
 
+def fetch_copilot_usage() -> dict[str, object]:
+    # gh に認証を任せ、トークンを別ファイルへ複製しない。
+    completed = subprocess.run(["gh", "api", "/copilot_internal/user"], env=child_env(),
+                               capture_output=True, text=True, timeout=15, check=False)
+    if completed.returncode:
+        raise RuntimeError(f"Copilot の取得に失敗しました (gh auth login を確認): {completed.stderr.strip()}")
+    response = json.loads(completed.stdout)
+    if not isinstance(response, dict):
+        raise ValueError("Copilot API の応答が JSON オブジェクトではありません")
+    return response
+
+
+def load_copilot(now: float, fetch: Callable[[], dict[str, object]] = fetch_copilot_usage) -> Result:
+    try:
+        response = fetch()
+        result = parse_copilot(response, now)
+        if isinstance(result, Failure):
+            return result
+        COPILOT_CACHE.parent.mkdir(parents=True, exist_ok=True)
+        temporary = COPILOT_CACHE.with_suffix(f".tmp.{os.getpid()}")
+        temporary.write_text(json.dumps({"_fetched_at": now, "response": response}))
+        temporary.replace(COPILOT_CACHE)
+        return result
+    except (OSError, ValueError, RuntimeError, subprocess.TimeoutExpired) as error:
+        message = f"Copilot の使用量を取得できません: {error}"
+    try:
+        cached = read_json(COPILOT_CACHE)
+        return parse_copilot(cached.get("response") or {}, cached.get("_fetched_at"))
+    except (OSError, ValueError):
+        return Failure(message)
+
+
 def main() -> int:
     now = time.time()
-    print(render(load_claude(now), load_codex(now), now))
+    print(render(load_claude(now), load_codex(now), now, load_copilot(now)))
     return 0
 
 
