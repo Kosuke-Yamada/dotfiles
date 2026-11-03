@@ -195,12 +195,12 @@
     "when": "!terminalFocus"
   },
   {
-    "key": "mod+shift+n",
+    "key": "mod+n",
     "command": "chat.newLocal",
     "when": "!terminalFocus"
   },
   {
-    "key": "mod+alt+n",
+    "key": "mod+e",
     "command": "chat.newWithoutProject",
     "when": "!terminalFocus"
   },
