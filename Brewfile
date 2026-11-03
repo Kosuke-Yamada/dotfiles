@@ -23,6 +23,7 @@ brew "node"
 if OS.mac?
   cask "claude-code"
   cask "codex"
+  cask "t3-code"
 end
 
 # macOS only

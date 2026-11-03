@@ -30,6 +30,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | エディタ | [Visual Studio Code](https://code.visualstudio.com/) | - | 2026-09 | GUI エディタ |
 | AIエージェント | [Claude Code](https://claude.com/product/claude-code) | 2.1.206 | 2026-07 | ターミナル AI コーディングエージェント (macOS) |
 | AIエージェント | [Codex](https://github.com/openai/codex) | 0.145.0 | 2026-07 | OpenAI のターミナル AI コーディングエージェント (macOS) |
+| AIエージェントGUI | [T3 Code](https://t3.codes/) | 0.1.6 | 2026-11 | AI コーディングエージェントのデスクトップアプリ (macOS) |
 
 ## セットアップ
 
@@ -57,6 +58,7 @@ make all    # または make init && make link
 | `make link` | シンボリックリンクを作成 |
 | `make codex-skills` | Claude Code のスキルを Codex に共有 |
 | `make codex-config` | Codex の共通設定を `~/.codex/config.toml` にマージ |
+| `make t3-keybindings` | T3 Code のキー設定を配置（既存ファイルはバックアップ） |
 | `make claude-mcp` | Claude Code の MCP サーバーを設定 |
 | `make claude-mem` | claude-mem を Claude Code と Codex にインストール |
 | `make vscode-extensions` | VS Code 拡張機能をインストール |
@@ -65,7 +67,7 @@ make all    # または make init && make link
 #### `make init` の処理内容
 
 1. **Homebrew のインストール** - 未インストールの場合のみ
-2. **パッケージのインストール** - Brewfile に定義されたツール群（Claude Code / Codex を含む）
+2. **パッケージのインストール** - Brewfile に定義されたツール群（Claude Code / Codex / T3 Code を含む）
 3. **Sheldon プラグインのインストール** - zsh プラグインの取得
 4. **Claude Code MCP サーバーの設定** - context7 / Playwright / serena / github
 5. **claude-mem のインストール** - Claude Code と Codex へ共有メモリ機能を登録
@@ -92,6 +94,8 @@ dotfiles/
     ├── .tmux.conf            # tmux 設定
     ├── .zshrc                # zsh 設定
     ├── .zshrc.local.example  # ローカル設定のサンプル
+    ├── .t3/userdata/         # T3 Code のキー設定（keybindings.json）
+    ├── .local/bin/           # t3-toggle などのコマンド
     ├── .claude/              # Claude Code 設定（AI エージェント）
     │   ├── CLAUDE.md         # グローバル指示
     │   ├── settings.json     # 権限・プラグイン・MCP 等の設定
@@ -132,6 +136,31 @@ dotfiles/
 既定値付きのフルテンプレート（全設定項目とコメント）は `leaf --config` で生成・確認できます。アプリ内キーバインドは leaf 起動中に `?` で表示できます。
 
 > leaf は Homebrew（`leaf-markdown-viewer`）で管理しているため、更新は `brew upgrade` を使用します。自己更新機能の `leaf --update` は使いません（Homebrew の管理外にバイナリが分岐するため）。
+
+### T3 Code 設定
+
+macOS では `make init` の Homebrew Bundle 処理で `t3-code` cask をインストールします。
+本体だけをインストールする場合は `brew install --cask t3-code` を実行します。
+
+`make link` または `make t3-keybindings` で、`src/.t3/userdata/keybindings.json` を
+`~/.t3/userdata/keybindings.json` にリンクします。既存の通常ファイルは同じディレクトリへ
+日時付きでバックアップします。履歴・認証情報など、ほかの `.t3` 配下のデータは管理対象にしません。
+キー設定が反映されない場合は T3 Code を再起動してください。
+
+`make link` で配置される `t3-toggle` は、T3 Code が最前面なら非表示にし、それ以外なら
+前面に表示します。未起動なら起動します。macOS の skhd 設定では `Ctrl+T` に割り当てています。
+このグローバルキーは、zsh の文字入れ替えや Fresh のコマンドパレットなど、ほかのアプリの `Ctrl+T` より優先されます。
+
+| キー | 操作 |
+|------|------|
+| `Ctrl+T` | T3 Code の前面表示／非表示（グローバル、macOS） |
+| `Cmd+T` | 通常の新規チャット（必要に応じてプロジェクト選択） |
+| `Cmd+N` | 現在のプロジェクトで新規チャット |
+| `Cmd+E` | プロジェクトなしで新規チャット |
+
+上記の新規チャット操作は内蔵ターミナルにフォーカスがないときに有効です。
+ターミナル内の `Cmd+N` は新規ターミナル作成です。`Cmd+T` は右パネルの新規タブより
+新規チャット作成を優先します。`Cmd+C` のコピー操作は変更していません。
 
 ### VS Code 拡張機能
 
@@ -221,7 +250,7 @@ skhd と yabai を使用するには、アクセシビリティ権限が必要�
 
 - ghostty、skhd、yabai は macOS 専用のため、Linux ではインストールされません
 - フォント（HackGen）も macOS 専用です
-- Claude Code / Codex は Homebrew cask でのみ提供されるため、Linux ではインストールされません（Linux では各公式インストーラを利用してください）
+- この Brewfile の Claude Code / Codex / T3 Code は macOS 専用の cask として登録しています。Linux では各公式インストーラを利用してください。
 
 ### zsh プラグイン
 
@@ -252,6 +281,8 @@ Starship の表示を使う場合は `~/.zshrc.local` に `DOTFILES_PROMPT=stars
 | leaf | `Ctrl+F` | ドキュメント内を検索 |
 | leaf | `Ctrl+W` | ウォッチモード（変更時の自動リロード）の切替 |
 | ghostty | `Ctrl+G` | Quick Terminal の表示/非表示 |
+| T3 Code + skhd | `Ctrl+T` | T3 Code の前面表示／非表示（ほかのアプリの同じキーより優先） |
+| T3 Code | `Cmd+T` / `Cmd+N` / `Cmd+E` | 通常／現在のプロジェクト／プロジェクトなしで新規チャット |
 | skhd + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
 
 ## ドキュメント

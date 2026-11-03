@@ -16,6 +16,10 @@ macOS 専用のホットキー（skhd）とタイリングウィンドウマネ�
 | `Alt+Return` | open -na "Ghostty" | Ghostty ターミナルを起動 |
 | `Alt+B` | open -na "Arc" | Arc ブラウザを起動 |
 | `Alt+E` | open -na "Finder" | Finder を起動 |
+| `Ctrl+T` | ~/.local/bin/t3-toggle | T3 Code の前面表示／非表示（未起動なら起動） |
+
+`t3-toggle` は `make link` で配置します。`Ctrl+T` はグローバルに有効で、
+zsh の文字入れ替えや Fresh のコマンドパレットなど、同じキーを使う操作より優先されます。
 
 ## ウィンドウフォーカス移動
 
