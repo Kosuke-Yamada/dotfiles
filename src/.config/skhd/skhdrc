@@ -14,6 +14,7 @@
 alt - return : open -na "Ghostty"
 alt - b      : open -na "Arc"
 alt - e      : open -na "Finder"
+ctrl - t : $HOME/.local/bin/t3-toggle
 
 # ===========================================
 # ウィンドウフォーカス移動（HJKL）
