@@ -1,0 +1,24 @@
+#!/bin/sh
+# Swift ヘルパーを一度だけコンパイルし、以後はキャッシュを実行する。
+set -eu
+if [ "$(uname -s)" != Darwin ]; then
+    echo 'app-toggle: macOS 専用のコマンドです。' >&2
+    exit 1
+fi
+if [ "$#" -ne 1 ]; then
+    echo 'Usage: app-toggle <bundle-id> | --build' >&2
+    exit 2
+fi
+source_file="$(dirname "$0")/../lib/app-toggle.swift"
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/app-toggle"
+binary="$cache_dir/app-toggle"
+if [ ! -x "$binary" ] || [ "$source_file" -nt "$binary" ]; then
+    mkdir -p "$cache_dir"
+    temporary=$(mktemp "$cache_dir/app-toggle.XXXXXX")
+    trap 'rm -f "$temporary"' EXIT HUP INT TERM
+    /usr/bin/xcrun swiftc -O -module-cache-path "$cache_dir/modules" "$source_file" -o "$temporary"
+    chmod +x "$temporary"
+    mv -f "$temporary" "$binary"
+fi
+if [ "$1" = --build ]; then exit 0; fi
+exec "$binary" "$1" "$(dirname "$0")/yabai-run"

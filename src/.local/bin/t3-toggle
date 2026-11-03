@@ -1,44 +1,4 @@
 #!/bin/sh
-# macOS: T3 Code が最前面なら隠し、それ以外なら前面に表示する。
+# macOS: T3 Code を現在のディスプレイ・デスクトップで表示切り替えする。
 set -eu
-
-if [ "$(uname -s)" != Darwin ]; then
-    echo 't3-toggle: macOS 専用のコマンドです。' >&2
-    exit 1
-fi
-
-action=$(/usr/bin/osascript -l JavaScript <<'JXA'
-ObjC.import('AppKit');
-
-const bundleID = 'com.t3tools.t3code';
-const apps = $.NSRunningApplication.runningApplicationsWithBundleIdentifier(bundleID);
-
-if (apps.count === 0) {
-    'launch';
-} else {
-    const app = apps.objectAtIndex(0);
-    const shouldHide = Boolean(app.active);
-    if (shouldHide) {
-        app.hide;
-    } else {
-        app.unhide;
-        app.activateWithOptions($.NSApplicationActivateIgnoringOtherApps);
-    }
-    // macOS の表示切り替えは非同期のため、実際の状態で成否を判定する。
-    let completed = false;
-    for (let attempt = 0; attempt < 20; attempt += 1) {
-        $.NSRunLoop.currentRunLoop.runUntilDate($.NSDate.dateWithTimeIntervalSinceNow(0.05));
-        completed = shouldHide ? Boolean(app.hidden) : Boolean(app.active);
-        if (completed) break;
-    }
-    if (!completed) {
-        throw new Error('t3-toggle: T3 Code の表示切り替えが完了しませんでした。');
-    }
-    'done';
-}
-JXA
-)
-
-if [ "$action" = launch ]; then
-    /usr/bin/open -b com.t3tools.t3code
-fi
+exec "$(dirname "$0")/app-toggle" com.t3tools.t3code

@@ -15,7 +15,7 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
-.PHONY: all init link codex-skills codex-config swiftbar brew packages plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
+.PHONY: all init link codex-skills codex-config swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init link
@@ -27,7 +27,7 @@ all: init link
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages plugins claude-mcp claude-mem vscode-extensions skim-setup macos-setup
+init: brew packages herdr-app plugins claude-mcp claude-mem vscode-extensions skim-setup macos-setup
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -54,6 +54,25 @@ packages: brew
 	@echo "[init] Brewfile からパッケージをインストール"
 	@echo "------------------------------------------"
 	brew bundle --file="$(DOT_DIRECTORY)/Brewfile"
+
+# Herdr デスクトップ版（Homebrew の herdr はターミナル版）
+herdr-app:
+	@echo ""
+	@echo "[init] Herdr デスクトップ版のインストール"
+	@set -eu; \
+	if [ "$(OS)" != Darwin ] && [ "$(OS)" != Linux ]; then \
+		echo "対応する OS ではないためスキップします。"; \
+	elif command -v herdr-app >/dev/null 2>&1 || \
+	     [ -x "$(HOME)/Applications/Herdr.app/Contents/MacOS/Herdr" ] || \
+	     [ -x "/Applications/Herdr.app/Contents/MacOS/Herdr" ] || \
+	     [ -x "$(HOME)/.local/bin/herdr-app" ]; then \
+		echo "Herdr デスクトップ版は導入済みです。スキップします。"; \
+	else \
+		installer=$$(mktemp); \
+		trap 'rm -f "$$installer"' EXIT HUP INT TERM; \
+		curl -fsSL https://releases.herdr.dev/app/install.sh -o "$$installer"; \
+		/bin/sh "$$installer"; \
+	fi
 
 # Sheldon プラグインのインストール
 plugins: packages
@@ -317,6 +336,11 @@ endif
 			fi; \
 		done; \
 	fi
+ifeq ($(OS),Darwin)
+	@mkdir -p "$(HOME)/.local/lib"
+	@ln -snfv "$(SRC_DIRECTORY)/.local/lib/app-toggle.swift" "$(HOME)/.local/lib/app-toggle.swift"
+	@"$(HOME)/.local/bin/app-toggle" --build
+endif
 	@# ホームディレクトリ配下（個別ファイル）
 	@echo ""
 	@echo "ホームディレクトリ配下の設定ファイルをリンク中..."
@@ -375,6 +399,7 @@ help:
 	@echo "使用方法:"
 	@echo "  make all               - init と link を実行（フルセットアップ）"
 	@echo "  make init              - Homebrew とパッケージをインストール"
+	@echo "  make herdr-app         - Herdr デスクトップ版をインストール"
 	@echo "  make link              - シンボリックリンクを作成"
 	@echo "  make codex-skills      - Claude Code のスキルを Codex に共有"
 	@echo "  make codex-config      - Codex の共通設定を ~/.codex/config.toml にマージ"

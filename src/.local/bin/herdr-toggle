@@ -1,0 +1,4 @@
+#!/bin/sh
+# macOS: Herdr を現在のディスプレイ・デスクトップで表示切り替えする。
+set -eu
+exec "$(dirname "$0")/app-toggle" dev.herdr.app

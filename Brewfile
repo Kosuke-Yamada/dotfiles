@@ -32,6 +32,15 @@ if OS.mac?
   cask "ghostty"
   cask "visual-studio-code"
 
+  # AI desktop apps
+  cask "chatgpt"
+  cask "google-gemini"
+  cask "claude"
+
+  # Work apps
+  cask "slack"
+  cask "notion"
+
   # LaTeX（TeX Live full、GUI アプリなし）と SyncTeX 対応 PDF ビューア
   cask "mactex-no-gui"
   cask "skim"
