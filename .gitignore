@@ -6,3 +6,6 @@ src/.zshrc.local
 # Serena AI設定
 .serena/
 .dmux/
+
+# Herdr が実行時に生成する型定義
+src/.config/herdr-app/mods/dotfiles-prefix/gpui-kit.d.ts
