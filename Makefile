@@ -235,7 +235,15 @@ endif
 # ------------------------------------------------------------------------------
 # link: シンボリックリンクの作成
 # ------------------------------------------------------------------------------
-link: codex-skills codex-config swiftbar
+.PHONY: t3-keybindings
+t3-keybindings:
+	@mkdir -p "$(HOME)/.t3/userdata"
+	@if [ -f "$(HOME)/.t3/userdata/keybindings.json" ] && [ ! -L "$(HOME)/.t3/userdata/keybindings.json" ]; then \
+		cp -p "$(HOME)/.t3/userdata/keybindings.json" "$(HOME)/.t3/userdata/keybindings.json.backup-$$(date +%Y%m%d%H%M%S)" || exit 1; \
+	fi
+	@ln -snfv "$(SRC_DIRECTORY)/.t3/userdata/keybindings.json" "$(HOME)/.t3/userdata/keybindings.json"
+
+link: codex-skills codex-config swiftbar t3-keybindings
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
@@ -244,7 +252,7 @@ link: codex-skills codex-config swiftbar
 	@echo "ホームディレクトリのドットファイルをリンク中..."
 	@cd "$(SRC_DIRECTORY)" && \
 	for f in .??*; do \
-		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".codex" ] || [ "$$f" = ".local" ]; then \
+		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".codex" ] || [ "$$f" = ".local" ] || [ "$$f" = ".t3" ]; then \
 			continue; \
 		fi; \
 		if [ -e "$(HOME)/$$f" ] && [ ! -L "$(HOME)/$$f" ]; then \
