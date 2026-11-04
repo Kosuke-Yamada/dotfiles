@@ -137,25 +137,6 @@ eza がインストールされている場合のみ有効になります。
 |------------|------|
 | `gua` | dev と main を最新化して元のブランチに戻る |
 
-## tmux
-
-| エイリアス/関数 | 展開後 | 説明 |
-|-----------------|--------|------|
-| `tmuxn` | `tmux new -s` | 新規セッション作成（`tmuxn <name>`） |
-| `tmuxl` | `tmux ls` | セッション一覧 |
-| `tmuxa` | `tmux a -t` | セッション再接続（`tmuxa <name>`） |
-| `tmuxd` | 関数 | セッション削除（`tmuxd <name>` または `tmuxd all`） |
-
-### tmuxd 関数
-
-```bash
-# 特定のセッションを削除
-tmuxd my-session
-
-# 全セッションを削除（kill-server）
-tmuxd all
-```
-
 ## herdr
 
 tmux 風の AI エージェント対応ターミナルマルチプレクサ。ターミナル起動時に `.zshrc` が自動でデフォルトセッションへアタッチします（`NO_HERDR=1` を付けて起動すると無効化）。

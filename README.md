@@ -12,7 +12,6 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | プラグイン管理 | [sheldon](https://github.com/rossmacarthur/sheldon) | 0.8.5 | 2025-12 | zsh プラグインマネージャー |
 | プロンプト | [starship](https://starship.rs/) | 1.24.1 | 2025-12 | カスタマイズ可能なプロンプト |
 | ターミナル | [herdr](https://herdr.dev) | 0.7.5 | 2026-07 | AI エージェント対応ターミナルマルチプレクサ（デフォルト） |
-| ターミナル | [tmux](https://github.com/tmux/tmux) | - | 2026-01 | ターミナルマルチプレクサ（設定ファイルのみ） |
 | ターミナル | [ghostty](https://ghostty.org/) | 1.2.3 | 2025-12 | ターミナルエミュレータ (macOS) |
 | ホットキー | [skhd](https://github.com/koekeishiya/skhd) | 0.3.9 | 2025-12 | ホットキーデーモン (macOS) |
 | ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | 2025-12 | タイリングウィンドウマネージャー (macOS) |
@@ -91,7 +90,6 @@ dotfiles/
     ├── .aliases              # エイリアス定義
     ├── .functions            # カスタム関数定義
     ├── .gitconfig            # Git 設定
-    ├── .tmux.conf            # tmux 設定
     ├── .zshrc                # zsh 設定
     ├── .zshrc.local.example  # ローカル設定のサンプル
     ├── .t3/userdata/         # T3 Code のキー設定（keybindings.json）
@@ -292,7 +290,6 @@ Starship の表示を使う場合は `~/.zshrc.local` に `DOTFILES_PROMPT=stars
 - [Git コマンド](./docs/git.md)
 - [Fresh エディタ](./docs/fresh.md)
 - [herdr キーバインド](./docs/herdr.md)
-- [tmux キーバインド](./docs/tmux.md)
 - [skhd & yabai キーバインド](./docs/skhd-yabai.md)
 
 ## ライセンス

@@ -94,22 +94,6 @@ alias gbr="gh browse"          # ブラウザでリポジトリを開く
 alias gua="git fetch origin && git checkout dev && git pull origin dev && git checkout main && git pull origin main && git checkout -"
 
 # ==============================================================================
-# tmux
-# ==============================================================================
-alias tmuxn="tmux new -s"      # 新規セッション作成 (tmuxn <name>)
-alias tmuxl="tmux ls"          # セッション一覧
-alias tmuxa="tmux a -t"        # セッション再接続 (tmuxa <name>)
-
-# セッション削除 (tmuxd <name> or tmuxd all)
-tmuxd() {
-    if [[ "$1" == "all" ]]; then
-        tmux kill-server
-    else
-        tmux kill-session -t "$1"
-    fi
-}
-
-# ==============================================================================
 # herdr
 # ==============================================================================
 alias hd="herdr"                       # 起動 / デフォルトセッションにアタッチ

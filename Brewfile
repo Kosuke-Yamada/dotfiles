@@ -1,5 +1,4 @@
 # Terminal
-brew "tmux"
 brew "herdr"
 brew "fresh-editor"
 brew "sheldon"
