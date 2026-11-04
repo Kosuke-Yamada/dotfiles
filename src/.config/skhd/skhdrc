@@ -14,8 +14,8 @@
 alt - return : open -na "Ghostty"
 alt - b      : open -na "Arc"
 alt - e      : open -na "Finder"
-ctrl - t : $HOME/.local/bin/t3-toggle
-ctrl - f : $HOME/.local/bin/herdr-toggle
+ctrl + cmd - t : $HOME/.local/bin/t3-toggle
+ctrl + cmd - f : $HOME/.local/bin/herdr-toggle
 ctrl + cmd - o : $HOME/.local/bin/app-toggle com.openai.codex
 ctrl + cmd - g : $HOME/.local/bin/app-toggle com.google.GeminiMacOS
 ctrl + cmd - c : $HOME/.local/bin/app-toggle com.anthropic.claudefordesktop
