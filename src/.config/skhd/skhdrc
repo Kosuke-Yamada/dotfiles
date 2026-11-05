@@ -15,8 +15,8 @@ alt - return : open -na "Ghostty"
 alt - b      : open -na "Arc"
 alt - e      : open -na "Finder"
 # Caps Lock は Karabiner-Elements で Hyper に変換する
-hyper - t : $HOME/.local/bin/t3-toggle
-hyper - f : $HOME/.local/bin/herdr-toggle
+hyper - f : $HOME/.local/bin/t3-toggle
+hyper - b : $HOME/.local/bin/app-toggle com.google.Chrome
 hyper - o : $HOME/.local/bin/app-toggle com.openai.codex
 hyper - g : $HOME/.local/bin/app-toggle com.google.GeminiMacOS
 hyper - c : $HOME/.local/bin/app-toggle com.anthropic.claudefordesktop
