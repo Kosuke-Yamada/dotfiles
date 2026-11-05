@@ -24,6 +24,7 @@ hyper - s : $HOME/.local/bin/app-toggle com.tinyspeck.slackmacgap
 hyper - n : $HOME/.local/bin/app-toggle notion.id
 hyper - m : $HOME/.local/bin/app-toggle com.meta.endo
 hyper - k : $HOME/.local/bin/app-toggle com.amazon.Lassen
+hyper - v : $HOME/.local/bin/app-toggle com.microsoft.VSCode
 
 # ===========================================
 # ウィンドウフォーカス移動（HJKL）
