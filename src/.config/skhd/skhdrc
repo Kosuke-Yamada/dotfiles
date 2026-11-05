@@ -14,13 +14,14 @@
 alt - return : open -na "Ghostty"
 alt - b      : open -na "Arc"
 alt - e      : open -na "Finder"
-ctrl + cmd - t : $HOME/.local/bin/t3-toggle
-ctrl + cmd - f : $HOME/.local/bin/herdr-toggle
-ctrl + cmd - o : $HOME/.local/bin/app-toggle com.openai.codex
-ctrl + cmd - g : $HOME/.local/bin/app-toggle com.google.GeminiMacOS
-ctrl + cmd - c : $HOME/.local/bin/app-toggle com.anthropic.claudefordesktop
-ctrl + cmd - s : $HOME/.local/bin/app-toggle com.tinyspeck.slackmacgap
-ctrl + cmd - n : $HOME/.local/bin/app-toggle notion.id
+# Caps Lock は Karabiner-Elements で Hyper に変換する
+hyper - t : $HOME/.local/bin/t3-toggle
+hyper - f : $HOME/.local/bin/herdr-toggle
+hyper - o : $HOME/.local/bin/app-toggle com.openai.codex
+hyper - g : $HOME/.local/bin/app-toggle com.google.GeminiMacOS
+hyper - c : $HOME/.local/bin/app-toggle com.anthropic.claudefordesktop
+hyper - s : $HOME/.local/bin/app-toggle com.tinyspeck.slackmacgap
+hyper - n : $HOME/.local/bin/app-toggle notion.id
 
 # ===========================================
 # ウィンドウフォーカス移動（HJKL）

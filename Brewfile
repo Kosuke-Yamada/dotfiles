@@ -49,6 +49,7 @@ if OS.mac?
 
   brew "skhd"
   brew "yabai"
+  cask "karabiner-elements"
 
   # Fonts
   cask "font-hackgen"

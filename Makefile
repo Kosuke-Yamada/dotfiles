@@ -262,7 +262,23 @@ t3-keybindings:
 	fi
 	@ln -snfv "$(SRC_DIRECTORY)/.t3/userdata/keybindings.json" "$(HOME)/.t3/userdata/keybindings.json"
 
-link: codex-skills codex-config swiftbar t3-keybindings
+# Karabiner はファイル単体の symlink では変更を検知しないため、通常ファイルとして配置する
+.PHONY: karabiner-config
+karabiner-config:
+ifeq ($(OS),Darwin)
+	@set -eu; \
+	mkdir -p "$(HOME)/.config/karabiner"; \
+	if ! cmp -s "$(SRC_DIRECTORY)/.config/karabiner/karabiner.json" "$(HOME)/.config/karabiner/karabiner.json"; then \
+		if [ -e "$(HOME)/.config/karabiner/karabiner.json" ] || [ -L "$(HOME)/.config/karabiner/karabiner.json" ]; then \
+			mv "$(HOME)/.config/karabiner/karabiner.json" "$(HOME)/.config/karabiner/karabiner.json.backup-$$(date +%Y%m%d%H%M%S)"; \
+		fi; \
+		cp "$(SRC_DIRECTORY)/.config/karabiner/karabiner.json" "$(HOME)/.config/karabiner/karabiner.json"; \
+	fi
+else
+	@echo "macOS ではないためスキップします。"
+endif
+
+link: codex-skills codex-config swiftbar t3-keybindings karabiner-config
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
