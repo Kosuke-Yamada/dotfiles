@@ -27,7 +27,7 @@ all: init link
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages herdr-app plugins claude-mcp claude-mem vscode-extensions skim-setup macos-setup
+init: brew packages herdr-app plugins claude-mcp claude-mem vscode-extensions skim-setup macos-setup karabiner-config
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
