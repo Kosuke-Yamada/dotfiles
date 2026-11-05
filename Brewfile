@@ -27,7 +27,7 @@ end
 
 # macOS only
 if OS.mac?
-  tap "koekeishiya/formulae"
+  tap "asmvik/formulae"
   cask "ghostty"
   cask "visual-studio-code"
 
@@ -47,8 +47,8 @@ if OS.mac?
   # メニューバーにスクリプト出力を表示 (Claude Code / Codex の残クレジット)
   cask "swiftbar"
 
-  brew "skhd"
-  brew "yabai"
+  brew "asmvik/formulae/skhd"
+  brew "asmvik/formulae/yabai"
   cask "karabiner-elements"
 
   # Fonts
