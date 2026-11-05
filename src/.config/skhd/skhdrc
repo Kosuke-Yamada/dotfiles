@@ -17,7 +17,7 @@ alt - e      : open -na "Finder"
 # Caps Lock は Karabiner-Elements で Hyper に変換する
 hyper - f : $HOME/.local/bin/t3-toggle
 hyper - b : $HOME/.local/bin/app-toggle com.google.Chrome
-hyper - o : $HOME/.local/bin/app-toggle com.openai.codex
+hyper - d : $HOME/.local/bin/app-toggle com.openai.codex
 hyper - g : $HOME/.local/bin/app-toggle com.google.GeminiMacOS
 hyper - c : $HOME/.local/bin/app-toggle com.anthropic.claudefordesktop
 hyper - s : $HOME/.local/bin/app-toggle com.tinyspeck.slackmacgap
