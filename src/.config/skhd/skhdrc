@@ -22,6 +22,7 @@ hyper - g : $HOME/.local/bin/app-toggle com.google.GeminiMacOS
 hyper - c : $HOME/.local/bin/app-toggle com.anthropic.claudefordesktop
 hyper - s : $HOME/.local/bin/app-toggle com.tinyspeck.slackmacgap
 hyper - n : $HOME/.local/bin/app-toggle notion.id
+hyper - m : $HOME/.local/bin/app-toggle com.meta.endo
 
 # ===========================================
 # ウィンドウフォーカス移動（HJKL）
