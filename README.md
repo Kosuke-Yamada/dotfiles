@@ -85,7 +85,7 @@ ARM 版を選択します。既存の Intel 版は削除しません。make の�
 #### `make init` の処理内容
 
 1. **Homebrew の選択・インストール** - OS / CPU に合う配置を選択し、なければ導入
-2. **パッケージのインストール** - Brewfile に定義されたツール群（macOS では Claude Code / Codex / T3 Code、共通で Node.js / uv / gh / jq を含む）。yabai / skhd の formula だけを明示的に信頼。Homebrew 外で導入済みのアプリ（手動導入や MDM 配布で `/Applications` にあるもの）は、取り込みに sudo が必要になるため cask をスキップして既存アプリを使う
+2. **パッケージのインストール** - Brewfile に定義されたツール群（macOS では Claude Code / Codex / Muse Code / T3 Code、共通で Node.js / uv / gh / jq を含む）。yabai / skhd の formula だけを明示的に信頼。Homebrew 外で導入済みのアプリ（手動導入や MDM 配布で `/Applications` にあるもの）は、取り込みに sudo が必要になるため cask をスキップして既存アプリを使う
 3. **Sheldon プラグインのインストール** - zsh プラグインの取得
 4. **Claude Code MCP サーバーの設定** - context7 / Playwright / serena / github
 5. **claude-mem のインストール** - Claude Code と Codex へ共有メモリ機能を登録
@@ -303,7 +303,7 @@ skhd と yabai を使用するには、アクセシビリティ権限が必要�
 
 - ghostty、skhd、yabai は macOS 専用のため、Linux ではインストールされません
 - フォント（HackGen）も macOS 専用です
-- この Brewfile の Claude Code / Codex / T3 Code は macOS 専用の cask として登録しています。Linux では各公式インストーラを利用してください。
+- この Brewfile の Claude Code / Codex / Muse Code / T3 Code は macOS 専用の cask として登録しています。Linux では各公式インストーラを利用してください。
 
 ### zsh プラグイン
 
