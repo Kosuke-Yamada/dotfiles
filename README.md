@@ -109,6 +109,8 @@ gh auth login     # GitHub にログイン（Copilot の表示と git の認証�
 ```
 
 skhd / yabai / Karabiner-Elements / SwiftBar は初回起動時に macOS の権限許可（アクセシビリティなど）が必要です。
+Karabiner-Elements（Caps Lock → Hyper）は、システム設定 > 一般 > ログイン項目と機能拡張 > ドライバ機能拡張 で
+`.Karabiner-VirtualHIDDevice-Manager` を、プライバシーとセキュリティ > 入力監視 で `karabiner_grabber` / `Karabiner-Core-Service` を有効にしてください。
 
 ## ディレクトリ構成
 
