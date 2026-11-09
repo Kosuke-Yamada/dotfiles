@@ -1,11 +1,257 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "attribution": {
-    "commit": "",
-    "pr": ""
+  "$schema" : "https:\/\/json.schemastore.org\/claude-code-settings.json",
+  "attribution" : {
+    "commit" : "",
+    "pr" : ""
   },
-  "permissions": {
-    "allow": [
+  "autoCompactEnabled" : true,
+  "autoCompactWindow" : 500000,
+  "autoMode" : {
+    "environment" : [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: private (Kosuke-Yamada\/dotfiles, verified via gh)",
+      "**Internal sharing \/ snippet hosting**: None configured — treat public paste\/gist services as outside the trust boundary",
+      "**Secrets management**: None configured",
+      "**Default \/ protected branches**: main (default); no classic protected branches listed; rulesets not queryable here so ruleset-based protection cannot be ruled out",
+      "**CI\/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine with open internet",
+      "**Source control**: the dotfiles repo at \/Users\/s26310\/ghq\/github.com\/Kosuke-Yamada\/dotfiles and its origin remote github.com:Kosuke-Yamada\/dotfiles.git only",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention \/ declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces \/ environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: dotfiles \/ developer environment setup and configuration management (macOS\/Linux)",
+      "**Trusted repo**: \/Users\/s26310\/ghq\/github.com\/Kosuke-Yamada\/dotfiles (private) and its origin remote github.com:Kosuke-Yamada\/dotfiles.git — confidential material is fine here, but secrets and personal\/entrusted sensitive data are never cleared into it by visibility alone",
+      "**Org-specific CLIs**: None configured"
+    ],
+    "soft_deny" : [
+      "$defaults"
+    ]
+  },
+  "effortLevel" : "xhigh",
+  "enabledPlugins" : {
+    "chrome-devtools-mcp@chrome-devtools-plugins" : true,
+    "claude-mem@thedotmack" : true,
+    "code-simplifier@claude-plugins-official" : false,
+    "cycloud-plugin@ailab" : true,
+    "eli5@claude-community" : true,
+    "figma@claude-plugins-official" : true,
+    "frontend-design@claude-plugins-official" : false,
+    "pb-skills@playbook" : true,
+    "skill-creator@claude-plugins-official" : false
+  },
+  "extraKnownMarketplaces" : {
+    "ailab" : {
+      "source" : {
+        "source" : "git",
+        "url" : "git@github.com:CyberAgentAILab\/claude-plugins.git"
+      }
+    },
+    "chrome-devtools-plugins" : {
+      "source" : {
+        "repo" : "ChromeDevTools\/chrome-devtools-mcp",
+        "source" : "github"
+      }
+    },
+    "claude-community" : {
+      "source" : {
+        "repo" : "anthropics\/claude-plugins-community",
+        "source" : "github"
+      }
+    },
+    "playbook" : {
+      "source" : {
+        "repo" : "Kosuke-Yamada\/playbook",
+        "source" : "github"
+      }
+    },
+    "thedotmack" : {
+      "source" : {
+        "repo" : "thedotmack\/claude-mem",
+        "source" : "github"
+      }
+    }
+  },
+  "hooks" : {
+    "Notification" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse" : [
+      {
+        "hooks" : [
+          {
+            "command" : "bash ~\/.claude\/scripts\/herdr-shell-token.sh idle",
+            "timeout" : 5,
+            "type" : "command"
+          }
+        ],
+        "matcher" : "Bash"
+      },
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "PreToolUse" : [
+      {
+        "hooks" : [
+          {
+            "command" : "bash ~\/.claude\/scripts\/herdr-shell-token.sh running",
+            "timeout" : 5,
+            "type" : "command"
+          }
+        ],
+        "matcher" : "Bash"
+      },
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "SessionEnd" : [
+      {
+        "hooks" : [
+          {
+            "command" : "bash ~\/.claude\/scripts\/herdr-shell-token.sh reset",
+            "timeout" : 5,
+            "type" : "command"
+          }
+        ]
+      },
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart" : [
+      {
+        "hooks" : [
+          {
+            "command" : "bash '\/Users\/s26310\/.claude\/hooks\/herdr-agent-state.sh' session",
+            "timeout" : 10,
+            "type" : "command"
+          },
+          {
+            "async" : true,
+            "command" : "bash ~\/.claude\/scripts\/statusline-refresh.sh",
+            "timeout" : 15,
+            "type" : "command"
+          },
+          {
+            "command" : "bash ~\/.claude\/scripts\/herdr-shell-token.sh reset",
+            "timeout" : 5,
+            "type" : "command"
+          }
+        ],
+        "matcher" : "*"
+      },
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "Stop" : [
+      {
+        "hooks" : [
+          {
+            "command" : "bash ~\/.claude\/scripts\/herdr-shell-token.sh reset",
+            "timeout" : 5,
+            "type" : "command"
+          }
+        ]
+      },
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "StopFailure" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "SubagentStop" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit" : [
+      {
+        "hooks" : [
+          {
+            "command" : "\"\/Users\/Kosuke\/.config\/iterm2\/it2\" handle-agent-hook",
+            "type" : "command"
+          }
+        ]
+      }
+    ]
+  },
+  "language" : "japanese",
+  "model" : "opus",
+  "modelSettings" : {
+    "claude-opus-5-5" : {
+      "effortLevel" : "high"
+    }
+  },
+  "outputStyle" : "Concise",
+  "permissions" : {
+    "allow" : [
       "Bash(pnpm *)",
       "Bash(make *)",
       "Bash(git add *)",
@@ -16,25 +262,7 @@
       "Bash(gh pr view *)",
       "Bash(gh issue view *)"
     ],
-    "deny": [
-      "Read(//**/.env)",
-      "Read(//**/.env.local)",
-      "Read(//**/.env.*.local)",
-      "Read(//**/.env.dev)",
-      "Read(//**/.env.development)",
-      "Read(//**/.env.stg)",
-      "Read(//**/.env.staging)",
-      "Read(//**/.env.prod)",
-      "Read(//**/.env.production)",
-      "Read(//**/.env.test)",
-      "Read(~/.ssh/**)",
-      "Read(~/.aws/**)",
-      "Read(~/.gnupg/**)",
-      "Read(~/.config/gh/**)",
-      "Read(//**/*.pem)",
-      "Read(//**/id_rsa*)"
-    ],
-    "ask": [
+    "ask" : [
       "Bash(git push *)",
       "Bash(git reset --hard *)",
       "Bash(gh pr merge *)",
@@ -43,191 +271,53 @@
       "Bash(terraform apply *)",
       "Bash(kubectl apply *)"
     ],
-    "defaultMode": "auto"
-  },
-  "model": "opus",
-  "skillOverrides": {
-    "claude-mem:babysit": "off",
-    "claude-mem:cloud-sync": "off",
-    "claude-mem:design-is": "off",
-    "claude-mem:how-it-works": "off",
-    "claude-mem:knowledge-agent": "off",
-    "claude-mem:learn-codebase": "off",
-    "claude-mem:oh-my-issues": "off",
-    "claude-mem:pathfinder": "off",
-    "claude-mem:smart-explore": "off",
-    "claude-mem:standup": "off",
-    "claude-mem:version-bump": "off",
-    "claude-mem:what-the": "off",
-    "claude-mem:wowerpoint": "off",
-    "related-work-survey": "off"
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh running",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh idle",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh reset",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh reset",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash '/Users/s26310/.claude/hooks/herdr-agent-state.sh' session",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "bash ~/.claude/scripts/statusline-refresh.sh",
-            "timeout": 15,
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "bash ~/.claude/scripts/herdr-shell-token.sh reset",
-            "timeout": 5
-          }
-        ]
-      }
+    "defaultMode" : "auto",
+    "deny" : [
+      "Read(\/\/**\/.env)",
+      "Read(\/\/**\/.env.local)",
+      "Read(\/\/**\/.env.*.local)",
+      "Read(\/\/**\/.env.dev)",
+      "Read(\/\/**\/.env.development)",
+      "Read(\/\/**\/.env.stg)",
+      "Read(\/\/**\/.env.staging)",
+      "Read(\/\/**\/.env.prod)",
+      "Read(\/\/**\/.env.production)",
+      "Read(\/\/**\/.env.test)",
+      "Read(~\/.ssh\/**)",
+      "Read(~\/.aws\/**)",
+      "Read(~\/.gnupg\/**)",
+      "Read(~\/.config\/gh\/**)",
+      "Read(\/\/**\/*.pem)",
+      "Read(\/\/**\/id_rsa*)"
     ]
   },
-  "worktree": {
-    "baseRef": "fresh"
+  "preferredNotifChannel" : "ghostty",
+  "skillOverrides" : {
+    "claude-mem:babysit" : "off",
+    "claude-mem:cloud-sync" : "off",
+    "claude-mem:design-is" : "off",
+    "claude-mem:how-it-works" : "off",
+    "claude-mem:knowledge-agent" : "off",
+    "claude-mem:learn-codebase" : "off",
+    "claude-mem:oh-my-issues" : "off",
+    "claude-mem:pathfinder" : "off",
+    "claude-mem:smart-explore" : "off",
+    "claude-mem:standup" : "off",
+    "claude-mem:version-bump" : "off",
+    "claude-mem:what-the" : "off",
+    "claude-mem:wowerpoint" : "off",
+    "related-work-survey" : "off"
   },
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/scripts/statusline.sh",
-    "refreshInterval": 30
+  "skipAutoPermissionPrompt" : true,
+  "statusLine" : {
+    "command" : "bash ~\/.claude\/scripts\/statusline.sh",
+    "refreshInterval" : 30,
+    "type" : "command"
   },
-  "enabledPlugins": {
-    "code-simplifier@claude-plugins-official": false,
-    "skill-creator@claude-plugins-official": false,
-    "frontend-design@claude-plugins-official": false,
-    "chrome-devtools-mcp@chrome-devtools-plugins": true,
-    "cycloud-plugin@ailab": true,
-    "claude-mem@thedotmack": true,
-    "eli5@claude-community": true,
-    "pb-skills@playbook": true,
-    "figma@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "ailab": {
-      "source": {
-        "source": "git",
-        "url": "git@github.com:CyberAgentAILab/claude-plugins.git"
-      }
-    },
-    "chrome-devtools-plugins": {
-      "source": {
-        "source": "github",
-        "repo": "ChromeDevTools/chrome-devtools-mcp"
-      }
-    },
-    "thedotmack": {
-      "source": {
-        "source": "github",
-        "repo": "thedotmack/claude-mem"
-      }
-    },
-    "claude-community": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/claude-plugins-community"
-      }
-    },
-    "playbook": {
-      "source": {
-        "source": "github",
-        "repo": "Kosuke-Yamada/playbook"
-      }
-    }
-  },
-  "outputStyle": "Concise",
-  "language": "japanese",
-  "effortLevel": "xhigh",
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "effortLevel": "high"
-    }
-  },
-  "autoCompactWindow": 500000,
-  "tui": "fullscreen",
-  "timeFormat": "24-hour",
-  "theme": "auto",
-  "preferredNotifChannel": "ghostty",
-  "autoCompactEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "autoMode": {
-    "environment": [
-      "### Org-wide",
-      "**Organization**: None configured",
-      "**Cloud provider(s)**: None configured",
-      "**Repository visibility**: private (Kosuke-Yamada/dotfiles, verified via gh)",
-      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
-      "**Secrets management**: None configured",
-      "**Default / protected branches**: main (default); no classic protected branches listed; rulesets not queryable here so ruleset-based protection cannot be ruled out",
-      "**CI/CD deploy targets**: None configured",
-      "**Network posture**: None configured",
-      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine with open internet",
-      "**Source control**: the dotfiles repo at /Users/s26310/ghq/github.com/Kosuke-Yamada/dotfiles and its origin remote github.com:Kosuke-Yamada/dotfiles.git only",
-      "**Trusted internal domains**: None configured",
-      "**Trusted cloud buckets**: None configured",
-      "**Key internal services**: None configured",
-      "**Internal package registry**: None configured",
-      "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar",
-      "**Data retention / declassification**: None configured",
-      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
-      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
-      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
-      "### User-specific",
-      "**Primary use of Claude Code**: dotfiles / developer environment setup and configuration management (macOS/Linux)",
-      "**Trusted repo**: /Users/s26310/ghq/github.com/Kosuke-Yamada/dotfiles (private) and its origin remote github.com:Kosuke-Yamada/dotfiles.git — confidential material is fine here, but secrets and personal/entrusted sensitive data are never cleared into it by visibility alone",
-      "**Org-specific CLIs**: None configured"
-    ],
-    "soft_deny": [
-      "$defaults"
-    ]
+  "theme" : "auto",
+  "timeFormat" : "24-hour",
+  "tui" : "fullscreen",
+  "worktree" : {
+    "baseRef" : "fresh"
   }
 }
