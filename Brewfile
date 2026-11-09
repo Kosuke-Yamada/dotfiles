@@ -52,7 +52,6 @@ if OS.mac?
   # メニューバーにスクリプト出力を表示 (Claude Code / Codex の残クレジット)
   cask "swiftbar"
 
-  brew "asmvik/formulae/skhd", trusted: true
   brew "asmvik/formulae/yabai", trusted: true
   cask "karabiner-elements"
 

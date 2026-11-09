@@ -13,7 +13,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | プロンプト | [starship](https://starship.rs/) | 1.24.1 | 2025-12 | カスタマイズ可能なプロンプト |
 | ターミナル | [herdr](https://herdr.dev) | 0.7.5 | 2026-07 | AI エージェント対応ターミナルマルチプレクサ（デフォルト） |
 | ターミナル | [ghostty](https://ghostty.org/) | 1.2.3 | 2025-12 | ターミナルエミュレータ (macOS) |
-| ホットキー | [skhd](https://github.com/koekeishiya/skhd) | 0.3.9 | 2025-12 | ホットキーデーモン (macOS) |
+| キー割り当て | [Karabiner-Elements](https://karabiner-elements.pqrs.org/) | 16.3.0 | 2026-11 | Caps Lock → Hyper とグローバルショートカット (macOS) |
 | ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | 2025-12 | タイリングウィンドウマネージャー (macOS) |
 | Git | [git-delta](https://github.com/dandavison/delta) | 0.18.2 | 2025-12 | 差分表示の強化 |
 | Git | [gitui](https://github.com/extrawurst/gitui) | nightly | 2025-12 | Git TUI クライアント |
@@ -76,6 +76,7 @@ ARM 版を選択します。既存の Intel 版は削除しません。make の�
 | `make link` | シンボリックリンクを作成 |
 | `make codex-skills` | Claude Code のスキルを Codex に共有 |
 | `make codex-config` | Codex の共通設定を `~/.codex/config.toml` にマージ |
+| `make claude-settings` | Claude Code の共通設定を `~/.claude/settings.json` にマージ |
 | `make t3-keybindings` | T3 Code のキー設定を配置（既存ファイルはバックアップ） |
 | `make claude-mcp` | Claude Code の MCP サーバーを設定 |
 | `make claude-mem` | claude-mem を Claude Code と Codex にインストール |
@@ -85,18 +86,20 @@ ARM 版を選択します。既存の Intel 版は削除しません。make の�
 #### `make init` の処理内容
 
 1. **Homebrew の選択・インストール** - OS / CPU に合う配置を選択し、なければ導入
-2. **パッケージのインストール** - Brewfile に定義されたツール群（macOS では Claude Code / Codex / T3 Code、共通で Node.js / uv / gh / jq を含む）。yabai / skhd の formula だけを明示的に信頼。Homebrew 外で導入済みのアプリ（手動導入や MDM 配布で `/Applications` にあるもの）は、取り込みに sudo が必要になるため cask をスキップして既存アプリを使う
+2. **パッケージのインストール** - Brewfile に定義されたツール群（macOS では Claude Code / Codex / T3 Code、共通で Node.js / uv / gh / jq を含む）。yabai の formula だけを明示的に信頼。Homebrew 外で導入済みのアプリ（手動導入や MDM 配布で `/Applications` にあるもの）は、取り込みに sudo が必要になるため cask をスキップして既存アプリを使う
 3. **Sheldon プラグインのインストール** - zsh プラグインの取得
 4. **Claude Code MCP サーバーの設定** - context7 / Playwright / serena / github
 5. **claude-mem のインストール** - Claude Code と Codex へ共有メモリ機能を登録
 6. **VS Code 拡張機能のインストール** - extensions.txt に基づき同期
-7. **macOS 固有の設定** - skhd / yabai サービスの起動など
+7. **macOS 固有の設定** - yabai サービスの起動など
 
 #### `make link` の処理内容
 
 1. **シンボリックリンクの作成** - 設定ファイルをホームディレクトリにリンク
 2. **既存ファイルのバックアップ** - 上書き前に自動バックアップ
 3. **メニューバーの設定 (macOS)** - SwiftBar のプラグインディレクトリを設定し、ログイン時に起動する LaunchAgent を登録
+4. **設定ファイルのマージ** - Claude Code / Codex の共通設定を各 PC の設定ファイルに反映（PC 固有の設定は保持）
+5. **キー割り当ての配置 (macOS)** - Karabiner-Elements の設定を配置し、廃止した skhd のサービスとリンクを片付ける
 
 #### セットアップ後の手動作業
 
@@ -108,8 +111,8 @@ codex login       # Codex にログイン（~/.codex/auth.json を作成、CX �
 gh auth login     # GitHub にログイン（Copilot の表示と git の認証）
 ```
 
-skhd / yabai / Karabiner-Elements / SwiftBar は初回起動時に macOS の権限許可（アクセシビリティなど）が必要です。
-Karabiner-Elements（Caps Lock → Hyper）は、システム設定 > 一般 > ログイン項目と機能拡張 > ドライバ機能拡張 で
+yabai / Karabiner-Elements / SwiftBar は初回起動時に macOS の権限許可（アクセシビリティなど）が必要です。
+Karabiner-Elements（Caps Lock → Hyper とグローバルショートカット）は、システム設定 > 一般 > ログイン項目と機能拡張 > ドライバ機能拡張 で
 `.Karabiner-VirtualHIDDevice-Manager` を、プライバシーとセキュリティ > 入力監視 で `karabiner_grabber` / `Karabiner-Core-Service` を有効にしてください。
 
 ## ディレクトリ構成
@@ -130,7 +133,8 @@ dotfiles/
     ├── .local/bin/           # t3-toggle などのコマンド
     ├── .claude/              # Claude Code 設定（AI エージェント）
     │   ├── CLAUDE.md         # グローバル指示
-    │   ├── settings.json     # 権限・プラグイン・MCP 等の設定
+    │   ├── settings.json     # 権限・プラグイン・MCP 等の共通設定
+    │   ├── merge-settings.py # 共通設定を ~/.claude/settings.json にマージ
     │   ├── skills/           # アクティブなスキル（symlink 対象）
     │   │   ├── claude-md-creator/  # プロジェクトの CLAUDE.md を作成・登録するスキル
     │   │   └── related-work-survey/
@@ -140,9 +144,9 @@ dotfiles/
         ├── fresh/            # Fresh 設定 (config.json)
         ├── ghostty/          # Ghostty 設定 (macOS)
         ├── herdr/            # herdr 設定
+        ├── karabiner/        # Karabiner-Elements 設定（キー割り当て, macOS）
         ├── leaf/             # leaf 設定 (config.toml)
         ├── sheldon/          # Sheldon 設定
-        ├── skhd/             # skhd 設定 (macOS)
         ├── starship/         # Starship 設定
         └── yabai/            # yabai 設定 (macOS)
 ```
@@ -180,12 +184,11 @@ macOS では `make init` の Homebrew Bundle 処理で `t3-code` cask をイン�
 キー設定が反映されない場合は T3 Code を再起動してください。
 
 `make link` で配置される `t3-toggle` は、T3 Code が最前面なら非表示にし、それ以外なら
-前面に表示します。未起動なら起動します。macOS の skhd 設定では `Ctrl+T` に割り当てています。
-このグローバルキーは、zsh の文字入れ替えや Fresh のコマンドパレットなど、ほかのアプリの `Ctrl+T` より優先されます。
+前面に表示します。未起動なら起動します。macOS の Karabiner-Elements 設定では `Hyper+F`（Caps Lock + F）に割り当てています。
 
 | キー | 操作 |
 |------|------|
-| `Ctrl+T` | T3 Code の前面表示／非表示（グローバル、macOS） |
+| `Hyper+F` | T3 Code の前面表示／非表示（グローバル、macOS） |
 | `Cmd+T` | 通常の新規チャット（必要に応じてプロジェクト選択） |
 | `Cmd+N` | 現在のプロジェクトで新規チャット |
 | `Cmd+E` | プロジェクトなしで新規チャット |
@@ -222,13 +225,18 @@ code --list-extensions | sort > ~/dotfiles/src/.config/Code/extensions.txt
 
 #### Claude Code (`src/.claude/`)
 
-`make link` で以下がホームディレクトリにシンボリックリンクされます。
+`make link` で以下がホームディレクトリに配置されます。
 
 | 対象 | リンク先 | 内容 |
 |------|----------|------|
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` | 全セッション共通のグローバル指示（日本語環境・開発方針など） |
-| `settings.json` | `~/.claude/settings.json` | 権限（allow/deny/ask）、プラグイン、MCP、言語設定など |
+| `settings.json` | `~/.claude/settings.json`（マージ） | 権限（allow/deny/ask）、プラグイン、MCP、言語設定など |
 | `skills/*` | `~/.claude/skills/<name>` | 各スキルディレクトリ |
+
+`settings.json` はシンボリックリンクにせず、`make claude-settings`（`make link` にも含まれる）で共通設定を
+`~/.claude/settings.json` にマージします。iTerm2 連携のフックなど、各 PC のアプリが書き込んだ設定はその PC にだけ残り、
+リポジトリには入りません。前回反映した内容を `~/.claude/.dotfiles-settings-base.json` に残しておき、
+リポジトリから削除した設定は各 PC からも削除します。共通にしたい設定は `src/.claude/settings.json` を編集してください。
 
 MCP サーバー（context7 / Playwright / serena / github）は `make claude-mcp` で登録されます。GitHub MCP には `GITHUB_TOKEN` 環境変数が必要です（`~/.zshrc.local` に設定）。
 
@@ -283,17 +291,19 @@ Command Line Tools の更新を求められた場合は、システム設定の�
 
 Homebrew の配置と移行については [公式のトラブルシューティング](https://docs.brew.sh/Common-Issues#multiple-homebrew-installations)を参照してください。
 
-### macOS での skhd / yabai 権限設定
+### macOS での yabai 権限設定
 
-skhd と yabai を使用するには、アクセシビリティ権限が必要です:
+yabai を使用するには、アクセシビリティ権限が必要です:
 
 1. **システム設定** > **プライバシーとセキュリティ** > **アクセシビリティ** を開く
-2. `$(brew --prefix)/bin/skhd` と `$(brew --prefix)/bin/yabai` の実際のパスを追加して有効化（Apple Silicon は `/opt/homebrew/bin`、Intel Mac は `/usr/local/bin`）
+2. `$(brew --prefix)/bin/yabai` の実際のパスを追加して有効化（Apple Silicon は `/opt/homebrew/bin`、Intel Mac は `/usr/local/bin`）
 3. 以下のコマンドでサービスを再起動:
    ```bash
-   skhd --restart-service
    yabai --restart-service
    ```
+
+ショートカットは Karabiner-Elements から実行します（以前の skhd は、セキュア入力が有効な間は起動できず
+全ショートカットが効かなくなるため廃止しました）。
 
 ### 既存ファイルのバックアップ
 
@@ -301,7 +311,7 @@ skhd と yabai を使用するには、アクセシビリティ権限が必要�
 
 ### Linux での注意
 
-- ghostty、skhd、yabai は macOS 専用のため、Linux ではインストールされません
+- ghostty、yabai、Karabiner-Elements は macOS 専用のため、Linux ではインストールされません
 - フォント（HackGen）も macOS 専用です
 - この Brewfile の Claude Code / Codex / T3 Code は macOS 専用の cask として登録しています。Linux では各公式インストーラを利用してください。
 
@@ -334,9 +344,9 @@ Starship の表示を使う場合は `~/.zshrc.local` に `DOTFILES_PROMPT=stars
 | leaf | `Ctrl+F` | ドキュメント内を検索 |
 | leaf | `Ctrl+W` | ウォッチモード（変更時の自動リロード）の切替 |
 | ghostty | `Ctrl+G` | Quick Terminal の表示/非表示 |
-| T3 Code + skhd | `Ctrl+T` | T3 Code の前面表示／非表示（ほかのアプリの同じキーより優先） |
+| Karabiner | `Hyper+<キー>` | アプリの前面表示／非表示（`F`: T3 Code、`B`: Chrome、`C`: Claude など） |
 | T3 Code | `Cmd+T` / `Cmd+N` / `Cmd+E` | 通常／現在のプロジェクト／プロジェクトなしで新規チャット |
-| skhd + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
+| Karabiner + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
 
 ## ドキュメント
 
@@ -345,7 +355,7 @@ Starship の表示を使う場合は `~/.zshrc.local` に `DOTFILES_PROMPT=stars
 - [Git コマンド](./docs/git.md)
 - [Fresh エディタ](./docs/fresh.md)
 - [herdr キーバインド](./docs/herdr.md)
-- [skhd & yabai キーバインド](./docs/skhd-yabai.md)
+- [Karabiner & yabai キーバインド](./docs/karabiner-yabai.md)
 
 ## ライセンス
 

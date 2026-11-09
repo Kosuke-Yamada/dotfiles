@@ -1,25 +1,41 @@
-# skhd & yabai キーバインド
+# Karabiner & yabai キーバインド
 
-macOS 専用のホットキー（skhd）とタイリングウィンドウマネージャー（yabai）の設定です。
+macOS 専用のキー割り当て（Karabiner-Elements）とタイリングウィンドウマネージャー（yabai）の設定です。
 
 ## 概要
 
-- **skhd**: macOS 用のホットキーデーモン
+- **Karabiner-Elements**: キーの変換（Caps Lock → Hyper）と、ショートカットからのコマンド実行（`shell_command`）
 - **yabai**: macOS 用のタイリングウィンドウマネージャー
 
-両者を組み合わせることで、キーボードショートカットでウィンドウを操作できます。
+設定は `src/.config/karabiner/karabiner.json` で管理し、`make link`（`make karabiner-config`）で
+`~/.config/karabiner/karabiner.json` に配置します。Karabiner はファイル単体のシンボリックリンクでは変更を検知しないため、通常ファイルとしてコピーします。
 
-## アプリケーション起動
+以前は skhd を使っていましたが、いずれかのプロセスがセキュア入力（Secure Keyboard Entry）を有効にしたままだと
+skhd は起動できず、全ショートカットが効かなくなるため廃止しました。Karabiner はセキュア入力の影響を受けません。
+`make link` を実行すると、旧環境の skhd のサービスと設定ファイルのリンクも片付けます。
+
+`Hyper` は Caps Lock（Karabiner で `Ctrl+Option+Shift+Cmd` に変換）です。
+
+## アプリケーション起動・切り替え
 
 | キー | アクション | 説明 |
 |------|-----------|------|
-| `Alt+Return` | open -na "Ghostty" | Ghostty ターミナルを起動 |
-| `Alt+B` | open -na "Arc" | Arc ブラウザを起動 |
-| `Alt+E` | open -na "Finder" | Finder を起動 |
-| `Ctrl+T` | ~/.local/bin/t3-toggle | T3 Code の前面表示／非表示（未起動なら起動） |
+| `Alt+Return` | open -na Ghostty | Ghostty ターミナルを起動 |
+| `Alt+B` | open -na Arc | Arc ブラウザを起動 |
+| `Alt+E` | open -na Finder | Finder を起動 |
+| `Hyper+F` | t3-toggle | T3 Code |
+| `Hyper+B` | app-toggle com.google.Chrome | Google Chrome |
+| `Hyper+D` | app-toggle com.openai.codex | ChatGPT（Codex アプリ） |
+| `Hyper+G` | app-toggle com.google.GeminiMacOS | Gemini |
+| `Hyper+C` | app-toggle com.anthropic.claudefordesktop | Claude |
+| `Hyper+S` | app-toggle com.tinyspeck.slackmacgap | Slack |
+| `Hyper+N` | app-toggle notion.id | Notion |
+| `Hyper+M` | app-toggle com.meta.endo | Meta のアプリ（bundle ID: com.meta.endo） |
+| `Hyper+K` | app-toggle com.amazon.Lassen | Kindle |
+| `Hyper+V` | app-toggle com.microsoft.VSCode | VS Code |
 
-`t3-toggle` は `make link` で配置します。`Ctrl+T` はグローバルに有効で、
-zsh の文字入れ替えや Fresh のコマンドパレットなど、同じキーを使う操作より優先されます。
+`app-toggle` / `t3-toggle` は `make link` で `~/.local/bin` に配置します。対象アプリが最前面なら非表示にし、
+それ以外なら現在のデスクトップに移動して前面に表示します（未起動なら起動）。
 
 ## ウィンドウフォーカス移動
 
@@ -58,7 +74,7 @@ zsh の文字入れ替えや Fresh のコマンドパレットなど、同じキ
 | `Alt+Cmd+←` | grid 1:2:0:0:1:1 | ウィンドウを左半分に配置 |
 | `Alt+Cmd+↑` | grid 2:1:0:0:1:1 | ウィンドウを上半分に配置 |
 | `Alt+Cmd+↓` | grid 2:1:0:1:1:1 | ウィンドウを下半分に配置 |
-| `Shift+Alt+Cmd+_` | grid 1:1:0:0:1:1 | ウィンドウを全画面に配置 |
+| `Alt+Cmd+_` | grid 1:1:0:0:1:1 | ウィンドウを全画面に配置（JIS キーボードの `_` キー） |
 
 ## スペース（デスクトップ）操作
 
@@ -77,12 +93,18 @@ zsh の文字入れ替えや Fresh のコマンドパレットなど、同じキ
 | `Ctrl+Alt+S` | layout stack | スタックレイアウトに変更 |
 | `Ctrl+Alt+F` | layout float | フロートレイアウトに変更 |
 
-## 設定リロード / 復旧
+## その他
 
 | キー | アクション | 説明 |
 |------|-----------|------|
-| `Ctrl+Alt+R` | skhd --reload | skhd 設定をリロード |
+| `Ctrl+G` | Ghostty のメニュー項目をクリック | Quick Terminal の表示/非表示 |
 | `Ctrl+Alt+Y` | yabai --restart-service | yabai を再起動して復旧 |
+
+Ghostty のグローバルキーバインドはスリープ復帰後に無効化されることがあるため、`Ctrl+G` は
+System Events 経由でメニュー項目「Quick Terminal」をクリックします。初回は Karabiner-Elements に
+アクセシビリティ（オートメーション）の許可を求められることがあります。
+
+Karabiner の設定は `~/.config/karabiner/karabiner.json` を保存すると自動で再読み込みされます。
 
 ### リサイズ等が「効かない・重い」ときの対処
 
@@ -161,33 +183,15 @@ yabai サーバはスリープ復帰や特定アプリの Accessibility 応答�
 
 ## 修飾キーの参考
 
-| 表記 | キー |
-|------|------|
-| `cmd` | Command |
-| `alt` | Option |
-| `ctrl` | Control |
-| `shift` | Shift |
-| `fn` | Function |
-| `hyper` | Cmd + Alt + Ctrl + Shift |
-| `meh` | Alt + Ctrl + Shift |
+| 表記 | キー | Karabiner の modifier |
+|------|------|------|
+| `Cmd` | Command | `command` |
+| `Alt` | Option | `option` |
+| `Ctrl` | Control | `control` |
+| `Shift` | Shift | `shift` |
+| `Hyper` | Caps Lock（Cmd + Alt + Ctrl + Shift） | 4 つすべて |
 
 ## サービス管理
-
-### skhd
-
-```bash
-# サービス開始
-skhd --start-service
-
-# サービス停止
-skhd --stop-service
-
-# サービス再起動
-skhd --restart-service
-
-# 設定リロード
-skhd --reload
-```
 
 ### yabai
 
@@ -206,15 +210,18 @@ yabai --restart-service
 
 ### アクセシビリティ権限
 
-skhd と yabai を使用するには、アクセシビリティ権限が必要です:
+yabai を使用するには、アクセシビリティ権限が必要です:
 
 1. **システム設定** > **プライバシーとセキュリティ** > **アクセシビリティ** を開く
-2. `$(brew --prefix)/bin/skhd` と `$(brew --prefix)/bin/yabai` の実際のパスを追加して有効化（Apple Silicon は `/opt/homebrew/bin`、Intel Mac は `/usr/local/bin`）
+2. `$(brew --prefix)/bin/yabai` の実際のパスを追加して有効化（Apple Silicon は `/opt/homebrew/bin`、Intel Mac は `/usr/local/bin`）
 3. 以下のコマンドでサービスを再起動:
    ```bash
-   skhd --restart-service
    yabai --restart-service
    ```
+
+Karabiner-Elements には、システム設定 > 一般 > ログイン項目と機能拡張 > ドライバ機能拡張 の
+`.Karabiner-VirtualHIDDevice-Manager` と、プライバシーとセキュリティ > 入力監視 の
+`karabiner_grabber` / `Karabiner-Core-Service` の許可が必要です。
 
 ### SIP について
 
@@ -222,6 +229,6 @@ yabai のフル機能（ウィンドウの自動タイリング、スペース�
 
 ## 参考リンク
 
-- [skhd GitHub](https://github.com/koekeishiya/skhd)
+- [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
 - [yabai GitHub](https://github.com/koekeishiya/yabai)
 - [yabai Wiki](https://github.com/koekeishiya/yabai/wiki)
