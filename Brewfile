@@ -37,9 +37,11 @@ if OS.mac?
   tap "asmvik/formulae"
   cask "ghostty"
   cask "visual-studio-code"
+  cask "cursor"
 
   # AI desktop apps
   cask "chatgpt"
+  cask "grok-bot"
   cask "google-gemini"
   cask "claude"
   # 音声入力（Speech-to-text）
