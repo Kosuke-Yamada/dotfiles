@@ -115,6 +115,8 @@ yabai / Karabiner-Elements / SwiftBar は初回起動時に macOS の権限許�
 Karabiner-Elements（Caps Lock → Hyper とグローバルショートカット）は、システム設定 > 一般 > ログイン項目と機能拡張 > ドライバ機能拡張 で
 `.Karabiner-VirtualHIDDevice-Manager` を、プライバシーとセキュリティ > 入力監視 で `karabiner_grabber` / `Karabiner-Core-Service` を有効にしてください。
 
+Aqua Voice（音声入力）は初回起動時にマイクとアクセシビリティの許可が必要です。起動キー（ホットキー）はアプリの設定で右側の `fn` キーに割り当てています（設定は dotfiles で管理していないため手動で設定）。
+
 ## ディレクトリ構成
 
 ```
@@ -347,6 +349,7 @@ Starship の表示を使う場合は `~/.zshrc.local` に `DOTFILES_PROMPT=stars
 | Karabiner | `Hyper+<キー>` | アプリの前面表示／非表示（`F`: T3 Code、`B`: Chrome、`C`: Claude など） |
 | T3 Code | `Cmd+T` / `Cmd+N` / `Cmd+E` | 通常／現在のプロジェクト／プロジェクトなしで新規チャット |
 | Karabiner + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |
+| Aqua Voice | 右 `fn` | 音声入力の開始（アプリの設定で割り当て） |
 
 ## ドキュメント
 
