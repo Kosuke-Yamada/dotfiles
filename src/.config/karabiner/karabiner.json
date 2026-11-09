@@ -12,99 +12,888 @@
                 "type": "basic",
                 "from": {
                   "key_code": "caps_lock",
-                  "modifiers": { "optional": ["any"] }
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
                 },
                 "to": [
                   {
                     "key_code": "left_control",
-                    "modifiers": ["left_option", "left_shift", "left_command"]
+                    "modifiers": [
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
                   }
                 ]
               }
             ]
           },
           {
-            "description": "Hyper + キー → アプリ切り替え（skhd はセキュア入力中に起動できないため Karabiner で実行）",
+            "description": "Hyper + キー → アプリ切り替え",
             "manipulators": [
               {
                 "type": "basic",
                 "from": {
                   "key_code": "f",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/t3-toggle" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/t3-toggle"
+                  }
+                ]
               },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "b",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.google.Chrome" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle com.google.Chrome"
+                  }
+                ]
               },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "d",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.openai.codex" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle com.openai.codex"
+                  }
+                ]
               },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "g",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.google.GeminiMacOS" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle com.google.GeminiMacOS"
+                  }
+                ]
               },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "c",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.anthropic.claudefordesktop" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle com.anthropic.claudefordesktop"
+                  }
+                ]
               },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "s",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.tinyspeck.slackmacgap" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle com.tinyspeck.slackmacgap"
+                  }
+                ]
               },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "n",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle notion.id" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle notion.id"
+                  }
+                ]
               },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "m",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.meta.endo" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle com.meta.endo"
+                  }
+                ]
               },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "k",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.amazon.Lassen" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle com.amazon.Lassen"
+                  }
+                ]
               },
               {
                 "type": "basic",
                 "from": {
                   "key_code": "v",
-                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
                 },
-                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.microsoft.VSCode" }]
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle com.microsoft.VSCode"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Option + キー → アプリ起動",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "return_or_enter",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "open -na Ghostty"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "b",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "open -na Arc"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "e",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "open -na Finder"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Option + HJKL → ウィンドウのフォーカス移動",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "h",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --focus west"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "j",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --focus south"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "k",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --focus north"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "l",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --focus east"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Shift + Option + HJKL → ウィンドウの入れ替え",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "h",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --swap west"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "j",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --swap south"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "k",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --swap north"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "l",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --swap east"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Control + Option + HJKL → ウィンドウサイズ変更（中央基準）",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "h",
+                  "modifiers": {
+                    "mandatory": [
+                      "control",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --resize left:50:0 ; $HOME/.local/bin/yabai-run window --resize right:-50:0"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "l",
+                  "modifiers": {
+                    "mandatory": [
+                      "control",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --resize left:-50:0 ; $HOME/.local/bin/yabai-run window --resize right:50:0"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "k",
+                  "modifiers": {
+                    "mandatory": [
+                      "control",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --resize top:0:-50 ; $HOME/.local/bin/yabai-run window --resize bottom:0:50"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "j",
+                  "modifiers": {
+                    "mandatory": [
+                      "control",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --resize top:0:50 ; $HOME/.local/bin/yabai-run window --resize bottom:0:-50"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Option + Command + 矢印 / _ → ウィンドウ配置（半分・全画面）",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "right_arrow",
+                  "modifiers": {
+                    "mandatory": [
+                      "option",
+                      "command"
+                    ],
+                    "optional": [
+                      "fn"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --grid 1:2:1:0:1:1"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "left_arrow",
+                  "modifiers": {
+                    "mandatory": [
+                      "option",
+                      "command"
+                    ],
+                    "optional": [
+                      "fn"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --grid 1:2:0:0:1:1"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "up_arrow",
+                  "modifiers": {
+                    "mandatory": [
+                      "option",
+                      "command"
+                    ],
+                    "optional": [
+                      "fn"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --grid 2:1:0:0:1:1"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "down_arrow",
+                  "modifiers": {
+                    "mandatory": [
+                      "option",
+                      "command"
+                    ],
+                    "optional": [
+                      "fn"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --grid 2:1:0:1:1:1"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "international1",
+                  "modifiers": {
+                    "mandatory": [
+                      "option",
+                      "command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --grid 1:1:0:0:1:1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Option + 1〜5 → スペース移動 / Shift + Option + 1〜5 → ウィンドウをスペースへ移動",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "1",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run space --focus 1"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "2",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run space --focus 2"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "3",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run space --focus 3"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "4",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run space --focus 4"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "5",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run space --focus 5"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "1",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --space 1"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "2",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --space 2"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "3",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --space 3"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "4",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --space 4"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "5",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --space 5"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "ウィンドウレイアウト切り替え",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "f",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --toggle zoom-fullscreen"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "t",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run window --toggle float"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "b",
+                  "modifiers": {
+                    "mandatory": [
+                      "control",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run space --layout bsp"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "s",
+                  "modifiers": {
+                    "mandatory": [
+                      "control",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run space --layout stack"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "f",
+                  "modifiers": {
+                    "mandatory": [
+                      "control",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/yabai-run space --layout float"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Control + G → Ghostty Quick Terminal",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "g",
+                  "modifiers": {
+                    "mandatory": [
+                      "control"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "osascript -e 'tell application \"System Events\" to tell process \"Ghostty\" to click menu item \"Quick Terminal\" of menu \"View\" of menu bar 1'"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Control + Option + Y → yabai 再起動",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "y",
+                  "modifiers": {
+                    "mandatory": [
+                      "control",
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "PATH=/opt/homebrew/bin:/usr/local/bin:$PATH yabai --restart-service"
+                  }
+                ]
               }
             ]
           }

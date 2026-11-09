@@ -213,15 +213,13 @@ macos-setup: packages
 	@echo "[init] macOS 固有の設定"
 	@echo "------------------------------------------"
 ifeq ($(OS),Darwin)
-	@echo "skhd サービスを開始中..."
-	@skhd --start-service || { echo "skhd の起動に失敗しました。アクセシビリティ権限と上のエラーを確認してください。" >&2; exit 1; }
 	@echo "yabai サービスを開始中..."
 	@yabai --start-service || { echo "yabai の起動に失敗しました。アクセシビリティ権限と上のエラーを確認してください。" >&2; exit 1; }
 	@echo ""
-	@echo "NOTE: skhd と yabai にはアクセシビリティ権限が必要です。"
+	@echo "NOTE: yabai にはアクセシビリティ権限が必要です。"
 	@echo "  1. システム設定 > プライバシーとセキュリティ > アクセシビリティ を開く"
-	@echo "  2. $(BREW_PREFIX)/bin/skhd と $(BREW_PREFIX)/bin/yabai を追加して有効化"
-	@echo "  3. 実行: skhd --restart-service && yabai --restart-service"
+	@echo "  2. $(BREW_PREFIX)/bin/yabai を追加して有効化"
+	@echo "  3. 実行: yabai --restart-service"
 else
 	@echo "macOS ではないためスキップします。"
 endif
@@ -367,9 +365,15 @@ ifeq ($(OS),Darwin)
 	@echo ".config 配下の設定ファイルをリンク中（macOS専用）..."
 	@mkdir -p "$(HOME)/.config/ghostty"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/ghostty/config" "$(HOME)/.config/ghostty/config"
-	@mkdir -p "$(HOME)/.config/skhd"
-	@ln -snfv "$(SRC_DIRECTORY)/.config/skhd/skhdrc" "$(HOME)/.config/skhd/skhdrc"
-	@ln -snfv "$(SRC_DIRECTORY)/.config/skhd/skhdrc" "$(HOME)/.skhdrc"
+	@# skhd はセキュア入力が有効な間は起動できないため廃止し、キー割り当ては Karabiner-Elements に移した。
+	@# 旧環境で両方が反応しないよう、skhd のサービスと dotfiles のリンクを片付ける
+	@if command -v skhd >/dev/null 2>&1; then \
+		skhd --stop-service 2>/dev/null || true; \
+		skhd --uninstall-service 2>/dev/null || true; \
+	fi
+	@for f in "$(HOME)/.skhdrc" "$(HOME)/.config/skhd/skhdrc"; do \
+		if [ -L "$$f" ] && [ "$$(readlink "$$f")" = "$(SRC_DIRECTORY)/.config/skhd/skhdrc" ]; then rm -v "$$f"; fi; \
+	done
 	@mkdir -p "$(HOME)/.config/yabai"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/yabai/yabairc" "$(HOME)/.config/yabai/yabairc"
 	@# VSCode settings.json
@@ -377,10 +381,9 @@ ifeq ($(OS),Darwin)
 	@echo "VSCode の設定ファイルをリンク中..."
 	@mkdir -p "$(HOME)/Library/Application Support/Code/User"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/Code/User/settings.json" "$(HOME)/Library/Application Support/Code/User/settings.json"
-	@# skhd と yabai をリロード（設定を即時反映）
+	@# yabai をリロード（設定を即時反映）
 	@echo ""
-	@echo "skhd と yabai の設定をリロード中..."
-	@skhd --reload 2>/dev/null || true
+	@echo "yabai の設定をリロード中..."
 	@yabai --restart-service 2>/dev/null || true
 endif
 	@# .local/bin 配下のスクリプト
