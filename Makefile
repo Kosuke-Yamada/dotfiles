@@ -310,6 +310,13 @@ ifeq ($(OS),Darwin)
 			mv "$(HOME)/.config/karabiner/karabiner.json" "$(HOME)/.config/karabiner/karabiner.json.backup-$$(date +%Y%m%d%H%M%S)"; \
 		fi; \
 		cp "$(SRC_DIRECTORY)/.config/karabiner/karabiner.json" "$(HOME)/.config/karabiner/karabiner.json"; \
+	fi; \
+	if [ -d "/Applications/Karabiner-Elements.app" ] && ! pgrep -q -x Karabiner-Core-Service; then \
+		echo "Karabiner-Elements を起動します（ドライバの許可が必要です）。"; \
+		open -g -a "Karabiner-Elements"; \
+		echo "NOTE: Caps Lock → Hyper を有効にするには以下の許可が必要です。"; \
+		echo "  1. システム設定 > 一般 > ログイン項目と機能拡張 > ドライバ機能拡張 で .Karabiner-VirtualHIDDevice-Manager を有効化"; \
+		echo "  2. システム設定 > プライバシーとセキュリティ > 入力監視 で karabiner_grabber / Karabiner-Core-Service を有効化"; \
 	fi
 else
 	@echo "macOS ではないためスキップします。"
