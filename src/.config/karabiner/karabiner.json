@@ -22,6 +22,91 @@
                 ]
               }
             ]
+          },
+          {
+            "description": "Hyper + キー → アプリ切り替え（skhd はセキュア入力中に起動できないため Karabiner で実行）",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "f",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/t3-toggle" }]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "b",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.google.Chrome" }]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "d",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.openai.codex" }]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "g",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.google.GeminiMacOS" }]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "c",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.anthropic.claudefordesktop" }]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "s",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.tinyspeck.slackmacgap" }]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "n",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle notion.id" }]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "m",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.meta.endo" }]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "k",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.amazon.Lassen" }]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "v",
+                  "modifiers": { "mandatory": ["left_control", "left_option", "left_shift", "left_command"] }
+                },
+                "to": [{ "shell_command": "$HOME/.local/bin/app-toggle com.microsoft.VSCode" }]
+              }
+            ]
           }
         ]
       }

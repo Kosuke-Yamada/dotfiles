@@ -14,17 +14,9 @@
 alt - return : open -na "Ghostty"
 alt - b      : open -na "Arc"
 alt - e      : open -na "Finder"
-# Caps Lock は Karabiner-Elements で Hyper に変換する
-hyper - f : $HOME/.local/bin/t3-toggle
-hyper - b : $HOME/.local/bin/app-toggle com.google.Chrome
-hyper - d : $HOME/.local/bin/app-toggle com.openai.codex
-hyper - g : $HOME/.local/bin/app-toggle com.google.GeminiMacOS
-hyper - c : $HOME/.local/bin/app-toggle com.anthropic.claudefordesktop
-hyper - s : $HOME/.local/bin/app-toggle com.tinyspeck.slackmacgap
-hyper - n : $HOME/.local/bin/app-toggle notion.id
-hyper - m : $HOME/.local/bin/app-toggle com.meta.endo
-hyper - k : $HOME/.local/bin/app-toggle com.amazon.Lassen
-hyper - v : $HOME/.local/bin/app-toggle com.microsoft.VSCode
+# Hyper（Caps Lock）+ キーのアプリ切り替えは Karabiner-Elements で実行する
+# skhd はセキュア入力が有効な間は起動できず、全バインドが効かなくなるため
+# （src/.config/karabiner/karabiner.json）
 
 # ===========================================
 # ウィンドウフォーカス移動（HJKL）
