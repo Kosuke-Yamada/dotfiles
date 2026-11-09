@@ -45,6 +45,15 @@ if OS.mac?
   cask "slack"
   cask "notion"
 
+  # Utilities
+  cask "keka"
+  # Markdown エディタ（MacDown は配布終了のため後継の MacDown 3000）
+  cask "macdown-3000"
+
+  # Mac App Store（mas でのインストールには App Store へのサインインが必要）
+  brew "mas"
+  mas "Kindle", id: 302584613
+
   # LaTeX（TeX Live full、GUI アプリなし）と SyncTeX 対応 PDF ビューア
   cask "mactex-no-gui"
   cask "skim"

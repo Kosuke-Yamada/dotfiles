@@ -19,6 +19,7 @@ OS := $(shell uname -s)
 ifeq ($(OS),Darwin)
 ifeq ($(shell /usr/sbin/sysctl -n hw.optional.arm64 2>/dev/null),1)
 BREW_PREFIX := /opt/homebrew
+HOST_ARM64 := 1
 SHELL := /usr/bin/arch -arm64 /bin/bash
 else
 BREW_PREFIX := /usr/local
@@ -28,7 +29,7 @@ BREW_PREFIX := /home/linuxbrew/.linuxbrew
 endif
 export PATH := $(BREW_PREFIX)/bin:$(BREW_PREFIX)/sbin:$(PATH)
 
-.PHONY: all init link codex-skills codex-config swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
+.PHONY: all init link codex-skills codex-config swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup chrome-incognito-app help
 
 # デフォルトターゲット
 all: init
@@ -41,7 +42,7 @@ all: init
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages herdr-app plugins claude-mcp claude-mem vscode-extensions skim-setup macos-setup karabiner-config
+init: brew packages herdr-app plugins claude-mcp claude-mem vscode-extensions skim-setup chrome-incognito-app macos-setup karabiner-config
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -70,26 +71,43 @@ brew:
 # パッケージのインストール
 # Homebrew 外で導入済みのアプリ（手動導入や MDM 配布）を cask で取り込むと sudo が必要になるため、
 # /Applications に同名アプリがある未管理の cask はスキップして既存アプリをそのまま使う
+# ただし Apple Silicon で既存アプリが Intel 版の場合は、Rosetta 依存で起動しないことがあるため入れ替える
 packages: brew
 	@echo ""
 	@echo "[init] Brewfile からパッケージをインストール"
 	@echo "------------------------------------------"
 	@set -eu; \
 	brew="$(BREW_PREFIX)/bin/brew"; \
-	skip=""; \
+	skip=""; reinstall=""; install=""; \
 	if [ "$(OS)" = Darwin ] && command -v jq >/dev/null 2>&1; then \
 		casks=$$("$$brew" bundle list --cask --file="$(DOT_DIRECTORY)/Brewfile"); \
 		if [ -n "$$casks" ]; then \
-			skip=$$("$$brew" info --cask --json=v2 $$casks \
-				| jq -r '.casks[] | select(.installed == null) | .token as $$t | .artifacts[] | .app? // empty | .[] | (if type == "object" then .target else . end) | strings | "\($$t) \(.)"' \
-				| while read -r token app; do \
-					if [ -e "/Applications/$$app" ]; then echo "$$token"; fi; \
-				done | sort -u | tr '\n' ' '); \
+			plan=$$("$$brew" info --cask --json=v2 $$casks \
+				| jq -r '.casks[] | .token as $$t | (if .installed == null then "new" else "installed" end) as $$s | .artifacts[] | .app? // empty | .[] | (if type == "object" then .target else . end) | strings | "\($$t) \($$s) \(.)"' \
+				| while read -r token state app; do \
+					path="/Applications/$$app"; \
+					[ -e "$$path" ] || continue; \
+					exe=$$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$$path/Contents/Info.plist" 2>/dev/null || true); \
+					archs=$$([ -n "$$exe" ] && /usr/bin/lipo -archs "$$path/Contents/MacOS/$$exe" 2>/dev/null || true); \
+					if [ "$(HOST_ARM64)" = 1 ] && [ -n "$$archs" ] && ! echo "$$archs" | grep -qwE 'arm64e?'; then \
+						echo "intel-$$state $$token"; \
+					elif [ "$$state" = new ]; then \
+						echo "skip $$token"; \
+					fi; \
+				done | sort -u); \
+			skip=$$(echo "$$plan" | awk '$$1 == "skip" { print $$2 }' | tr '\n' ' '); \
+			reinstall=$$(echo "$$plan" | awk '$$1 == "intel-installed" { print $$2 }' | tr '\n' ' '); \
+			install=$$(echo "$$plan" | awk '$$1 == "intel-new" { print $$2 }' | tr '\n' ' '); \
 		fi; \
 	fi; \
 	if [ -n "$$skip" ]; then \
 		echo "Homebrew 外で導入済みのためスキップします: $$skip"; \
 	fi; \
+	if [ -n "$$reinstall$$install" ]; then \
+		echo "Intel 版のアプリを Apple Silicon 版に入れ替えます: $$reinstall$$install"; \
+	fi; \
+	if [ -n "$$reinstall" ]; then "$$brew" reinstall --cask $$reinstall; fi; \
+	if [ -n "$$install" ]; then "$$brew" install --cask --force $$install; fi; \
 	HOMEBREW_BUNDLE_CASK_SKIP="$$skip" "$$brew" bundle --file="$(DOT_DIRECTORY)/Brewfile"
 
 # Herdr デスクトップ版（Homebrew の herdr はターミナル版）
@@ -203,6 +221,24 @@ ifeq ($(OS),Darwin)
 	@defaults write -app Skim SKAutoCheckFileUpdate -bool true
 	@defaults write -app Skim SKAutoReloadFileUpdate -bool true
 	@echo "Skim: 逆方向検索を fresh-synctex に設定し、PDF の自動再読み込みを有効化しました"
+else
+	@echo "macOS ではないためスキップします。"
+endif
+
+# Chrome をシークレットウィンドウで開くアプリを生成（osacompile のアプレットは Apple Silicon にネイティブ対応）
+chrome-incognito-app:
+	@echo ""
+	@echo "[init] Chrome シークレットウィンドウ起動アプリの作成"
+	@echo "------------------------------------------"
+ifeq ($(OS),Darwin)
+	@set -eu; \
+	app="/Applications/Chrome - シークレットウィンドウ.app"; \
+	work=$$(mktemp -d); \
+	trap 'rm -rf "$$work"' EXIT HUP INT TERM; \
+	/usr/bin/osacompile -o "$$work/applet.app" -e 'do shell script "open -na \"Google Chrome\" --args --incognito"'; \
+	rm -rf "$$app"; \
+	mv "$$work/applet.app" "$$app"; \
+	echo "$$app を作成しました"
 else
 	@echo "macOS ではないためスキップします。"
 endif
@@ -467,4 +503,5 @@ help:
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
 	@echo "  make vscode-extensions      - VSCode 拡張機能をインストール"
+	@echo "  make chrome-incognito-app   - Chrome をシークレットウィンドウで開くアプリを作成"
 	@echo "  make help                   - このヘルプを表示"
