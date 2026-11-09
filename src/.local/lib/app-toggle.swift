@@ -198,7 +198,7 @@ func toggle(bundleID: String, yabai: String) throws {
     }
     running.unhide()
     _ = try command(yabai, ["window", "--focus", String(selected.id)])
-    // skhd の最大化ショートカットと同じ処理を毎回適用する。
+    // Option+Command+_ の最大化ショートカットと同じ処理を毎回適用する。
     _ = try command(yabai, ["window", String(selected.id), "--grid", "1:1:0:0:1:1"])
     let _: Bool = try waitFor("ウィンドウの表示") {
         NSWorkspace.shared.frontmostApplication?.processIdentifier == running.processIdentifier ? true : nil

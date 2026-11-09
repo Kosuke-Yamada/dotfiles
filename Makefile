@@ -29,7 +29,7 @@ BREW_PREFIX := /home/linuxbrew/.linuxbrew
 endif
 export PATH := $(BREW_PREFIX)/bin:$(BREW_PREFIX)/sbin:$(PATH)
 
-.PHONY: all init link codex-skills codex-config swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup chrome-incognito-app help
+.PHONY: all init link codex-skills codex-config claude-settings swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup chrome-incognito-app help
 
 # デフォルトターゲット
 all: init
@@ -249,15 +249,13 @@ macos-setup: packages
 	@echo "[init] macOS 固有の設定"
 	@echo "------------------------------------------"
 ifeq ($(OS),Darwin)
-	@echo "skhd サービスを開始中..."
-	@skhd --start-service || { echo "skhd の起動に失敗しました。アクセシビリティ権限と上のエラーを確認してください。" >&2; exit 1; }
 	@echo "yabai サービスを開始中..."
 	@yabai --start-service || { echo "yabai の起動に失敗しました。アクセシビリティ権限と上のエラーを確認してください。" >&2; exit 1; }
 	@echo ""
-	@echo "NOTE: skhd と yabai にはアクセシビリティ権限が必要です。"
+	@echo "NOTE: yabai にはアクセシビリティ権限が必要です。"
 	@echo "  1. システム設定 > プライバシーとセキュリティ > アクセシビリティ を開く"
-	@echo "  2. $(BREW_PREFIX)/bin/skhd と $(BREW_PREFIX)/bin/yabai を追加して有効化"
-	@echo "  3. 実行: skhd --restart-service && yabai --restart-service"
+	@echo "  2. $(BREW_PREFIX)/bin/yabai を追加して有効化"
+	@echo "  3. 実行: yabai --restart-service"
 else
 	@echo "macOS ではないためスキップします。"
 endif
@@ -297,6 +295,29 @@ codex-config:
 		"$(SRC_DIRECTORY)/.codex/config.toml" "$(HOME)/.codex/config.toml"
 
 # ------------------------------------------------------------------------------
+# claude-settings: Claude Code の共通設定を ~/.claude/settings.json にマージ
+# iTerm2 連携など各 PC のアプリが書き込む設定をリポジトリに混ぜないよう、
+# シンボリックリンクにはせず src/.claude/settings.json の内容だけを反映する
+# 前回反映した内容を ~/.claude/.dotfiles-settings-base.json に残し、リポジトリから消した設定は PC からも消す
+claude-settings:
+	@echo ""
+	@echo "[link] Claude Code の共通設定をマージ"
+	@echo "------------------------------------------"
+	@set -eu; \
+	target="$(HOME)/.claude/settings.json"; \
+	mkdir -p "$(HOME)/.claude"; \
+	if [ -L "$$target" ]; then \
+		echo "シンボリックリンクを通常ファイルに置き換えます: $$target"; \
+		cp "$$target" "$$target.tmp"; \
+		mv -f "$$target.tmp" "$$target"; \
+	fi; \
+	if ! command -v uv >/dev/null 2>&1; then \
+		echo "uv が見つからないため Claude Code の設定をマージできません。uv をインストールしてから make claude-settings を実行してください。" >&2; \
+		exit 1; \
+	fi; \
+	uv run --quiet --no-project python "$(SRC_DIRECTORY)/.claude/merge-settings.py" \
+		"$(SRC_DIRECTORY)/.claude/settings.json" "$$target" "$(HOME)/.claude/.dotfiles-settings-base.json"
+
 # swiftbar: メニューバーに Claude Code / Codex の月間残クレジットを表示
 # プラグインディレクトリを指定し、ログイン時に SwiftBar を起動する LaunchAgent を登録する
 # LaunchAgent の plist は symlink だと launchd に読まれないことがあるためコピーする
@@ -358,7 +379,7 @@ else
 	@echo "macOS ではないためスキップします。"
 endif
 
-link: codex-skills codex-config swiftbar t3-keybindings karabiner-config
+link: codex-skills codex-config claude-settings swiftbar t3-keybindings karabiner-config
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
@@ -403,9 +424,15 @@ ifeq ($(OS),Darwin)
 	@echo ".config 配下の設定ファイルをリンク中（macOS専用）..."
 	@mkdir -p "$(HOME)/.config/ghostty"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/ghostty/config" "$(HOME)/.config/ghostty/config"
-	@mkdir -p "$(HOME)/.config/skhd"
-	@ln -snfv "$(SRC_DIRECTORY)/.config/skhd/skhdrc" "$(HOME)/.config/skhd/skhdrc"
-	@ln -snfv "$(SRC_DIRECTORY)/.config/skhd/skhdrc" "$(HOME)/.skhdrc"
+	@# skhd はセキュア入力が有効な間は起動できないため廃止し、キー割り当ては Karabiner-Elements に移した。
+	@# 旧環境で両方が反応しないよう、skhd のサービスと dotfiles のリンクを片付ける
+	@if command -v skhd >/dev/null 2>&1; then \
+		skhd --stop-service 2>/dev/null || true; \
+		skhd --uninstall-service 2>/dev/null || true; \
+	fi
+	@for f in "$(HOME)/.skhdrc" "$(HOME)/.config/skhd/skhdrc"; do \
+		if [ -L "$$f" ] && [ "$$(readlink "$$f")" = "$(SRC_DIRECTORY)/.config/skhd/skhdrc" ]; then rm -v "$$f"; fi; \
+	done
 	@mkdir -p "$(HOME)/.config/yabai"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/yabai/yabairc" "$(HOME)/.config/yabai/yabairc"
 	@# VSCode settings.json
@@ -413,10 +440,9 @@ ifeq ($(OS),Darwin)
 	@echo "VSCode の設定ファイルをリンク中..."
 	@mkdir -p "$(HOME)/Library/Application Support/Code/User"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/Code/User/settings.json" "$(HOME)/Library/Application Support/Code/User/settings.json"
-	@# skhd と yabai をリロード（設定を即時反映）
+	@# yabai をリロード（設定を即時反映）
 	@echo ""
-	@echo "skhd と yabai の設定をリロード中..."
-	@skhd --reload 2>/dev/null || true
+	@echo "yabai の設定をリロード中..."
 	@yabai --restart-service 2>/dev/null || true
 endif
 	@# .local/bin 配下のスクリプト
@@ -442,7 +468,6 @@ endif
 	@echo "ホームディレクトリ配下の設定ファイルをリンク中..."
 	@mkdir -p "$(HOME)/.claude"
 	@ln -snfv "$(SRC_DIRECTORY)/.claude/CLAUDE.md" "$(HOME)/.claude/CLAUDE.md"
-	@ln -snfv "$(SRC_DIRECTORY)/.claude/settings.json" "$(HOME)/.claude/settings.json"
 	@mkdir -p "$(HOME)/.codex"
 	@ln -snfv "$(SRC_DIRECTORY)/.codex/AGENTS.md" "$(HOME)/.codex/AGENTS.md"
 	@# .claude/commands 配下
@@ -499,6 +524,7 @@ help:
 	@echo "  make link              - シンボリックリンクを作成"
 	@echo "  make codex-skills      - Claude Code のスキルを Codex に共有"
 	@echo "  make codex-config      - Codex の共通設定を ~/.codex/config.toml にマージ"
+	@echo "  make claude-settings   - Claude Code の共通設定を ~/.claude/settings.json にマージ"
 	@echo "  make swiftbar          - メニューバーに AI 使用量を表示 (SwiftBar)"
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
