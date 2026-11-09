@@ -14,6 +14,10 @@ brew "gitui"
 brew "git-delta"
 brew "ghq"
 brew "fzf"
+# GitHub CLI（git の認証ヘルパー、gbr エイリアス、メニューバーの Copilot 使用量で使用）
+brew "gh"
+# JSON 処理（メニューバーのプラグインと make packages で使用）
+brew "jq"
 
 # JavaScript runtime (npx / claude-mem installer)
 brew "node"

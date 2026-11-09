@@ -85,7 +85,7 @@ ARM 版を選択します。既存の Intel 版は削除しません。make の�
 #### `make init` の処理内容
 
 1. **Homebrew の選択・インストール** - OS / CPU に合う配置を選択し、なければ導入
-2. **パッケージのインストール** - Brewfile に定義されたツール群（macOS では Claude Code / Codex / T3 Code、共通で Node.js / uv を含む）。yabai / skhd の formula だけを明示的に信頼
+2. **パッケージのインストール** - Brewfile に定義されたツール群（macOS では Claude Code / Codex / T3 Code、共通で Node.js / uv / gh / jq を含む）。yabai / skhd の formula だけを明示的に信頼。Homebrew 外で導入済みのアプリ（手動導入や MDM 配布で `/Applications` にあるもの）は、取り込みに sudo が必要になるため cask をスキップして既存アプリを使う
 3. **Sheldon プラグインのインストール** - zsh プラグインの取得
 4. **Claude Code MCP サーバーの設定** - context7 / Playwright / serena / github
 5. **claude-mem のインストール** - Claude Code と Codex へ共有メモリ機能を登録
@@ -96,6 +96,19 @@ ARM 版を選択します。既存の Intel 版は削除しません。make の�
 
 1. **シンボリックリンクの作成** - 設定ファイルをホームディレクトリにリンク
 2. **既存ファイルのバックアップ** - 上書き前に自動バックアップ
+3. **メニューバーの設定 (macOS)** - SwiftBar のプラグインディレクトリを設定し、ログイン時に起動する LaunchAgent を登録
+
+#### セットアップ後の手動作業
+
+メニューバーの AI 使用量表示（SwiftBar）は、各サービスへのログインが必要です。
+
+```bash
+claude            # Claude Code にログイン（CC の表示）
+codex login       # Codex にログイン（~/.codex/auth.json を作成、CX の表示）
+gh auth login     # GitHub にログイン（Copilot の表示と git の認証）
+```
+
+skhd / yabai / Karabiner-Elements / SwiftBar は初回起動時に macOS の権限許可（アクセシビリティなど）が必要です。
 
 ## ディレクトリ構成
 

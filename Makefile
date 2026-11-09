@@ -68,11 +68,29 @@ brew:
 	fi
 
 # パッケージのインストール
+# Homebrew 外で導入済みのアプリ（手動導入や MDM 配布）を cask で取り込むと sudo が必要になるため、
+# /Applications に同名アプリがある未管理の cask はスキップして既存アプリをそのまま使う
 packages: brew
 	@echo ""
 	@echo "[init] Brewfile からパッケージをインストール"
 	@echo "------------------------------------------"
-	"$(BREW_PREFIX)/bin/brew" bundle --file="$(DOT_DIRECTORY)/Brewfile"
+	@set -eu; \
+	brew="$(BREW_PREFIX)/bin/brew"; \
+	skip=""; \
+	if [ "$(OS)" = Darwin ] && command -v jq >/dev/null 2>&1; then \
+		casks=$$("$$brew" bundle list --cask --file="$(DOT_DIRECTORY)/Brewfile"); \
+		if [ -n "$$casks" ]; then \
+			skip=$$("$$brew" info --cask --json=v2 $$casks \
+				| jq -r '.casks[] | select(.installed == null) | .token as $$t | .artifacts[] | .app? // empty | .[] | (if type == "object" then .target else . end) | strings | "\($$t) \(.)"' \
+				| while read -r token app; do \
+					if [ -e "/Applications/$$app" ]; then echo "$$token"; fi; \
+				done | sort -u | tr '\n' ' '); \
+		fi; \
+	fi; \
+	if [ -n "$$skip" ]; then \
+		echo "Homebrew 外で導入済みのためスキップします: $$skip"; \
+	fi; \
+	HOMEBREW_BUNDLE_CASK_SKIP="$$skip" "$$brew" bundle --file="$(DOT_DIRECTORY)/Brewfile"
 
 # Herdr デスクトップ版（Homebrew の herdr はターミナル版）
 herdr-app: packages
