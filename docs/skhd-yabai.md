@@ -209,7 +209,7 @@ yabai --restart-service
 skhd と yabai を使用するには、アクセシビリティ権限が必要です:
 
 1. **システム設定** > **プライバシーとセキュリティ** > **アクセシビリティ** を開く
-2. `/opt/homebrew/bin/skhd` と `/opt/homebrew/bin/yabai` を追加して有効化
+2. `$(brew --prefix)/bin/skhd` と `$(brew --prefix)/bin/yabai` の実際のパスを追加して有効化（Apple Silicon は `/opt/homebrew/bin`、Intel Mac は `/usr/local/bin`）
 3. 以下のコマンドでサービスを再起動:
    ```bash
    skhd --restart-service

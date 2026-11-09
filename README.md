@@ -33,6 +33,11 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 
 ## セットアップ
 
+macOS では、OS に対応する Xcode Command Line Tools が必要です。未導入の場合は
+`xcode-select --install` を実行して、インストール完了後に進めてください。
+Xcode 本体を使用している場合は、対応版へ更新し、一度起動して追加コンポーネントの導入を完了してください。
+Xcode / Command Line Tools の更新は、この Makefile では自動実行しません。
+
 ### 1. リポジトリのクローン
 
 ```bash
@@ -45,8 +50,22 @@ git clone https://github.com/<your-username>/dotfiles.git ~/dotfiles
 
 ```bash
 cd ~/dotfiles
-make all    # または make init && make link
+make        # make all と同じ。init の完了後に link を実行
+exec zsh    # 新しい PATH とシェル設定を読み込む
 ```
+
+Homebrew の配置は OS と CPU から自動判定します。選択した配置に Homebrew がなければ、
+公式インストーラで導入します。
+
+| 環境 | Homebrew の配置 |
+|------|-----------------|
+| Apple Silicon（M1 以降） | `/opt/homebrew` |
+| Intel Mac | `/usr/local` |
+| Linux | `/home/linuxbrew/.linuxbrew` |
+
+Apple Silicon では、Intel 版 Homebrew が残っている場合や Rosetta 経由で `make` を実行した場合も、
+ARM 版を選択します。既存の Intel 版は削除しません。make の各処理と、セットアップ後の `.zshrc` で
+選択した Homebrew を PATH の先頭に追加します。
 
 #### 利用可能なコマンド
 
@@ -65,8 +84,8 @@ make all    # または make init && make link
 
 #### `make init` の処理内容
 
-1. **Homebrew のインストール** - 未インストールの場合のみ
-2. **パッケージのインストール** - Brewfile に定義されたツール群（Claude Code / Codex / T3 Code を含む）
+1. **Homebrew の選択・インストール** - OS / CPU に合う配置を選択し、なければ導入
+2. **パッケージのインストール** - Brewfile に定義されたツール群（macOS では Claude Code / Codex / T3 Code、共通で Node.js / uv を含む）。yabai / skhd の formula だけを明示的に信頼
 3. **Sheldon プラグインのインストール** - zsh プラグインの取得
 4. **Claude Code MCP サーバーの設定** - context7 / Playwright / serena / github
 5. **claude-mem のインストール** - Claude Code と Codex へ共有メモリ機能を登録
@@ -228,12 +247,33 @@ Claude Code のアクティブなスキルは、`make link` または `make code
 
 ## 注意事項
 
+### Xcode が古く、パッケージのインストールに失敗する場合
+
+`Your Xcode (...) ... is too outdated` が出た場合は、App Store から Xcode を
+エラーに示された対応版へ更新してください。更新後に Xcode を一度起動し、
+追加コンポーネントの導入を完了してから `make` を再実行します。
+Command Line Tools の更新を求められた場合は、システム設定の「ソフトウェアアップデート」で更新してください。
+
+この共通エラーで多数の `Installing ... has failed!` が続く場合は、
+先に開発ツールの問題を解消します。再実行時に導入済みのパッケージを削除する必要はありません。
+必要な開発ツールは [Homebrew のインストール要件](https://docs.brew.sh/Installation)を参照してください。
+
+### M1 なのに Homebrew が Intel と表示する場合
+
+更新済みのリポジトリで `make` を実行し、完了後に `exec zsh` でシェルを読み直してください。
+`which brew` が `/opt/homebrew/bin/brew`、`brew --prefix` が `/opt/homebrew` を
+示すことを確認します。make が途中で失敗して `make link` まで進まなかった場合は、
+現在のターミナルで `eval "$(/opt/homebrew/bin/brew shellenv)"` を実行すると ARM 版を選択できます
+（ARM 版 Homebrew の導入完了後のみ）。
+
+Homebrew の配置と移行については [公式のトラブルシューティング](https://docs.brew.sh/Common-Issues#multiple-homebrew-installations)を参照してください。
+
 ### macOS での skhd / yabai 権限設定
 
 skhd と yabai を使用するには、アクセシビリティ権限が必要です:
 
 1. **システム設定** > **プライバシーとセキュリティ** > **アクセシビリティ** を開く
-2. `/opt/homebrew/bin/skhd` と `/opt/homebrew/bin/yabai` を追加して有効化
+2. `$(brew --prefix)/bin/skhd` と `$(brew --prefix)/bin/yabai` の実際のパスを追加して有効化（Apple Silicon は `/opt/homebrew/bin`、Intel Mac は `/usr/local/bin`）
 3. 以下のコマンドでサービスを再起動:
    ```bash
    skhd --restart-service
