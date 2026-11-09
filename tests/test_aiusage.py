@@ -1,6 +1,7 @@
 """Exercise the SwiftBar AI usage plugin's parsing and rendering (no network)."""
 import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -8,6 +9,8 @@ from unittest.mock import patch
 PLUGIN = Path(__file__).resolve().parents[1] / 'src/.config/swiftbar/plugins/aiusage.5m.py'
 spec = importlib.util.spec_from_file_location('aiusage', PLUGIN)
 aiusage = importlib.util.module_from_spec(spec)
+# プラグインフォルダに __pycache__ を作ると SwiftBar が別プラグインとして読み込み「?」アイコンが出る
+sys.dont_write_bytecode = True
 spec.loader.exec_module(aiusage)
 
 NOW = 1_793_000_000.0
