@@ -27,6 +27,8 @@ brew "uv"
 if OS.mac?
   cask "claude-code"
   cask "codex"
+  # Meta の Muse（ターミナルで動くコーディングエージェント、コマンド名は muse）
+  cask "muse-code"
   cask "t3-code"
 end
 
