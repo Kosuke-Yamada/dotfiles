@@ -17,6 +17,7 @@ brew "fzf"
 
 # JavaScript runtime (npx / claude-mem installer)
 brew "node"
+brew "uv"
 
 # AI Coding Agent (macOS cask のみ提供)
 if OS.mac?
@@ -47,8 +48,8 @@ if OS.mac?
   # メニューバーにスクリプト出力を表示 (Claude Code / Codex の残クレジット)
   cask "swiftbar"
 
-  brew "asmvik/formulae/skhd"
-  brew "asmvik/formulae/yabai"
+  brew "asmvik/formulae/skhd", trusted: true
+  brew "asmvik/formulae/yabai", trusted: true
   cask "karabiner-elements"
 
   # Fonts

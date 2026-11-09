@@ -15,10 +15,24 @@ SRC_DIRECTORY := $(DOT_DIRECTORY)/src
 BACKUP_DIRECTORY := $(HOME)/.backup/dotfiles
 OS := $(shell uname -s)
 
+# Rosetta の uname は x86_64 を返すため、ハードウェア側の ARM 対応を調べる。
+ifeq ($(OS),Darwin)
+ifeq ($(shell /usr/sbin/sysctl -n hw.optional.arm64 2>/dev/null),1)
+BREW_PREFIX := /opt/homebrew
+SHELL := /usr/bin/arch -arm64 /bin/bash
+else
+BREW_PREFIX := /usr/local
+endif
+else
+BREW_PREFIX := /home/linuxbrew/.linuxbrew
+endif
+export PATH := $(BREW_PREFIX)/bin:$(BREW_PREFIX)/sbin:$(PATH)
+
 .PHONY: all init link codex-skills codex-config swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
-all: init link
+all: init
+	+@$(MAKE) link
 	@echo ""
 	@echo "=========================================="
 	@echo "セットアップが完了しました！"
@@ -38,14 +52,19 @@ brew:
 	@echo ""
 	@echo "[init] Homebrew のインストール"
 	@echo "------------------------------------------"
-	@if ! command -v brew &> /dev/null; then \
-		echo "Homebrew が見つかりません。インストールを開始します..."; \
-		/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; \
-		if [ "$(OS)" = "Linux" ]; then \
-			eval "$$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; \
-		fi; \
+	@set -eu; \
+	if [ ! -x "$(BREW_PREFIX)/bin/brew" ]; then \
+		echo "$(OS) / $$(uname -m): $(BREW_PREFIX) に Homebrew をインストールします（既存の別環境は保持します）。"; \
+		installer=$$(mktemp); \
+		trap 'rm -f "$$installer"' EXIT HUP INT TERM; \
+		curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh -o "$$installer"; \
+		/bin/bash "$$installer"; \
 	else \
-		echo "Homebrew は既にインストールされています。スキップします。"; \
+		echo "Homebrew を使用します: $(BREW_PREFIX)/bin/brew ($$(uname -m))"; \
+	fi; \
+	if [ ! -x "$(BREW_PREFIX)/bin/brew" ]; then \
+		echo "Homebrew の導入に失敗しました: $(BREW_PREFIX)/bin/brew がありません。" >&2; \
+		exit 1; \
 	fi
 
 # パッケージのインストール
@@ -53,10 +72,10 @@ packages: brew
 	@echo ""
 	@echo "[init] Brewfile からパッケージをインストール"
 	@echo "------------------------------------------"
-	brew bundle --file="$(DOT_DIRECTORY)/Brewfile"
+	"$(BREW_PREFIX)/bin/brew" bundle --file="$(DOT_DIRECTORY)/Brewfile"
 
 # Herdr デスクトップ版（Homebrew の herdr はターミナル版）
-herdr-app:
+herdr-app: packages
 	@echo ""
 	@echo "[init] Herdr デスクトップ版のインストール"
 	@set -eu; \
@@ -120,7 +139,7 @@ claude-mem: packages
 # VSCode 拡張機能のインストール
 # PATH 上の code が別エディタを指す場合があるため、アプリ同梱の CLI を優先する
 VSCODE_CLI := $(shell p="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"; [ -x "$$p" ] && echo "$$p" || echo code)
-vscode-extensions:
+vscode-extensions: packages
 	@echo ""
 	@echo "[init] VSCode 拡張機能のインストール"
 	@echo "------------------------------------------"
@@ -155,7 +174,7 @@ vscode-extensions:
 	fi
 
 # Skim の SyncTeX 逆方向検索（PDF → Fresh）と自動再読み込みを設定
-skim-setup:
+skim-setup: packages
 	@echo ""
 	@echo "[init] Skim の設定"
 	@echo "------------------------------------------"
@@ -171,19 +190,19 @@ else
 endif
 
 # macOS 固有の設定
-macos-setup:
+macos-setup: packages
 	@echo ""
 	@echo "[init] macOS 固有の設定"
 	@echo "------------------------------------------"
 ifeq ($(OS),Darwin)
 	@echo "skhd サービスを開始中..."
-	@skhd --start-service 2>/dev/null || true
+	@skhd --start-service || { echo "skhd の起動に失敗しました。アクセシビリティ権限と上のエラーを確認してください。" >&2; exit 1; }
 	@echo "yabai サービスを開始中..."
-	@yabai --start-service 2>/dev/null || true
+	@yabai --start-service || { echo "yabai の起動に失敗しました。アクセシビリティ権限と上のエラーを確認してください。" >&2; exit 1; }
 	@echo ""
 	@echo "NOTE: skhd と yabai にはアクセシビリティ権限が必要です。"
 	@echo "  1. システム設定 > プライバシーとセキュリティ > アクセシビリティ を開く"
-	@echo "  2. /opt/homebrew/bin/skhd と /opt/homebrew/bin/yabai を追加して有効化"
+	@echo "  2. $(BREW_PREFIX)/bin/skhd と $(BREW_PREFIX)/bin/yabai を追加して有効化"
 	@echo "  3. 実行: skhd --restart-service && yabai --restart-service"
 else
 	@echo "macOS ではないためスキップします。"

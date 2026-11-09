@@ -5,6 +5,17 @@ export PATH="$HOME/bin:/usr/local/bin:$PATH"
 export PATH=$PATH:$HOME/.cycloud/bin
 export PATH=$PATH:$HOME/.config/cycloud/bin
 
+# Intel 版から移行した Mac でも、ハードウェアに合う Homebrew を優先する。
+if [[ "$(uname -s)" == Darwin ]]; then
+    if [[ "$(/usr/sbin/sysctl -n hw.optional.arm64 2>/dev/null)" == 1 ]]; then
+        [[ ! -x /opt/homebrew/bin/brew ]] || eval "$(/usr/bin/arch -arm64 /opt/homebrew/bin/brew shellenv)"
+    else
+        [[ ! -x /usr/local/bin/brew ]] || eval "$(/usr/local/bin/brew shellenv)"
+    fi
+elif [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
 # ==============================================================================
 # Language
 # ==============================================================================
