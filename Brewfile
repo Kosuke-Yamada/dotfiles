@@ -42,6 +42,8 @@ if OS.mac?
   cask "chatgpt"
   cask "google-gemini"
   cask "claude"
+  # 音声入力（Speech-to-text）
+  cask "aqua-voice"
 
   # Work apps
   cask "slack"
