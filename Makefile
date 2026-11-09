@@ -29,7 +29,7 @@ BREW_PREFIX := /home/linuxbrew/.linuxbrew
 endif
 export PATH := $(BREW_PREFIX)/bin:$(BREW_PREFIX)/sbin:$(PATH)
 
-.PHONY: all init link codex-skills codex-config claude-settings swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup chrome-incognito-app help
+.PHONY: all init link codex-skills codex-config claude-settings swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init
@@ -42,7 +42,7 @@ all: init
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages herdr-app plugins claude-mcp claude-mem vscode-extensions skim-setup chrome-incognito-app macos-setup karabiner-config
+init: brew packages herdr-app plugins claude-mcp claude-mem vscode-extensions skim-setup macos-setup karabiner-config
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -225,23 +225,6 @@ else
 	@echo "macOS ではないためスキップします。"
 endif
 
-# Chrome をシークレットウィンドウで開くアプリを生成（osacompile のアプレットは Apple Silicon にネイティブ対応）
-chrome-incognito-app:
-	@echo ""
-	@echo "[init] Chrome シークレットウィンドウ起動アプリの作成"
-	@echo "------------------------------------------"
-ifeq ($(OS),Darwin)
-	@set -eu; \
-	app="/Applications/Chrome - シークレットウィンドウ.app"; \
-	work=$$(mktemp -d); \
-	trap 'rm -rf "$$work"' EXIT HUP INT TERM; \
-	/usr/bin/osacompile -o "$$work/applet.app" -e 'do shell script "open -na \"Google Chrome\" --args --incognito"'; \
-	rm -rf "$$app"; \
-	mv "$$work/applet.app" "$$app"; \
-	echo "$$app を作成しました"
-else
-	@echo "macOS ではないためスキップします。"
-endif
 
 # macOS 固有の設定
 macos-setup: packages
@@ -529,5 +512,4 @@ help:
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
 	@echo "  make vscode-extensions      - VSCode 拡張機能をインストール"
-	@echo "  make chrome-incognito-app   - Chrome をシークレットウィンドウで開くアプリを作成"
 	@echo "  make help                   - このヘルプを表示"

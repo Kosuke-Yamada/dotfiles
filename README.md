@@ -81,7 +81,6 @@ ARM 版を選択します。既存の Intel 版は削除しません。make の�
 | `make claude-mcp` | Claude Code の MCP サーバーを設定 |
 | `make claude-mem` | claude-mem を Claude Code と Codex にインストール |
 | `make vscode-extensions` | VS Code 拡張機能をインストール |
-| `make chrome-incognito-app` | Chrome をシークレットウィンドウで開くアプリ（`/Applications/Chrome - シークレットウィンドウ.app`）を作成 |
 | `make help` | ヘルプを表示 |
 
 #### `make init` の処理内容
