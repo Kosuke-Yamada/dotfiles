@@ -28,7 +28,7 @@ BREW_PREFIX := /home/linuxbrew/.linuxbrew
 endif
 export PATH := $(BREW_PREFIX)/bin:$(BREW_PREFIX)/sbin:$(PATH)
 
-.PHONY: all init link codex-skills codex-config swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
+.PHONY: all init link codex-skills codex-config claude-settings swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init
@@ -259,6 +259,29 @@ codex-config:
 		"$(SRC_DIRECTORY)/.codex/config.toml" "$(HOME)/.codex/config.toml"
 
 # ------------------------------------------------------------------------------
+# claude-settings: Claude Code の共通設定を ~/.claude/settings.json にマージ
+# iTerm2 連携など各 PC のアプリが書き込む設定をリポジトリに混ぜないよう、
+# シンボリックリンクにはせず src/.claude/settings.json の内容だけを反映する
+# 前回反映した内容を ~/.claude/.dotfiles-settings-base.json に残し、リポジトリから消した設定は PC からも消す
+claude-settings:
+	@echo ""
+	@echo "[link] Claude Code の共通設定をマージ"
+	@echo "------------------------------------------"
+	@set -eu; \
+	target="$(HOME)/.claude/settings.json"; \
+	mkdir -p "$(HOME)/.claude"; \
+	if [ -L "$$target" ]; then \
+		echo "シンボリックリンクを通常ファイルに置き換えます: $$target"; \
+		cp "$$target" "$$target.tmp"; \
+		mv -f "$$target.tmp" "$$target"; \
+	fi; \
+	if ! command -v uv >/dev/null 2>&1; then \
+		echo "uv が見つからないため Claude Code の設定をマージできません。uv をインストールしてから make claude-settings を実行してください。" >&2; \
+		exit 1; \
+	fi; \
+	uv run --quiet --no-project python "$(SRC_DIRECTORY)/.claude/merge-settings.py" \
+		"$(SRC_DIRECTORY)/.claude/settings.json" "$$target" "$(HOME)/.claude/.dotfiles-settings-base.json"
+
 # swiftbar: メニューバーに Claude Code / Codex の月間残クレジットを表示
 # プラグインディレクトリを指定し、ログイン時に SwiftBar を起動する LaunchAgent を登録する
 # LaunchAgent の plist は symlink だと launchd に読まれないことがあるためコピーする
@@ -320,7 +343,7 @@ else
 	@echo "macOS ではないためスキップします。"
 endif
 
-link: codex-skills codex-config swiftbar t3-keybindings karabiner-config
+link: codex-skills codex-config claude-settings swiftbar t3-keybindings karabiner-config
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
@@ -409,7 +432,6 @@ endif
 	@echo "ホームディレクトリ配下の設定ファイルをリンク中..."
 	@mkdir -p "$(HOME)/.claude"
 	@ln -snfv "$(SRC_DIRECTORY)/.claude/CLAUDE.md" "$(HOME)/.claude/CLAUDE.md"
-	@ln -snfv "$(SRC_DIRECTORY)/.claude/settings.json" "$(HOME)/.claude/settings.json"
 	@mkdir -p "$(HOME)/.codex"
 	@ln -snfv "$(SRC_DIRECTORY)/.codex/AGENTS.md" "$(HOME)/.codex/AGENTS.md"
 	@# .claude/commands 配下
@@ -466,6 +488,7 @@ help:
 	@echo "  make link              - シンボリックリンクを作成"
 	@echo "  make codex-skills      - Claude Code のスキルを Codex に共有"
 	@echo "  make codex-config      - Codex の共通設定を ~/.codex/config.toml にマージ"
+	@echo "  make claude-settings   - Claude Code の共通設定を ~/.claude/settings.json にマージ"
 	@echo "  make swiftbar          - メニューバーに AI 使用量を表示 (SwiftBar)"
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
