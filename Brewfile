@@ -45,8 +45,6 @@ if OS.mac?
   cask "slack"
   cask "notion"
 
-  # Utilities
-  cask "keka"
   # Markdown エディタ（MacDown は配布終了のため後継の MacDown 3000）
   cask "macdown-3000"
 
