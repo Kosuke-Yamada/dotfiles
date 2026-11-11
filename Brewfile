@@ -38,6 +38,7 @@ if OS.mac?
   cask "ghostty"
   cask "visual-studio-code"
   cask "cursor"
+  cask "github"
 
   # AI desktop apps
   cask "chatgpt"
