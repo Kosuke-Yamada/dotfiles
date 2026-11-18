@@ -146,19 +146,12 @@
     "skill-creator@claude-plugins-official": false,
     "frontend-design@claude-plugins-official": false,
     "chrome-devtools-mcp@chrome-devtools-plugins": true,
-    "cycloud-plugin@ailab": true,
     "claude-mem@thedotmack": true,
     "eli5@claude-community": true,
     "pb-skills@playbook": true,
     "figma@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
-    "ailab": {
-      "source": {
-        "source": "git",
-        "url": "git@github.com:CyberAgentAILab/claude-plugins.git"
-      }
-    },
     "chrome-devtools-plugins": {
       "source": {
         "source": "github",
