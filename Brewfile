@@ -35,7 +35,6 @@ end
 # macOS only
 if OS.mac?
   tap "asmvik/formulae"
-  cask "ghostty"
   cask "visual-studio-code"
   cask "cursor"
   cask "github"

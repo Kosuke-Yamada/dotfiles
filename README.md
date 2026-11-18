@@ -12,7 +12,6 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 | プラグイン管理 | [sheldon](https://github.com/rossmacarthur/sheldon) | 0.8.5 | 2025-12 | zsh プラグインマネージャー |
 | プロンプト | [starship](https://starship.rs/) | 1.24.1 | 2025-12 | カスタマイズ可能なプロンプト |
 | ターミナル | [herdr](https://herdr.dev) | 0.7.5 | 2026-07 | AI エージェント対応ターミナルマルチプレクサ（デフォルト） |
-| ターミナル | [ghostty](https://ghostty.org/) | 1.2.3 | 2025-12 | ターミナルエミュレータ (macOS) |
 | キー割り当て | [Karabiner-Elements](https://karabiner-elements.pqrs.org/) | 16.3.0 | 2026-11 | Caps Lock → Hyper とグローバルショートカット (macOS) |
 | ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | 2025-12 | タイリングウィンドウマネージャー (macOS) |
 | Git | [git-delta](https://github.com/dandavison/delta) | 0.18.2 | 2025-12 | 差分表示の強化 |
@@ -144,7 +143,6 @@ dotfiles/
     └── .config/
         ├── Code/             # VS Code 設定 (settings.json) と拡張機能リスト
         ├── fresh/            # Fresh 設定 (config.json)
-        ├── ghostty/          # Ghostty 設定 (macOS)
         ├── herdr/            # herdr 設定
         ├── karabiner/        # Karabiner-Elements 設定（キー割り当て, macOS）
         ├── leaf/             # leaf 設定 (config.toml)
@@ -313,7 +311,7 @@ yabai を使用するには、アクセシビリティ権限が必要です:
 
 ### Linux での注意
 
-- ghostty、yabai、Karabiner-Elements は macOS 専用のため、Linux ではインストールされません
+- yabai、Karabiner-Elements は macOS 専用のため、Linux ではインストールされません
 - フォント（HackGen）も macOS 専用です
 - この Brewfile の Claude Code / Codex / Muse Code / T3 Code は macOS 専用の cask として登録しています。Linux では各公式インストーラを利用してください。
 
@@ -345,7 +343,6 @@ Starship の表示を使う場合は `~/.zshrc.local` に `DOTFILES_PROMPT=stars
 | leaf | `Ctrl+E` | 表示中のファイルを外部エディタ (Fresh) で開く |
 | leaf | `Ctrl+F` | ドキュメント内を検索 |
 | leaf | `Ctrl+W` | ウォッチモード（変更時の自動リロード）の切替 |
-| ghostty | `Ctrl+G` | Quick Terminal の表示/非表示 |
 | Karabiner | `Hyper+<キー>` | アプリの前面表示／非表示（`F`: T3 Code、`B`: Chrome、`C`: Claude など） |
 | T3 Code | `Cmd+T` / `Cmd+N` / `Cmd+E` | 通常／現在のプロジェクト／プロジェクトなしで新規チャット |
 | Karabiner + yabai | `Alt+Cmd+←/→/↑/↓` | ウィンドウを画面の左/右/上/下半分に配置 |

@@ -405,8 +405,6 @@ link: codex-skills codex-config claude-settings swiftbar t3-keybindings karabine
 ifeq ($(OS),Darwin)
 	@echo ""
 	@echo ".config 配下の設定ファイルをリンク中（macOS専用）..."
-	@mkdir -p "$(HOME)/.config/ghostty"
-	@ln -snfv "$(SRC_DIRECTORY)/.config/ghostty/config" "$(HOME)/.config/ghostty/config"
 	@# skhd はセキュア入力が有効な間は起動できないため廃止し、キー割り当ては Karabiner-Elements に移した。
 	@# 旧環境で両方が反応しないよう、skhd のサービスと dotfiles のリンクを片付ける
 	@if command -v skhd >/dev/null 2>&1; then \

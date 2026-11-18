@@ -20,7 +20,6 @@ skhd は起動できず、全ショートカットが効かなくなるため廃
 
 | キー | アクション | 説明 |
 |------|-----------|------|
-| `Alt+Return` | open -na Ghostty | Ghostty ターミナルを起動 |
 | `Alt+B` | open -na Arc | Arc ブラウザを起動 |
 | `Alt+E` | open -na Finder | Finder を起動 |
 | `Hyper+F` | t3-toggle | T3 Code |
@@ -99,12 +98,7 @@ skhd は起動できず、全ショートカットが効かなくなるため廃
 
 | キー | アクション | 説明 |
 |------|-----------|------|
-| `Ctrl+G` | Ghostty のメニュー項目をクリック | Quick Terminal の表示/非表示 |
 | `Ctrl+Alt+Y` | yabai --restart-service | yabai を再起動して復旧 |
-
-Ghostty のグローバルキーバインドはスリープ復帰後に無効化されることがあるため、`Ctrl+G` は
-System Events 経由でメニュー項目「Quick Terminal」をクリックします。初回は Karabiner-Elements に
-アクセシビリティ（オートメーション）の許可を求められることがあります。
 
 Karabiner の設定は `~/.config/karabiner/karabiner.json` を保存すると自動で再読み込みされます。
 

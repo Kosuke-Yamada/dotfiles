@@ -270,22 +270,6 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "return_or_enter",
-                  "modifiers": {
-                    "mandatory": [
-                      "option"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "shell_command": "open -na Ghostty"
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
                   "key_code": "b",
                   "modifiers": {
                     "mandatory": [
@@ -887,27 +871,6 @@
                 "to": [
                   {
                     "shell_command": "$HOME/.local/bin/yabai-run space --layout float"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "description": "Control + G → Ghostty Quick Terminal",
-            "manipulators": [
-              {
-                "type": "basic",
-                "from": {
-                  "key_code": "g",
-                  "modifiers": {
-                    "mandatory": [
-                      "control"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "shell_command": "osascript -e 'tell application \"System Events\" to tell process \"Ghostty\" to click menu item \"Quick Terminal\" of menu \"View\" of menu bar 1'"
                   }
                 ]
               }

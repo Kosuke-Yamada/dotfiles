@@ -196,7 +196,7 @@
   "tui": "fullscreen",
   "timeFormat": "24-hour",
   "theme": "auto",
-  "preferredNotifChannel": "ghostty",
+  "preferredNotifChannel": "auto",
   "autoCompactEnabled": true,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
