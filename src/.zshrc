@@ -1,8 +1,22 @@
+# ##############################################################################
+# 構成
+#   1. Environment       … PATH と環境変数
+#   2. Shell options     … 履歴・補完・ディレクトリ・キー割り当てなど zsh の挙動
+#   3. External files    … 関数・エイリアス・ローカル設定（~/.zshrc.local）
+#   4. Tools             … プラグイン・プロンプト・zoxide の初期化
+#
+# 会社固有のツール（社内向け CLI など）やユーザー名入りのパスはここに書かず、
+# Git 管理外の ~/.zshrc.local に置く（.zshrc.local.example を参照）
+# ##############################################################################
+
 # ==============================================================================
-# PATH
+# 1. Environment
 # ==============================================================================
+
+# --- PATH --------------------------------------------------------------------
+# 重複を自動で取り除く（先に現れたものを残す）
+typeset -U path PATH
 export PATH="$HOME/bin:/usr/local/bin:$PATH"
-# 会社固有のツール（社内向け CLI など）の設定はここに書かず ~/.zshrc.local に置く
 
 # Intel 版から移行した Mac でも、ハードウェアに合う Homebrew を優先する。
 if [[ "$(uname -s)" == Darwin ]]; then
@@ -15,32 +29,47 @@ elif [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
-# ==============================================================================
-# Language
-# ==============================================================================
+# Google Cloud SDK
+[ -f "$HOME/google-cloud-sdk/path.zsh.inc" ] && source "$HOME/google-cloud-sdk/path.zsh.inc"
+
+# アプリケーション固有の PATH（後に書いたものほど優先される）
+# Rancher Desktop: 自動で追記される PATH ブロックは絶対パス（ユーザー名）を含むため、
+# このファイルには置かず ~/.zshrc.local に置く（.zshrc.local.example を参照）
+[ -d "$HOME/.rd/bin" ] && export PATH="$HOME/.rd/bin:$PATH"
+[ -d "/opt/homebrew/opt/postgresql@17/bin" ] && export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+# bun (mem-sync CLI)
+[ -d "$HOME/.bun/bin" ] && export PATH="$HOME/.bun/bin:$PATH"
+[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
+
+# --- Language ----------------------------------------------------------------
 export LANG=ja_JP.UTF-8
 export LC_ALL=ja_JP.UTF-8
 
-# ==============================================================================
-# Editor
-# ==============================================================================
+# --- Editor ------------------------------------------------------------------
 if type fresh >/dev/null 2>&1; then
     export EDITOR=fresh
     export VISUAL=fresh
 fi
 
-# ==============================================================================
-# Browser
-# ==============================================================================
+# --- Browser -----------------------------------------------------------------
 # gcloud / gh などが URL を開くときの起動コマンド。
 # 素の `open` だと、chrome-devtools-mcp 等が残した一時プロファイルの Chrome へ
 # LaunchServices が URL を配送してしまい、ゲストモードのように見える。
 # ラッパー経由で Chrome バイナリを直接呼び、プロファイルを固定する。
 [ -x "$HOME/.local/bin/browser" ] && export BROWSER="$HOME/.local/bin/browser"
 
+# --- Google Cloud SDK --------------------------------------------------------
+if [ -x /opt/homebrew/bin/python3.14 ]; then
+    export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3.14
+elif command -v python3 &>/dev/null; then
+    export CLOUDSDK_PYTHON="$(command -v python3)"
+fi
+
 # ==============================================================================
-# History
+# 2. Shell options
 # ==============================================================================
+
+# --- History -----------------------------------------------------------------
 export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=10000
 export SAVEHIST=1000000
@@ -57,9 +86,7 @@ setopt share_history         # 複数のzsh間で履歴を共有
 setopt inc_append_history    # コマンド実行時に即座に履歴に追加
 setopt extended_history      # 履歴にタイムスタンプを記録
 
-# ==============================================================================
-# Completion
-# ==============================================================================
+# --- Completion --------------------------------------------------------------
 autoload -Uz compinit && compinit
 
 # 大文字小文字を区別しない
@@ -79,23 +106,20 @@ setopt complete_in_word      # 単語の途中でも補完
 setopt list_types            # 補完候補にファイル種別を表示
 setopt magic_equal_subst     # =以降も補完対象
 
-# ==============================================================================
-# Directory
-# ==============================================================================
+# Google Cloud SDK（compinit の後に読み込む）
+[ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ] && source "$HOME/google-cloud-sdk/completion.zsh.inc"
+
+# --- Directory ---------------------------------------------------------------
 setopt auto_pushd            # cdでディレクトリスタックに追加
 setopt pushd_ignore_dups     # 重複するディレクトリはスタックに追加しない
 setopt mark_dirs             # ファイル名展開でディレクトリにマッチした場合/を付加
 
-# ==============================================================================
-# Keybind
-# ==============================================================================
+# --- Keybind -----------------------------------------------------------------
 bindkey -e                   # Emacsキーバインド
 [[ -t 0 ]] && stty erase ^H  # Ctrl+Hでバックスペース（tty接続時のみ）
 bindkey "^[[3~" delete-char  # Deleteキーで削除
 
-# ==============================================================================
-# Misc
-# ==============================================================================
+# --- Misc --------------------------------------------------------------------
 setopt correct               # コマンドのスペルチェック
 setopt interactive_comments  # コマンドラインでも#以降をコメントとして扱う
 setopt no_beep               # ビープ音を鳴らさない
@@ -103,14 +127,16 @@ setopt nolistbeep            # 補完時のビープ音も鳴らさない
 zle_highlight=('paste:none') # ペースト時のハイライトを無効化
 
 # ==============================================================================
-# External files
+# 3. External files
 # ==============================================================================
 [ -f "$HOME/.functions" ] && source "$HOME/.functions"
 [ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
-[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"  # ローカル設定（Git管理外）
+# ローカル設定（Git 管理外）。PATH の設定より後に読むので、ここで足した PATH が最優先になる。
+# DOTFILES_PROMPT などツール初期化に使う変数もここで設定できる
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
 # ==============================================================================
-# Tools initialization
+# 4. Tools
 # ==============================================================================
 # 初期化コードを再利用し、タブを開くたびの外部プロセス起動を減らす。
 # バイナリ・zshrc・関連設定の更新時は自動で作り直す。
@@ -241,27 +267,3 @@ if [[ $- == *i* ]]; then
   _dotfiles_cached_init zoxide init zsh --cmd cd
 fi
 unfunction _dotfiles_cached_init
-
-# ==============================================================================
-# Google Cloud SDK
-# ==============================================================================
-if [ -x /opt/homebrew/bin/python3.14 ]; then
-    export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3.14
-elif command -v python3 &>/dev/null; then
-    export CLOUDSDK_PYTHON="$(command -v python3)"
-fi
-[ -f "$HOME/google-cloud-sdk/path.zsh.inc" ] && source "$HOME/google-cloud-sdk/path.zsh.inc"
-[ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ] && source "$HOME/google-cloud-sdk/completion.zsh.inc"
-
-# ==============================================================================
-# Application-specific PATH
-# ==============================================================================
-[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
-# Rancher Desktop: 自動で追記される PATH ブロックは絶対パス（ユーザー名）を含むため、
-# このファイルには置かず ~/.zshrc.local に置く（.zshrc.local.example を参照）
-[ -d "$HOME/.rd/bin" ] && export PATH="$HOME/.rd/bin:$PATH"
-[ -d "/opt/homebrew/opt/postgresql@17/bin" ] && export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
-
-# bun (mem-sync CLI)
-export PATH="$HOME/.bun/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
