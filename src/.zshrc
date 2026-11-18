@@ -2,8 +2,7 @@
 # PATH
 # ==============================================================================
 export PATH="$HOME/bin:/usr/local/bin:$PATH"
-export PATH=$PATH:$HOME/.cycloud/bin
-export PATH=$PATH:$HOME/.config/cycloud/bin
+# 会社固有のツール（社内向け CLI など）の設定はここに書かず ~/.zshrc.local に置く
 
 # Intel 版から移行した Mac でも、ハードウェアに合う Homebrew を優先する。
 if [[ "$(uname -s)" == Darwin ]]; then
@@ -261,7 +260,6 @@ fi
 # Rancher Desktop: 自動で追記される PATH ブロックは絶対パス（ユーザー名）を含むため、
 # このファイルには置かず ~/.zshrc.local に置く（.zshrc.local.example を参照）
 [ -d "$HOME/.rd/bin" ] && export PATH="$HOME/.rd/bin:$PATH"
-[ -d "$HOME/.cycloud/bin" ] && export PATH="$HOME/.cycloud/bin:$PATH"
 [ -d "/opt/homebrew/opt/postgresql@17/bin" ] && export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
 
 # bun (mem-sync CLI)
