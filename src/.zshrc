@@ -258,6 +258,8 @@ fi
 # Application-specific PATH
 # ==============================================================================
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
+# Rancher Desktop: 自動で追記される PATH ブロックは絶対パス（ユーザー名）を含むため、
+# このファイルには置かず ~/.zshrc.local に置く（.zshrc.local.example を参照）
 [ -d "$HOME/.rd/bin" ] && export PATH="$HOME/.rd/bin:$PATH"
 [ -d "$HOME/.cycloud/bin" ] && export PATH="$HOME/.cycloud/bin:$PATH"
 [ -d "/opt/homebrew/opt/postgresql@17/bin" ] && export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"

@@ -26,3 +26,12 @@ export GITHUB_TOKEN="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 # その他のローカル設定
 # ------------------------------------------------------------------------------
 # export MY_CUSTOM_VAR="value"
+
+# ------------------------------------------------------------------------------
+# Rancher Desktop
+# ------------------------------------------------------------------------------
+# Rancher Desktop が ~/.zshrc に自動で追記するブロック。~/.zshrc は dotfiles への
+# シンボリックリンクなので、追記されたらこちらへ移す（パスは $HOME で書く）
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+# export PATH="$HOME/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
