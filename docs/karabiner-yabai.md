@@ -33,6 +33,8 @@ skhd は起動できず、全ショートカットが効かなくなるため廃
 | `Hyper+M` | app-toggle com.meta.endo | Meta のアプリ（bundle ID: com.meta.endo） |
 | `Hyper+K` | app-toggle com.amazon.Lassen | Kindle |
 | `Hyper+V` | app-toggle com.microsoft.VSCode | VS Code |
+| `Hyper+X` | app-toggle com.anysphere.sand | Grok Bot |
+| `Hyper+Q` | open -a ScreenSaverEngine | スクリーンセーバーを起動 |
 
 `app-toggle` / `t3-toggle` は `make link` で `~/.local/bin` に配置します。対象アプリが最前面なら非表示にし、
 それ以外なら現在のデスクトップに移動して前面に表示します（未起動なら起動）。
