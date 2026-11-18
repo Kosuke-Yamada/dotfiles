@@ -4,31 +4,84 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 
 ## 概要
 
-このリポジトリには以下の設定ファイルが含まれています:
+このリポジトリには以下のツールと設定ファイルが含まれています（パッケージは `Brewfile` で管理）。
+「バージョン」は記載時点のもの、「導入」はこのリポジトリに追加した時期です。
 
-| カテゴリ | ツール | バージョン | 導入 | 説明 |
-|---------|--------|------------|------|------|
-| シェル | [zsh](https://www.zsh.org/) | - | 2022-07 | メインシェル |
-| プラグイン管理 | [sheldon](https://github.com/rossmacarthur/sheldon) | 0.8.5 | 2025-12 | zsh プラグインマネージャー |
-| プロンプト | [starship](https://starship.rs/) | 1.24.1 | 2025-12 | カスタマイズ可能なプロンプト |
-| ターミナル | [herdr](https://herdr.dev) | 0.7.5 | 2026-07 | AI エージェント対応ターミナルマルチプレクサ（デフォルト） |
-| キー割り当て | [Karabiner-Elements](https://karabiner-elements.pqrs.org/) | 16.3.0 | 2026-11 | Caps Lock → Hyper とグローバルショートカット (macOS) |
-| ウィンドウ管理 | [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | 2025-12 | タイリングウィンドウマネージャー (macOS) |
-| Git | [git-delta](https://github.com/dandavison/delta) | 0.18.2 | 2025-12 | 差分表示の強化 |
-| Git | [gitui](https://github.com/extrawurst/gitui) | nightly | 2025-12 | Git TUI クライアント |
-| ファイル操作 | [eza](https://github.com/eza-community/eza) | 0.23.4 | 2025-12 | モダンな ls 代替 |
-| ファイル操作 | [bat](https://github.com/sharkdp/bat) | 0.26.1 | 2025-12 | シンタックスハイライト付き cat |
-| ファイル操作 | [fd](https://github.com/sharkdp/fd) | 10.3.0 | 2025-12 | 高速な find 代替 |
-| 検索 | [ripgrep](https://github.com/BurntSushi/ripgrep) | 15.1.0 | 2025-12 | 高速な grep 代替 |
-| ナビゲーション | [zoxide](https://github.com/ajeetdsouza/zoxide) | 0.9.8 | 2025-12 | スマートな cd |
-| リポジトリ管理 | [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | 2025-12 | Git リポジトリ管理 |
-| 選択UI | [fzf](https://github.com/junegunn/fzf) | 0.67.0 | 2026-01 | インタラクティブフィルタリング |
-| ビューア | [leaf](https://leaf.rivolink.mg/) | 1.28.0 | 2026-08 | GUI 風の操作感を持つターミナル Markdown ビューア |
-| エディタ | [Fresh](https://getfresh.dev/) | 0.4.4 | 2026-07 | ゼロコンフィグなターミナルエディタ（VS Code 風の操作感） |
-| エディタ | [Visual Studio Code](https://code.visualstudio.com/) | - | 2026-09 | GUI エディタ |
-| AIエージェント | [Claude Code](https://claude.com/product/claude-code) | 2.1.206 | 2026-07 | ターミナル AI コーディングエージェント (macOS) |
-| AIエージェント | [Codex](https://github.com/openai/codex) | 0.145.0 | 2026-07 | OpenAI のターミナル AI コーディングエージェント (macOS) |
-| AIエージェントGUI | [T3 Code](https://t3.codes/) | 0.1.6 | 2026-11 | AI コーディングエージェントのデスクトップアプリ (macOS) |
+### シェル環境
+
+| ツール | バージョン | 導入 | 説明 |
+|--------|------------|------|------|
+| [zsh](https://www.zsh.org/) | - | 2022-07 | メインシェル |
+| [sheldon](https://github.com/rossmacarthur/sheldon) | 0.8.5 | 2025-12 | zsh プラグインマネージャー |
+| [starship](https://starship.rs/) | 1.24.1 | 2025-12 | カスタマイズ可能なプロンプト |
+| [zoxide](https://github.com/ajeetdsouza/zoxide) | 0.9.8 | 2025-12 | スマートな cd |
+| [fzf](https://github.com/junegunn/fzf) | 0.67.0 | 2026-01 | インタラクティブフィルタリング |
+
+### ターミナル・エディタ
+
+| ツール | バージョン | 導入 | 説明 |
+|--------|------------|------|------|
+| [herdr](https://herdr.dev) | 0.7.5 | 2026-07 | AI エージェント対応ターミナルマルチプレクサ（デフォルト） |
+| [Fresh](https://getfresh.dev/) | 0.4.4 | 2026-07 | ゼロコンフィグなターミナルエディタ（VS Code 風の操作感） |
+| [leaf](https://leaf.rivolink.mg/) | 1.28.0 | 2026-08 | GUI 風の操作感を持つターミナル Markdown ビューア |
+| [Visual Studio Code](https://code.visualstudio.com/) | - | 2026-09 | GUI エディタ |
+| [Cursor](https://www.cursor.com/) | 3.29.15 | 2026-11 | AI 機能を統合した GUI エディタ (macOS) |
+| [MacDown 3000](https://macdown.app/) | - | 2026-11 | Markdown エディタ (macOS) |
+
+### CLI ツール
+
+| ツール | バージョン | 導入 | 説明 |
+|--------|------------|------|------|
+| [eza](https://github.com/eza-community/eza) | 0.23.4 | 2025-12 | モダンな ls 代替 |
+| [bat](https://github.com/sharkdp/bat) | 0.26.1 | 2025-12 | シンタックスハイライト付き cat |
+| [fd](https://github.com/sharkdp/fd) | 10.3.0 | 2025-12 | 高速な find 代替 |
+| [ripgrep](https://github.com/BurntSushi/ripgrep) | 15.1.0 | 2025-12 | 高速な grep 代替 |
+| [jq](https://jqlang.github.io/jq/) | 1.8.2 | 2026-11 | JSON 処理（メニューバーのプラグインと `make packages` で使用） |
+| [Node.js](https://nodejs.org/) | 26.13.0 | 2026-08 | JavaScript ランタイム（npx / claude-mem のインストーラ） |
+| [uv](https://docs.astral.sh/uv/) | 0.11.24 | 2026-01 | Python パッケージ・プロジェクト管理 |
+
+### Git
+
+| ツール | バージョン | 導入 | 説明 |
+|--------|------------|------|------|
+| [git-delta](https://github.com/dandavison/delta) | 0.18.2 | 2025-12 | 差分表示の強化 |
+| [gitui](https://github.com/extrawurst/gitui) | nightly | 2025-12 | Git TUI クライアント |
+| [ghq](https://github.com/x-motemen/ghq) | 1.8.0 | 2025-12 | Git リポジトリ管理 |
+| [GitHub CLI](https://cli.github.com/) | 2.103.0 | 2026-11 | GitHub 操作（git の認証ヘルパー、`gbr` エイリアス、メニューバーの Copilot 使用量） |
+| [GitHub Desktop](https://desktop.github.com/) | 3.6.10 | 2026-11 | Git の GUI クライアント (macOS) |
+
+### AI エージェント
+
+| ツール | バージョン | 導入 | 説明 |
+|--------|------------|------|------|
+| [Claude Code](https://claude.com/product/claude-code) | 2.1.206 | 2026-07 | ターミナル AI コーディングエージェント (macOS) |
+| [Codex](https://github.com/openai/codex) | 0.145.0 | 2026-07 | OpenAI のターミナル AI コーディングエージェント (macOS) |
+| [Muse Code](https://dev.meta.ai/) | - | 2026-11 | Meta のターミナル AI コーディングエージェント（コマンド名 `muse`, macOS） |
+| [T3 Code](https://t3.codes/) | 0.1.6 | 2026-11 | AI コーディングエージェントのデスクトップアプリ (macOS) |
+
+### macOS の操作環境
+
+| ツール | バージョン | 導入 | 説明 |
+|--------|------------|------|------|
+| [Karabiner-Elements](https://karabiner-elements.pqrs.org/) | 16.3.0 | 2026-11 | Caps Lock → Hyper とグローバルショートカット |
+| [yabai](https://github.com/koekeishiya/yabai) | 7.1.16 | 2025-12 | タイリングウィンドウマネージャー |
+| [SwiftBar](https://swiftbar.app/) | 2.1.1 | 2026-10 | メニューバーに Claude Code / Codex の残クレジットを表示 |
+| [HackGen](https://github.com/yuru7/HackGen) | 2.10.0 | 2025-12 | 日本語プログラミングフォント（Nerd Fonts 版を含む） |
+
+### GUI アプリ (macOS)
+
+| ツール | バージョン | 導入 | 説明 |
+|--------|------------|------|------|
+| [ChatGPT](https://chatgpt.com/) | 26.1111.21308 | 2026-11 | OpenAI のデスクトップアプリ |
+| [Claude](https://claude.com/download) | 6.6395.0 | 2026-01 | Anthropic のデスクトップアプリ |
+| [Gemini](https://gemini.google/) | 1.141.3.1394 | 2026-11 | Google のデスクトップアプリ |
+| [Grok Bot](https://x.ai/bot) | 1.2.0 | 2026-11 | xAI のデスクトップアプリ |
+| [Aqua Voice](https://aquavoice.com/) | 0.22.16 | 2026-11 | 音声入力（Speech-to-text） |
+| [Slack](https://slack.com/) | 4.51.180 | 2026-11 | チャット |
+| [Notion](https://www.notion.com/) | 7.44.0 | 2026-11 | ドキュメント・ナレッジ管理 |
+| [Kindle](https://www.amazon.co.jp/kindle) | 7.69 | 2026-11 | 電子書籍リーダー（Mac App Store から `mas` で導入） |
+| [MacTeX](https://www.tug.org/mactex/) | 2026.0324 | 2026-09 | TeX Live 一式（GUI アプリなし） |
+| [Skim](https://skim-app.sourceforge.io/) | 1.7.19 | 2026-09 | SyncTeX 対応の PDF ビューア |
 
 ## セットアップ
 
