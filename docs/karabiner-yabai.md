@@ -32,6 +32,7 @@ skhd は起動できず、全ショートカットが効かなくなるため廃
 | `Hyper+M` | app-toggle com.meta.endo | Meta のアプリ（bundle ID: com.meta.endo） |
 | `Hyper+K` | app-toggle com.amazon.Lassen | Kindle |
 | `Hyper+V` | app-toggle com.microsoft.VSCode | VS Code |
+| `Hyper+H` | app-toggle dev.herdr.app | Herdr |
 | `Hyper+X` | app-toggle com.anysphere.sand | Grok Bot |
 | `Hyper+Q` | open -a ScreenSaverEngine | スクリーンセーバーを起動 |
 

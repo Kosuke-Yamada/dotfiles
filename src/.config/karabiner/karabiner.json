@@ -227,6 +227,25 @@
               {
                 "type": "basic",
                 "from": {
+                  "key_code": "h",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control",
+                      "left_option",
+                      "left_shift",
+                      "left_command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "$HOME/.local/bin/app-toggle dev.herdr.app"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
                   "key_code": "x",
                   "modifiers": {
                     "mandatory": [
