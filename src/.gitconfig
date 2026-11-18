@@ -1,6 +1,6 @@
 [user]
-	name = Kosuke-Yamada
-	email = kosyamada0526@gmail.com
+	name = Kosuke Yamada
+	email = 39643260+Kosuke-Yamada@users.noreply.github.com
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
