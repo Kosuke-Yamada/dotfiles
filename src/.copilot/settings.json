@@ -1,0 +1,62 @@
+{
+  "allowedUrls": [
+    "https://docs.github.com"
+  ],
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "thedotmack": {
+      "source": {
+        "source": "github",
+        "repo": "thedotmack/claude-mem"
+      }
+    },
+    "ailab": {
+      "source": {
+        "source": "github",
+        "repo": "CyberAgentAILab/claude-plugins"
+      }
+    },
+    "chrome-devtools-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "ChromeDevTools/chrome-devtools-mcp"
+      }
+    },
+    "claude-community": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-community"
+      }
+    },
+    "playbook": {
+      "source": {
+        "source": "github",
+        "repo": "Kosuke-Yamada/playbook"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "chrome-devtools-mcp@chrome-devtools-plugins": true,
+    "cycloud-plugin@ailab": true,
+    "claude-mem@thedotmack": true,
+    "eli5@claude-community": true,
+    "pb-skills@playbook": true,
+    "figma@claude-plugins-official": true,
+    "notion@claude-plugins-official": true
+  },
+  "hooks": {
+    "permissionRequest": [
+      {
+        "type": "command",
+        "matcher": "bash",
+        "bash": "bash ~/.copilot/scripts/allow-git.sh",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

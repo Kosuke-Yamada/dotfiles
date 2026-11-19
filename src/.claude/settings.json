@@ -8,11 +8,7 @@
     "allow": [
       "Bash(pnpm *)",
       "Bash(make *)",
-      "Bash(git add *)",
-      "Bash(git commit *)",
-      "Bash(git stash *)",
-      "Bash(git switch *)",
-      "Bash(git worktree remove *)",
+      "Bash(git *)",
       "Bash(gh pr view *)",
       "Bash(gh issue view *)"
     ],
@@ -35,8 +31,6 @@
       "Read(//**/id_rsa*)"
     ],
     "ask": [
-      "Bash(git push *)",
-      "Bash(git reset --hard *)",
       "Bash(gh pr merge *)",
       "Bash(gh release *)",
       "Bash(npm publish *)",

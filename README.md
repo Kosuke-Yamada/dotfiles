@@ -56,6 +56,7 @@ macOS / Linux 対応の開発環境セットアップ用 dotfiles リポジト�
 |--------|------------|------|------|
 | [Claude Code](https://claude.com/product/claude-code) | 2.1.206 | 2026-07 | ターミナル AI コーディングエージェント (macOS) |
 | [Codex](https://github.com/openai/codex) | 0.145.0 | 2026-07 | OpenAI のターミナル AI コーディングエージェント (macOS) |
+| [GitHub Copilot CLI](https://docs.github.com/en/copilot/concepts/agents/about-copilot-cli) | 1.0.114 | 2026-11 | GitHub のターミナル AI コーディングエージェント (macOS) |
 | [Muse Code](https://dev.meta.ai/) | - | 2026-11 | Meta のターミナル AI コーディングエージェント（コマンド名 `muse`, macOS） |
 | [T3 Code](https://t3.codes/) | 0.1.6 | 2026-11 | AI コーディングエージェントのデスクトップアプリ (macOS) |
 
@@ -129,6 +130,8 @@ ARM 版を選択します。既存の Intel 版は削除しません。make の�
 | `make codex-skills` | Claude Code のスキルを Codex に共有 |
 | `make codex-config` | Codex の共通設定を `~/.codex/config.toml` にマージ |
 | `make claude-settings` | Claude Code の共通設定を `~/.claude/settings.json` にマージ |
+| `make copilot-settings` | Copilot CLI の共通設定を `~/.copilot/settings.json` にマージ |
+| `make copilot-plugins` | Copilot CLI のプラグインをインストール |
 | `make t3-keybindings` | T3 Code のキー設定を配置（既存ファイルはバックアップ） |
 | `make claude-mcp` | Claude Code の MCP サーバーを設定 |
 | `make claude-mem` | claude-mem を Claude Code と Codex にインストール |
@@ -272,7 +275,7 @@ code --list-extensions | sort > ~/dotfiles/src/.config/Code/extensions.txt
 | Git | eamodio.gitlens, mhutchie.git-graph |
 | AI | anthropic.claude-code |
 
-### AI エージェント設定（Claude Code / Codex）
+### AI エージェント設定（Claude Code / Codex / Copilot CLI）
 
 [agent-config](https://github.com/Kosuke-Yamada/agent-config) から統合した AI エージェント設定を管理しています。
 
@@ -298,8 +301,21 @@ MCP サーバー（context7 / Playwright / serena / github）は `make claude-mc
 `make codex-config`（`make link` にも含まれる）で共通設定を `~/.codex/config.toml` にマージします。
 端末固有のプロジェクト・プラグイン設定は保持します。反映後は Codex CLI を再起動してください。
 
+コマンドの許可ルール `src/.codex/rules/*.rules` も `~/.codex/rules/` にリンクします。`git.rules` で git コマンドを確認なしで許可します。
+Codex が承認時に書き込む `~/.codex/rules/default.rules` は管理しません。
+
 下部のステータス行には、モデル、5 時間・週間の使用上限、現在のスレッドの消費 credits・推定金額（USD）、スレッド名、プロジェクト、ブランチを表示します。
 `thread-credits` / `estimated-thread-cost` は Enterprise ワークスペースで料金データが提供される場合のみ表示され、データがない場合は省略されます。購入済み credits の残高や月間合計ではありません。
+
+#### Copilot CLI (`src/.copilot/`)
+
+`make copilot-settings`（`make link` にも含まれる）で共通設定を `~/.copilot/settings.json` にマージします。
+Claude Code と同じ 3-way マージで、前回反映した内容は `~/.copilot/.dotfiles-settings-base.json` に残します。
+プラグインは `make copilot-plugins`（`make init` にも含まれる）で、`enabledPlugins` のうち未導入のものをインストールします。
+
+Copilot CLI には許可ルールを設定ファイルに保存する仕組みがないため、`permissionRequest` フック
+（`scripts/allow-git.sh`）で git コマンドを確認なしで許可します。`&&`、`;`、`|`、リダイレクト、`$(...)` などを含む
+コマンドは許可せず、通常の確認に回します。
 
 #### claude-mem（Claude Code / Codex 共通）
 

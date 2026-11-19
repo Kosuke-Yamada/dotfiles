@@ -1,0 +1,15 @@
+prefix_rule(
+    pattern = ["git"],
+    decision = "allow",
+    justification = "git コマンドを確認なしで許可する (Claude Code の Bash(git *) と揃える)。",
+    match = [
+        "git status",
+        "git commit -m test",
+        "git push origin main",
+        "git worktree remove --force .worktrees/feature-a",
+    ],
+    not_match = [
+        "gitea status",
+        "gh pr merge",
+    ],
+)

@@ -29,7 +29,7 @@ BREW_PREFIX := /home/linuxbrew/.linuxbrew
 endif
 export PATH := $(BREW_PREFIX)/bin:$(BREW_PREFIX)/sbin:$(PATH)
 
-.PHONY: all init link codex-skills codex-config claude-settings swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
+.PHONY: all init link codex-skills codex-config claude-settings copilot-settings copilot-plugins swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init
@@ -42,7 +42,7 @@ all: init
 # ------------------------------------------------------------------------------
 # init: Homebrew とパッケージのインストール
 # ------------------------------------------------------------------------------
-init: brew packages herdr-app plugins claude-mcp claude-mem vscode-extensions skim-setup macos-setup karabiner-config
+init: brew packages herdr-app plugins claude-mcp claude-mem copilot-plugins vscode-extensions skim-setup macos-setup karabiner-config
 	@echo ""
 	@echo "=========================================="
 	@echo "init が完了しました！"
@@ -172,6 +172,40 @@ claude-mem: packages
 		exit 1; \
 	fi
 
+# Copilot CLI のプラグインをインストール
+# Copilot CLI は settings.json の enabledPlugins から自動ではインストールしないため、
+# src/.copilot/settings.json で有効にしたプラグインとそのマーケットプレイスを登録する
+copilot-plugins: packages
+	@echo ""
+	@echo "[init] Copilot CLI プラグインのインストール"
+	@echo "------------------------------------------"
+	@set -eu; \
+	if ! command -v copilot >/dev/null 2>&1; then \
+		echo "Copilot CLI がインストールされていません。スキップします。"; \
+		exit 0; \
+	fi; \
+	settings="$(SRC_DIRECTORY)/.copilot/settings.json"; \
+	marketplaces=$$(copilot plugin marketplace list); \
+	jq -r '.extraKnownMarketplaces | to_entries[] | "\(.key) \(.value.source.repo)"' "$$settings" | \
+	while read -r name repo; do \
+		if echo "$$marketplaces" | grep -qF "• $$name "; then \
+			echo "  既存マーケットプレイス: $$name"; \
+		else \
+			echo "  マーケットプレイス追加: $$name ($$repo)"; \
+			copilot plugin marketplace add "$$repo"; \
+		fi; \
+	done; \
+	installed=$$(copilot plugin list); \
+	jq -r '.enabledPlugins | to_entries[] | select(.value) | .key' "$$settings" | \
+	while read -r plugin; do \
+		if echo "$$installed" | grep -qF "• $$plugin"; then \
+			echo "  既存: $$plugin"; \
+		else \
+			echo "  インストール: $$plugin"; \
+			copilot plugin install "$$plugin"; \
+		fi; \
+	done
+
 # VSCode 拡張機能のインストール
 # PATH 上の code が別エディタを指す場合があるため、アプリ同梱の CLI を優先する
 VSCODE_CLI := $(shell p="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"; [ -x "$$p" ] && echo "$$p" || echo code)
@@ -276,6 +310,11 @@ codex-config:
 	fi
 	@uv run --quiet --no-project --with tomlkit python "$(SRC_DIRECTORY)/.codex/scripts/merge-config.py" \
 		"$(SRC_DIRECTORY)/.codex/config.toml" "$(HOME)/.codex/config.toml"
+	@# コマンドの許可ルール。default.rules は Codex が承認内容を書き込むため管理しない
+	@mkdir -p "$(HOME)/.codex/rules"
+	@for f in "$(SRC_DIRECTORY)/.codex/rules"/*.rules; do \
+		ln -snfv "$$f" "$(HOME)/.codex/rules/$$(basename "$$f")"; \
+	done
 
 # ------------------------------------------------------------------------------
 # claude-settings: Claude Code の共通設定を ~/.claude/settings.json にマージ
@@ -300,6 +339,27 @@ claude-settings:
 	fi; \
 	uv run --quiet --no-project python "$(SRC_DIRECTORY)/.claude/merge-settings.py" \
 		"$(SRC_DIRECTORY)/.claude/settings.json" "$$target" "$(HOME)/.claude/.dotfiles-settings-base.json"
+
+# ------------------------------------------------------------------------------
+# copilot-settings: Copilot CLI の共通設定を ~/.copilot/settings.json にマージ
+# Copilot CLI が承認した URL などを書き込むため、claude-settings と同じ 3-way マージで反映する
+# ------------------------------------------------------------------------------
+copilot-settings:
+	@echo ""
+	@echo "[link] Copilot CLI の共通設定をマージ"
+	@echo "------------------------------------------"
+	@set -eu; \
+	mkdir -p "$(HOME)/.copilot/scripts"; \
+	for f in "$(SRC_DIRECTORY)/.copilot/scripts"/*.sh; do \
+		chmod +x "$$f"; \
+		ln -snfv "$$f" "$(HOME)/.copilot/scripts/$$(basename "$$f")"; \
+	done; \
+	if ! command -v uv >/dev/null 2>&1; then \
+		echo "uv が見つからないため Copilot CLI の設定をマージできません。uv をインストールしてから make copilot-settings を実行してください。" >&2; \
+		exit 1; \
+	fi; \
+	uv run --quiet --no-project python "$(SRC_DIRECTORY)/.claude/merge-settings.py" \
+		"$(SRC_DIRECTORY)/.copilot/settings.json" "$(HOME)/.copilot/settings.json" "$(HOME)/.copilot/.dotfiles-settings-base.json"
 
 # swiftbar: メニューバーに Claude Code / Codex の月間残クレジットを表示
 # プラグインディレクトリを指定し、ログイン時に SwiftBar を起動する LaunchAgent を登録する
@@ -362,7 +422,7 @@ else
 	@echo "macOS ではないためスキップします。"
 endif
 
-link: codex-skills codex-config claude-settings swiftbar t3-keybindings karabiner-config
+link: codex-skills codex-config claude-settings copilot-settings swiftbar t3-keybindings karabiner-config
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
@@ -371,7 +431,7 @@ link: codex-skills codex-config claude-settings swiftbar t3-keybindings karabine
 	@echo "ホームディレクトリのドットファイルをリンク中..."
 	@cd "$(SRC_DIRECTORY)" && \
 	for f in .??*; do \
-		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".codex" ] || [ "$$f" = ".local" ] || [ "$$f" = ".t3" ]; then \
+		if [ "$$f" = ".git" ] || [ "$$f" = ".config" ] || [ "$$f" = ".claude" ] || [ "$$f" = ".codex" ] || [ "$$f" = ".copilot" ] || [ "$$f" = ".local" ] || [ "$$f" = ".t3" ]; then \
 			continue; \
 		fi; \
 		if [ -e "$(HOME)/$$f" ] && [ ! -L "$(HOME)/$$f" ]; then \
@@ -506,6 +566,8 @@ help:
 	@echo "  make codex-skills      - Claude Code のスキルを Codex に共有"
 	@echo "  make codex-config      - Codex の共通設定を ~/.codex/config.toml にマージ"
 	@echo "  make claude-settings   - Claude Code の共通設定を ~/.claude/settings.json にマージ"
+	@echo "  make copilot-settings  - Copilot CLI の共通設定を ~/.copilot/settings.json にマージ"
+	@echo "  make copilot-plugins   - Copilot CLI のプラグインをインストール"
 	@echo "  make swiftbar          - メニューバーに AI 使用量を表示 (SwiftBar)"
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
