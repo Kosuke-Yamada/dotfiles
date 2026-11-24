@@ -29,7 +29,7 @@ BREW_PREFIX := /home/linuxbrew/.linuxbrew
 endif
 export PATH := $(BREW_PREFIX)/bin:$(BREW_PREFIX)/sbin:$(PATH)
 
-.PHONY: all init link codex-skills codex-config claude-settings copilot-settings copilot-plugins swiftbar brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
+.PHONY: all init link codex-skills codex-config claude-settings copilot-settings copilot-plugins swiftbar yabai-service brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init
@@ -261,18 +261,42 @@ endif
 
 
 # macOS 固有の設定
-macos-setup: packages
+macos-setup: packages yabai-service
 	@echo ""
 	@echo "[init] macOS 固有の設定"
 	@echo "------------------------------------------"
 ifeq ($(OS),Darwin)
-	@echo "yabai サービスを開始中..."
-	@yabai --start-service || { echo "yabai の起動に失敗しました。アクセシビリティ権限と上のエラーを確認してください。" >&2; exit 1; }
-	@echo ""
 	@echo "NOTE: yabai にはアクセシビリティ権限が必要です。"
 	@echo "  1. システム設定 > プライバシーとセキュリティ > アクセシビリティ を開く"
 	@echo "  2. $(BREW_PREFIX)/bin/yabai を追加して有効化"
 	@echo "  3. 実行: yabai --restart-service"
+else
+	@echo "macOS ではないためスキップします。"
+endif
+
+# yabai-service: 公式 LaunchAgent を有効化し、ログイン時の ensure エージェントも登録する
+# yabai --stop-service は launchctl disable するため、再起動後に起動しなくなる。
+# local.dotfiles.yabai が毎ログイン時に --start-service で復旧する。
+# ------------------------------------------------------------------------------
+YABAI_AGENT := local.dotfiles.yabai
+yabai-service:
+	@echo ""
+	@echo "[link] yabai ログイン起動の登録"
+	@echo "------------------------------------------"
+ifeq ($(OS),Darwin)
+	@if ! command -v yabai >/dev/null 2>&1; then \
+		echo "yabai が見つかりません。make packages の後に make yabai-service を実行してください。"; \
+	else \
+		mkdir -p "$(HOME)/Library/LaunchAgents"; \
+		install -m 644 "$(SRC_DIRECTORY)/Library/LaunchAgents/$(YABAI_AGENT).plist" "$(HOME)/Library/LaunchAgents/$(YABAI_AGENT).plist"; \
+		launchctl bootout "gui/$$(id -u)/$(YABAI_AGENT)" 2>/dev/null || true; \
+		launchctl bootstrap "gui/$$(id -u)" "$(HOME)/Library/LaunchAgents/$(YABAI_AGENT).plist"; \
+		echo "ログイン時に yabai を起動するエージェントを登録しました"; \
+		echo "yabai サービスを開始中..."; \
+		yabai --start-service || { echo "yabai の起動に失敗しました。アクセシビリティ権限と上のエラーを確認してください。" >&2; exit 1; }; \
+		launchctl enable "gui/$$(id -u)/com.asmvik.yabai"; \
+		echo "yabai サービスを有効化しました（再起動後も自動起動します）"; \
+	fi
 else
 	@echo "macOS ではないためスキップします。"
 endif
@@ -422,7 +446,7 @@ else
 	@echo "macOS ではないためスキップします。"
 endif
 
-link: codex-skills codex-config claude-settings copilot-settings swiftbar t3-keybindings karabiner-config
+link: codex-skills codex-config claude-settings copilot-settings swiftbar yabai-service t3-keybindings karabiner-config
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
@@ -481,10 +505,10 @@ ifeq ($(OS),Darwin)
 	@echo "VSCode の設定ファイルをリンク中..."
 	@mkdir -p "$(HOME)/Library/Application Support/Code/User"
 	@ln -snfv "$(SRC_DIRECTORY)/.config/Code/User/settings.json" "$(HOME)/Library/Application Support/Code/User/settings.json"
-	@# yabai をリロード（設定を即時反映）
+	@# yabai をリロード（設定を即時反映）。未起動なら yabai-service 側で開始済み。
 	@echo ""
 	@echo "yabai の設定をリロード中..."
-	@yabai --restart-service 2>/dev/null || true
+	@yabai --restart-service 2>/dev/null || yabai --start-service 2>/dev/null || true
 endif
 	@# .local/bin 配下のスクリプト
 	@if [ -d "$(SRC_DIRECTORY)/.local/bin" ]; then \
@@ -569,6 +593,7 @@ help:
 	@echo "  make copilot-settings  - Copilot CLI の共通設定を ~/.copilot/settings.json にマージ"
 	@echo "  make copilot-plugins   - Copilot CLI のプラグインをインストール"
 	@echo "  make swiftbar          - メニューバーに AI 使用量を表示 (SwiftBar)"
+	@echo "  make yabai-service     - yabai をログイン時に自動起動するよう登録"
 	@echo "  make claude-mcp             - Claude Code MCP サーバーを設定"
 	@echo "  make claude-mem             - claude-mem を Claude Code / Codex に導入"
 	@echo "  make vscode-extensions      - VSCode 拡張機能をインストール"

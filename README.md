@@ -146,13 +146,13 @@ ARM 版を選択します。既存の Intel 版は削除しません。make の�
 4. **Claude Code MCP サーバーの設定** - context7 / Playwright / serena / github
 5. **claude-mem のインストール** - Claude Code と Codex へ共有メモリ機能を登録
 6. **VS Code 拡張機能のインストール** - extensions.txt に基づき同期
-7. **macOS 固有の設定** - yabai サービスの起動など
+7. **macOS 固有の設定** - yabai サービスの起動と、ログイン時の自動起動エージェント登録
 
 #### `make link` の処理内容
 
 1. **シンボリックリンクの作成** - 設定ファイルをホームディレクトリにリンク
 2. **既存ファイルのバックアップ** - 上書き前に自動バックアップ
-3. **メニューバーの設定 (macOS)** - SwiftBar のプラグインディレクトリを設定し、ログイン時に起動する LaunchAgent を登録
+3. **メニューバー / yabai の設定 (macOS)** - SwiftBar と yabai のログイン時 LaunchAgent を登録
 4. **設定ファイルのマージ** - Claude Code / Codex の共通設定を各 PC の設定ファイルに反映（PC 固有の設定は保持）
 5. **キー割り当ての配置 (macOS)** - Karabiner-Elements の設定を配置し、廃止した skhd のサービスとリンクを片付ける
 

@@ -193,15 +193,22 @@ yabai サーバはスリープ復帰や特定アプリの Accessibility 応答�
 ### yabai
 
 ```bash
-# サービス開始
+# サービス開始（再起動後の自動起動も有効化）
 yabai --start-service
-
-# サービス停止
-yabai --stop-service
 
 # サービス再起動
 yabai --restart-service
+
+# サービス停止（注意: 自動起動も無効化される）
+yabai --stop-service
 ```
+
+`yabai --stop-service` はプロセス停止に加えて `launchctl disable` も行うため、
+**そのままだと再起動後に起動しません**。止めたあとに自動起動を戻すには
+`yabai --start-service`（または `make yabai-service`）を実行してください。
+
+dotfiles ではログイン時に `local.dotfiles.yabai` が `--start-service` を呼び、
+誤って disable されていても次回ログインで復旧します。
 
 ## 注意事項
 
