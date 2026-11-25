@@ -45,6 +45,10 @@ fi
 export LANG=ja_JP.UTF-8
 export LC_ALL=ja_JP.UTF-8
 
+# --- T3 Code -----------------------------------------------------------------
+export T3CODE_TELEMETRY_ENABLED=false
+export T3CODE_OTEL_SDK_DISABLED=true
+
 # --- Editor ------------------------------------------------------------------
 if type fresh >/dev/null 2>&1; then
     export EDITOR=fresh
