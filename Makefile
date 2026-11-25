@@ -402,8 +402,10 @@ ifeq ($(OS),Darwin)
 	@mkdir -p "$(HOME)/Library/LaunchAgents"
 	@install -m 644 "$(SRC_DIRECTORY)/Library/LaunchAgents/$(SWIFTBAR_AGENT).plist" "$(HOME)/Library/LaunchAgents/$(SWIFTBAR_AGENT).plist"
 	@if [ -d /Applications/SwiftBar.app ]; then \
+		launchctl enable "gui/$$(id -u)/$(SWIFTBAR_AGENT)"; \
 		launchctl bootout "gui/$$(id -u)/$(SWIFTBAR_AGENT)" 2>/dev/null || true; \
 		launchctl bootstrap "gui/$$(id -u)" "$(HOME)/Library/LaunchAgents/$(SWIFTBAR_AGENT).plist"; \
+		open -g -a SwiftBar; \
 		echo "SwiftBar をログイン時に起動するよう登録しました"; \
 	else \
 		echo "SwiftBar がインストールされていません。make packages の後に make swiftbar を実行してください。"; \
