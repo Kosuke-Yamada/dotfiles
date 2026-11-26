@@ -35,6 +35,9 @@ if [ -x "$CHROME_BIN" ]; then
     # Python の webbrowser.GenericBrowser は子プロセスの終了を待つため、
     # 前面実行すると Chrome 未起動時に呼び出し元がブロックされてしまう。
     "$CHROME_BIN" --profile-directory="$CHROME_PROFILE" "$@" >/dev/null 2>&1 &
+    # バイナリ直接起動ではウィンドウが前面に来ないため、ログイン画面を見落とさないよう前面に出す
+    sleep 1
+    /usr/bin/osascript -e 'tell application "Google Chrome" to activate' >/dev/null 2>&1 || true
     exit 0
 fi
 

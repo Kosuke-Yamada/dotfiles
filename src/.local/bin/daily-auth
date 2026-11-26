@@ -15,6 +15,10 @@ set -uo pipefail
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
+# LaunchAgent には .zshrc の BROWSER が引き継がれないため、ここで同じラッパーを指定する。
+# gcloud はこの BROWSER でログイン画面を開く。
+[ -x "$HOME/.local/bin/browser" ] && export BROWSER="$HOME/.local/bin/browser"
+
 readonly STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/daily-auth"
 readonly STAMP_FILE="$STATE_DIR/last-success"
 readonly LOCAL_TARGETS="${XDG_CONFIG_HOME:-$HOME/.config}/daily-auth/targets"
@@ -61,7 +65,7 @@ open_first_url() {
   while IFS= read -r line; do
     printf '%s\n' "$line"
     if [ "$opened" -eq 0 ] && [[ "$line" =~ ^[[:space:]]*(https://[^[:space:]]+)[[:space:]]*$ ]]; then
-      /usr/bin/open "${BASH_REMATCH[1]}" && opened=1
+      "${BROWSER:-/usr/bin/open}" "${BASH_REMATCH[1]}" && opened=1
     fi
   done
 }
@@ -102,7 +106,7 @@ run_with_timeout() {
   "$@" </dev/null &
   local pid=$!
   set +m
-  (sleep "$seconds" && kill -TERM -- "-$pid" 2>/dev/null) &
+  (sleep "$seconds" && kill -TERM -- "-$pid") 2>/dev/null &
   local watchdog=$!
   wait "$pid"
   local status=$?
