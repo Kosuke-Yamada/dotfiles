@@ -1,0 +1,154 @@
+#!/bin/bash
+# 1 日 1 回、CLI に再ログインしてセッションを更新する。
+# 有効なトークンも朝に取り直すことで、再認証ポリシーによる日中の失効を避ける。
+# LaunchAgent (local.dotfiles.daily-auth) からログイン時・スリープ復帰時に呼ばれる。
+#
+# 対象は「名前|確認コマンド|ログインコマンド[|open-url]」の形式で定義する。
+# 確認コマンドはログイン後にトークンを取得できるかの検証に使う。
+#   - 共通の対象: 下の DEFAULT_TARGETS
+#   - マシン固有・社内の対象: ~/.config/daily-auth/targets（dotfiles 管理外）
+#
+# 使い方:
+#   daily-auth          今日まだ成功していなければ実行
+#   daily-auth --force  今日の実行済みスタンプを無視して実行
+set -uo pipefail
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+readonly STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/daily-auth"
+readonly STAMP_FILE="$STATE_DIR/last-success"
+readonly LOCAL_TARGETS="${XDG_CONFIG_HOME:-$HOME/.config}/daily-auth/targets"
+readonly LOCK_DIR="$STATE_DIR/lock"
+readonly LOGIN_TIMEOUT_SECONDS="${DAILY_AUTH_LOGIN_TIMEOUT:-600}"
+
+readonly DEFAULT_TARGETS=(
+  # gcloud / gsutil（GCS）/ Vertex AI 用。--update-adc でクライアントライブラリ用の ADC も同時に更新し、
+  # --enable-gdrive-access で Google Drive のスコープを付ける
+  "gcloud|gcloud auth print-access-token && gcloud auth application-default print-access-token|gcloud auth login --update-adc --enable-gdrive-access --brief"
+)
+
+log() { printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"; }
+
+notify() {
+  local message="$1"
+  /usr/bin/osascript -e "display notification \"${message//\"/\\\"}\" with title \"daily-auth\"" >/dev/null 2>&1 || true
+}
+
+# スリープ復帰直後はネットワークが未接続のことがある。
+# 未接続のまま確認すると有効なトークンも失効扱いになるため、疎通を待つ。
+wait_for_network() {
+  local i
+  for i in $(seq 1 30); do
+    if /usr/bin/curl -s -o /dev/null --max-time 5 https://oauth2.googleapis.com/; then
+      return 0
+    fi
+    sleep 5
+  done
+  return 1
+}
+
+load_targets() {
+  printf '%s\n' "${DEFAULT_TARGETS[@]}"
+  if [ -f "$LOCAL_TARGETS" ]; then
+    grep -v -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$LOCAL_TARGETS"
+  fi
+}
+
+# ログインコマンドの出力をそのまま流しつつ、URL だけの行が出たら最初の 1 つをブラウザで開く。
+# TTY がないとブラウザを自動で開かず URL を表示するだけの CLI 向け。
+open_first_url() {
+  local line opened=0
+  while IFS= read -r line; do
+    printf '%s\n' "$line"
+    if [ "$opened" -eq 0 ] && [[ "$line" =~ ^[[:space:]]*(https://[^[:space:]]+)[[:space:]]*$ ]]; then
+      /usr/bin/open "${BASH_REMATCH[1]}" && opened=1
+    fi
+  done
+}
+
+# 1 対象に再ログインし、トークンを取得できたら 0 を返す。
+# 4 番目のフィールドに open-url を指定すると、出力された認可 URL をブラウザで開く。
+refresh_target() {
+  local name="$1" check="$2" login="$3" options="${4:-}"
+  log "再ログイン: $name → $login"
+  notify "$name にログインします。ブラウザで承認してください"
+  local runner=(bash -c "$login")
+  if [ "$options" = "open-url" ]; then
+    runner=(bash -c 'set -o pipefail; bash -c "$1" 2>&1 | open_first_url' _ "$login")
+    export -f open_first_url
+  fi
+  run_with_timeout "$LOGIN_TIMEOUT_SECONDS" "${runner[@]}"
+  local status=$?
+  if [ "$status" -eq 0 ]; then
+    if bash -c "$check" >/dev/null 2>&1; then
+      log "再ログイン成功: $name"
+      return 0
+    fi
+    log "再ログイン後もトークンを取得できません: $name"
+  elif [ "$status" -eq 143 ]; then
+    log "${LOGIN_TIMEOUT_SECONDS} 秒以内に承認されなかったため中断しました: $name"
+  else
+    log "再ログインに失敗しました: $name (exit $status)"
+  fi
+  return 1
+}
+
+# ブラウザで承認されないとログインコマンドは待ち続けるため、一定時間で打ち切る。
+# 孫プロセス（各 CLI 本体）ごと止めるため、別プロセスグループで起動してグループに送る。
+run_with_timeout() {
+  local seconds="$1"
+  shift
+  set -m
+  "$@" </dev/null &
+  local pid=$!
+  set +m
+  (sleep "$seconds" && kill -TERM -- "-$pid" 2>/dev/null) &
+  local watchdog=$!
+  wait "$pid"
+  local status=$?
+  pkill -P "$watchdog" 2>/dev/null
+  kill "$watchdog" 2>/dev/null
+  wait "$watchdog" 2>/dev/null
+  return "$status"
+}
+
+main() {
+  local force=0
+  [ "${1:-}" = "--force" ] && force=1
+
+  mkdir -p "$STATE_DIR"
+  local today
+  today="$(date +%Y-%m-%d)"
+  if [ "$force" -eq 0 ] && [ "$(cat "$STAMP_FILE" 2>/dev/null)" = "$today" ]; then
+    log "本日は実行済みのためスキップします"
+    return 0
+  fi
+
+  # ログイン時とカレンダー起動が重なっても二重にブラウザを開かない
+  if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    log "別の daily-auth が実行中のためスキップします"
+    return 0
+  fi
+  trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
+
+  if ! wait_for_network; then
+    log "ネットワークに接続できないため中止します"
+    notify "ネットワークに接続できないため認証確認を中止しました"
+    return 1
+  fi
+
+  local failed=() name check login options
+  while IFS='|' read -r name check login options; do
+    [ -n "$name" ] || continue
+    refresh_target "$name" "$check" "$login" "$options" || failed+=("$name")
+  done < <(load_targets)
+
+  if [ "${#failed[@]}" -gt 0 ]; then
+    notify "認証に失敗: ${failed[*]}（daily-auth --force で再実行）"
+    return 1
+  fi
+  printf '%s\n' "$today" >"$STAMP_FILE"
+  log "すべての再ログインが完了しました"
+}
+
+main "$@"

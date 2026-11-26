@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  その日最初に PC を使い始めたときに daily-auth を実行する。
+  - RunAtLoad: ログイン時
+  - StartCalendarInterval: 毎朝 6:00。スリープ中に時刻を過ぎた場合は
+    launchd が復帰直後に 1 回だけ実行するため、「朝フタを開けた時」に動く。
+  1 日 1 回の制御は daily-auth 側のスタンプファイルで行う。
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.dotfiles.daily-auth</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-c</string>
+    <string>exec "$HOME/.local/bin/daily-auth"</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>6</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/tmp/local.dotfiles.daily-auth.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/local.dotfiles.daily-auth.err.log</string>
+</dict>
+</plist>

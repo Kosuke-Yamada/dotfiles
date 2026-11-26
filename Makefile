@@ -29,7 +29,7 @@ BREW_PREFIX := /home/linuxbrew/.linuxbrew
 endif
 export PATH := $(BREW_PREFIX)/bin:$(BREW_PREFIX)/sbin:$(PATH)
 
-.PHONY: all init link codex-skills codex-config claude-settings copilot-settings copilot-plugins swiftbar yabai-service brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
+.PHONY: all init link codex-skills codex-config claude-settings copilot-settings copilot-plugins swiftbar yabai-service daily-auth brew packages herdr-app plugins macos-setup claude-mcp claude-mem vscode-extensions skim-setup help
 
 # デフォルトターゲット
 all: init
@@ -302,6 +302,31 @@ else
 endif
 
 # ------------------------------------------------------------------------------
+# daily-auth: その日最初に PC を使い始めたときに CLI へ再ログインする LaunchAgent を登録
+# ログイン時と毎朝 6:00（スリープ中なら復帰直後）に ~/.local/bin/daily-auth を実行する。
+# 社内向けなどの追加対象は ~/.config/daily-auth/targets に書く（dotfiles 管理外）。
+# 登録直後の RunAtLoad でブラウザが開かないよう、初回は本日分のスタンプを書いておく。
+# ------------------------------------------------------------------------------
+DAILY_AUTH_AGENT := local.dotfiles.daily-auth
+daily-auth:
+	@echo ""
+	@echo "[link] daily-auth LaunchAgent の登録"
+	@echo "------------------------------------------"
+ifeq ($(OS),Darwin)
+	@set -eu; \
+	mkdir -p "$(HOME)/Library/LaunchAgents" "$(HOME)/.local/bin" "$(HOME)/.local/state/daily-auth"; \
+	ln -snf "$(SRC_DIRECTORY)/.local/bin/daily-auth" "$(HOME)/.local/bin/daily-auth"; \
+	install -m 644 "$(SRC_DIRECTORY)/Library/LaunchAgents/$(DAILY_AUTH_AGENT).plist" "$(HOME)/Library/LaunchAgents/$(DAILY_AUTH_AGENT).plist"; \
+	[ -f "$(HOME)/.local/state/daily-auth/last-success" ] || date +%Y-%m-%d > "$(HOME)/.local/state/daily-auth/last-success"; \
+	launchctl enable "gui/$$(id -u)/$(DAILY_AUTH_AGENT)"; \
+	launchctl bootout "gui/$$(id -u)/$(DAILY_AUTH_AGENT)" 2>/dev/null || true; \
+	launchctl bootstrap "gui/$$(id -u)" "$(HOME)/Library/LaunchAgents/$(DAILY_AUTH_AGENT).plist"; \
+	echo "daily-auth を登録しました（今すぐ実行するには daily-auth --force）"
+else
+	@echo "macOS ではないためスキップします。"
+endif
+
+# ------------------------------------------------------------------------------
 # codex-skills: Claude Code と同じスキルを Codex に共有
 # ------------------------------------------------------------------------------
 codex-skills:
@@ -448,7 +473,7 @@ else
 	@echo "macOS ではないためスキップします。"
 endif
 
-link: codex-skills codex-config claude-settings copilot-settings swiftbar yabai-service t3-keybindings karabiner-config
+link: codex-skills codex-config claude-settings copilot-settings swiftbar yabai-service daily-auth t3-keybindings karabiner-config
 	@echo ""
 	@echo "[link] シンボリックリンクの作成"
 	@echo "------------------------------------------"
