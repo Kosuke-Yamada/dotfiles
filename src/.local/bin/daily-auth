@@ -51,6 +51,30 @@ wait_for_network() {
   return 1
 }
 
+# フタを閉じたスリープ中の DarkWake でも定時実行が走る。そのままログイン画面を開くと
+# 誰にも見えずにタイムアウトするため、画面ロックが解除され、直近に操作があるまで待つ。
+readonly USER_IDLE_THRESHOLD_SECONDS=60
+
+user_is_active() {
+  local idle
+  if /usr/sbin/ioreg -n Root -d1 -a \
+    | /usr/bin/plutil -extract IOConsoleUsers.0.CGSSessionScreenIsLocked raw - 2>/dev/null \
+    | grep -qx true; then
+    return 1
+  fi
+  idle="$(/usr/sbin/ioreg -c IOHIDSystem -d 4 | awk '/HIDIdleTime/ {print int($NF / 1000000000); exit}')"
+  [ -n "$idle" ] && [ "$idle" -lt "$USER_IDLE_THRESHOLD_SECONDS" ]
+}
+
+wait_for_user() {
+  user_is_active && return 0
+  log "ユーザーの操作を待っています（画面ロック中または無操作）"
+  until user_is_active; do
+    sleep 10
+  done
+  log "ユーザーの操作を検知しました"
+}
+
 load_targets() {
   printf '%s\n' "${DEFAULT_TARGETS[@]}"
   if [ -f "$LOCAL_TARGETS" ]; then
@@ -74,6 +98,7 @@ open_first_url() {
 # 4 番目のフィールドに open-url を指定すると、出力された認可 URL をブラウザで開く。
 refresh_target() {
   local name="$1" check="$2" login="$3" options="${4:-}"
+  wait_for_user
   log "再ログイン: $name → $login"
   notify "$name にログインします。ブラウザで承認してください"
   local runner=(bash -c "$login")
